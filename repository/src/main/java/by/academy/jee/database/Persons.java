@@ -7,17 +7,21 @@ import java.util.Map;
 
 public class Persons {
 
-    private Map<Integer, Person> persons = new HashMap<>();
+    static {
+
+    }
+
+    private static Map<Integer, Person> persons = new HashMap<>();
 
     private static int count = 1;
 
-    public void addPerson(Person person) {
+    public static void addPerson(Person person) {
         int id = count++;
         person.setId(id);
         persons.put(id, person);
     }
 
-    public Person getPerson(int id) {
+    public static Person getPerson(int id) {
         return persons.get(id);
     }
 }

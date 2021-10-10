@@ -14,6 +14,18 @@ public abstract class Person {
     private int age;
     private Role role;
 
+    public Person() {
+    }
+
+    public Person(String login, byte[] pwd, byte[] salt, String name, int age, Role role) {
+        this.login = login;
+        this.pwd = pwd;
+        this.salt = salt;
+        this.name = name;
+        this.age = age;
+        this.role = role;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
