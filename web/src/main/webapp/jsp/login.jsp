@@ -6,6 +6,7 @@
     </head>
 
     <body>
+    <jsp:include page="header.jsp"></jsp:include>
     <h2>Login page</h2>
     <form method="POST" action="${pageContext.request.contextPath}/login">
         User Name
@@ -15,7 +16,6 @@
             <input type="password" name="password" value="" />
         </p>
         <input type="submit" value= "Enter" />
-        <a href="${pageContext.request.contextPath}/">HomePage</a>
     </form>
 
     </body>
