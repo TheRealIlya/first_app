@@ -15,7 +15,7 @@ public class HomePageServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         RequestDispatcher dispatcher = getServletContext().
-                getRequestDispatcher("/jsp/homePage.jsp");
+                getRequestDispatcher("/jsp/common/homePage.jsp");
         dispatcher.forward(req, resp);
     }
 

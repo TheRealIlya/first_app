@@ -7,6 +7,6 @@
 
     <body>
         <jsp:include page="header.jsp"></jsp:include>
-        <h3>Welcome to my web_app! Choose your action in header</h3>
+        <h3>Welcome to my web_app! This is just useless home page :) Choose your action in header</h3>
     </body>
 </html>

@@ -1,4 +1,4 @@
-package by.academy.jee;
+package by.academy.jee.util;
 
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.dao.person.PersonDaoForMemoryDatabase;

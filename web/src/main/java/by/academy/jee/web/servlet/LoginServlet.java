@@ -1,7 +1,6 @@
 package by.academy.jee.web.servlet;
 
-import by.academy.jee.Initializer;
-import by.academy.jee.database.Database;
+import by.academy.jee.util.Initializer;
 import by.academy.jee.model.person.Person;
 import by.academy.jee.util.PasswordHasher;
 
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 @WebServlet(value = "/login")
 public class LoginServlet extends HttpServlet {
@@ -21,23 +19,22 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         RequestDispatcher dispatcher = getServletContext().
-                getRequestDispatcher("/jsp/login.jsp");
+                getRequestDispatcher("/jsp/common/login.jsp");
         dispatcher.forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("text/html");
-        PrintWriter writer = resp.getWriter();
+
+        //TODO - check session. if autorised - redirect to menu
         String userName = req.getParameter("userName");
         String password = req.getParameter("password");
-
         Person user = Initializer.personDao.read(userName);
         if (user == null) {
             String errorMessage = "No such user in database";
             req.setAttribute("errorMessage", errorMessage);
             RequestDispatcher dispatcher = getServletContext().
-                    getRequestDispatcher("/jsp/login.jsp");
+                    getRequestDispatcher("/jsp/common/login.jsp");
             dispatcher.forward(req, resp);
             return;
         }
@@ -46,13 +43,17 @@ public class LoginServlet extends HttpServlet {
             String errorMessage = "Wrong password";
             req.setAttribute("errorMessage", errorMessage);
             RequestDispatcher dispatcher = getServletContext().
-                    getRequestDispatcher("/jsp/login.jsp");
+                    getRequestDispatcher("/jsp/common/login.jsp");
             dispatcher.forward(req, resp);
             return;
         }
+        req.getSession().setAttribute("loginedUser", user);
         String role = user.getRole().toString();
         switch (role) {
-            case "ADMIN": //TODO admin jsp
+            case "ADMIN":
+                RequestDispatcher dispatcher = getServletContext().
+                        getRequestDispatcher("/jsp/admin/adminMenu.jsp");
+                dispatcher.forward(req, resp);
                 break;
             case "TEACHER": //TODO teacher jsp
                 break;
@@ -61,8 +62,8 @@ public class LoginServlet extends HttpServlet {
             default:
                 String errorMessage = "Error - role is filled incorrectly. Please contact admin to fix it";
                 req.setAttribute("errorMessage", errorMessage);
-                RequestDispatcher dispatcher = getServletContext().
-                        getRequestDispatcher("/jsp/login.jsp");
+                dispatcher = getServletContext().
+                        getRequestDispatcher("/jsp/common/login.jsp");
                 dispatcher.forward(req, resp);
         }
     }
