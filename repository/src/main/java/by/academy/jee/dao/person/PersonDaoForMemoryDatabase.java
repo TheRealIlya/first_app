@@ -1,5 +1,6 @@
 package by.academy.jee.dao.person;
 
+import by.academy.jee.database.Database;
 import by.academy.jee.model.person.Person;
 
 import java.util.List;
@@ -14,6 +15,11 @@ public class PersonDaoForMemoryDatabase implements PersonDao{
     @Override
     public Person read(int id) {
         return null; //TODO
+    }
+
+    @Override
+    public Person read(String name) {
+        return Database.getPerson(name);
     }
 
     @Override

@@ -10,6 +10,8 @@ public interface PersonDao {
 
     Person read(int id);
 
+    Person read(String name);
+
     boolean update(int id, Person newPerson);
 
     boolean delete (int id);
