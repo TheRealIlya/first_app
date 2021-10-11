@@ -3,6 +3,7 @@ package by.academy.jee.web.servlet;
 import by.academy.jee.util.Initializer;
 import by.academy.jee.model.person.Person;
 import by.academy.jee.util.PasswordHasher;
+import by.academy.jee.web.util.SessionUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -12,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(value = "/login")
+@WebServlet(value = {"/", "/login"})
 public class LoginServlet extends HttpServlet {
 
     @Override
@@ -47,7 +48,7 @@ public class LoginServlet extends HttpServlet {
             dispatcher.forward(req, resp);
             return;
         }
-        req.getSession().setAttribute("loginedUser", user);
+        SessionUtil.setSessionUser(req, user);
         String role = user.getRole().toString();
         switch (role) {
             case "ADMIN":
