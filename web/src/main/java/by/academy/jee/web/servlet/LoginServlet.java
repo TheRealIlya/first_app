@@ -19,6 +19,12 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        if (SessionUtil.getSessionUser(req) != null) {
+            RequestDispatcher dispatcher = getServletContext().
+                    getRequestDispatcher("/jsp/common/alreadyLoggedIn.jsp");
+            dispatcher.forward(req, resp);
+            return;
+        }
         RequestDispatcher dispatcher = getServletContext().
                 getRequestDispatcher("/jsp/common/login.jsp");
         dispatcher.forward(req, resp);
@@ -27,7 +33,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        //TODO - check session. if autorised - redirect to menu
+
         String userName = req.getParameter("userName");
         String password = req.getParameter("password");
         Person user = Initializer.personDao.read(userName);

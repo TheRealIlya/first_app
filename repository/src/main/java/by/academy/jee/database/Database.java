@@ -7,10 +7,6 @@ import java.util.Map;
 
 public abstract class Database {
 
-    static {
-
-    }
-
     private static Map<Integer, Person> persons = new HashMap<>();
 
     private static int count = 1;
