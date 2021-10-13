@@ -94,4 +94,11 @@ public abstract class Person {
     public void setRole(Role role) {
         this.role = role;
     }
+
+    @Override
+    public String toString() {
+        return "User " + login + " (" + role + ") <br>" +
+                "Name: " + name + " <br>" +
+                "Age: " + age;
+    }
 }
