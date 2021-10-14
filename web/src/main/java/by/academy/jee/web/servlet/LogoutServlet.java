@@ -1,6 +1,7 @@
 package by.academy.jee.web.servlet;
 
-import javax.servlet.RequestDispatcher;
+import by.academy.jee.web.util.SessionUtil;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,9 +17,7 @@ public class LogoutServlet extends HttpServlet {
         req.getSession().invalidate();
         String errorMessage = "Successfully logged out!";
         req.setAttribute("errorMessage", errorMessage);
-        RequestDispatcher dispatcher = getServletContext().
-                getRequestDispatcher("/jsp/common/login.jsp");
-        dispatcher.forward(req, resp);
+        SessionUtil.setupForward(this, req, resp, "/jsp/common/login.jsp");
     }
 
     @Override

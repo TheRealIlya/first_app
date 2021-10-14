@@ -7,7 +7,8 @@ public class Admin extends Person {
     public Admin() {
     }
 
-    public Admin(String login, byte[] pwd, byte[] salt, String name, int age, Role role) {
-        super(login, pwd, salt, name, age, role);
+    public Admin(String login, byte[] pwd, byte[] salt, String name, int age) {
+        super(login, pwd, salt, name, age);
+        setRole(Role.ADMIN);
     }
 }

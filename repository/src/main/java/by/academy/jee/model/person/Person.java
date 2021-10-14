@@ -17,13 +17,12 @@ public abstract class Person {
     public Person() {
     }
 
-    public Person(String login, byte[] pwd, byte[] salt, String name, int age, Role role) {
+    public Person(String login, byte[] pwd, byte[] salt, String name, int age) {
         this.login = login;
         this.pwd = pwd;
         this.salt = salt;
         this.name = name;
         this.age = age;
-        this.role = role;
     }
 
     @Override
@@ -97,7 +96,7 @@ public abstract class Person {
 
     @Override
     public String toString() {
-        return "User " + login + " (" + role + ") <br>" +
+        return "User: " + login + " (" + role + ") <br>" +
                 "Name: " + name + " <br>" +
                 "Age: " + age;
     }

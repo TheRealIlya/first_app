@@ -1,6 +1,7 @@
 package by.academy.jee.web.servlet;
 
-import javax.servlet.RequestDispatcher;
+import by.academy.jee.web.util.SessionUtil;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,15 +14,11 @@ public class HomePageServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        RequestDispatcher dispatcher = getServletContext().
-                getRequestDispatcher("/jsp/common/homePage.jsp");
-        dispatcher.forward(req, resp);
+        SessionUtil.setupForward(this, req, resp, "/jsp/common/homePage.jsp");
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         doGet(req, resp);
     }
 }

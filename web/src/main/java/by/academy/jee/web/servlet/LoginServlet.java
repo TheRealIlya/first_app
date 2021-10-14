@@ -5,7 +5,6 @@ import by.academy.jee.model.person.Person;
 import by.academy.jee.util.PasswordHasher;
 import by.academy.jee.web.util.SessionUtil;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,14 +19,10 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         if (SessionUtil.getSessionUser(req) != null) {
-            RequestDispatcher dispatcher = getServletContext().
-                    getRequestDispatcher("/jsp/common/alreadyLoggedIn.jsp");
-            dispatcher.forward(req, resp);
+            SessionUtil.setupForward(this, req, resp, "/jsp/common/alreadyLoggedIn.jsp");
             return;
         }
-        RequestDispatcher dispatcher = getServletContext().
-                getRequestDispatcher("/jsp/common/login.jsp");
-        dispatcher.forward(req, resp);
+        SessionUtil.setupForward(this, req, resp, "/jsp/common/login.jsp");
     }
 
     @Override
@@ -40,38 +35,32 @@ public class LoginServlet extends HttpServlet {
         if (user == null) {
             String errorMessage = "No such user in database";
             req.setAttribute("errorMessage", errorMessage);
-            RequestDispatcher dispatcher = getServletContext().
-                    getRequestDispatcher("/jsp/common/login.jsp");
-            dispatcher.forward(req, resp);
+            SessionUtil.setupForward(this, req, resp, "/jsp/common/login.jsp");
             return;
         }
         boolean isCorrectPassword = PasswordHasher.authenticate(password, user.getPwd(), user.getSalt());
         if (!isCorrectPassword) {
             String errorMessage = "Wrong password";
             req.setAttribute("errorMessage", errorMessage);
-            RequestDispatcher dispatcher = getServletContext().
-                    getRequestDispatcher("/jsp/common/login.jsp");
-            dispatcher.forward(req, resp);
+            SessionUtil.setupForward(this, req, resp, "/jsp/common/login.jsp");
             return;
         }
         SessionUtil.setSessionUser(req, user);
         String role = user.getRole().toString();
         switch (role) {
             case "ADMIN":
-                RequestDispatcher dispatcher = getServletContext().
-                        getRequestDispatcher("/jsp/admin/adminMenu.jsp");
-                dispatcher.forward(req, resp);
+                SessionUtil.setupForward(this, req, resp, "/jsp/admin/adminMenu.jsp");
                 break;
-            case "TEACHER": //TODO teacher jsp
+            case "TEACHER":
+                SessionUtil.setupForward(this, req, resp, "/jsp/teacher/teacherMenu.jsp");
                 break;
-            case "STUDENT": //TODO student jsp
+            case "STUDENT":
+                SessionUtil.setupForward(this, req, resp, "/jsp/student/studentMenu.jsp");
                 break;
             default:
                 String errorMessage = "Error - role is filled incorrectly. Please contact admin to fix it";
                 req.setAttribute("errorMessage", errorMessage);
-                dispatcher = getServletContext().
-                        getRequestDispatcher("/jsp/common/login.jsp");
-                dispatcher.forward(req, resp);
+                SessionUtil.setupForward(this, req, resp, "/jsp/common/login.jsp");
         }
     }
 }
