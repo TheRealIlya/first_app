@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static by.academy.jee.web.constant.Constant.*;
+
 @WebServlet(value = {"/", "/login"})
 public class LoginServlet extends HttpServlet {
 
@@ -22,27 +24,28 @@ public class LoginServlet extends HttpServlet {
             SessionUtil.setupForward(this, req, resp, "/jsp/common/alreadyLoggedIn.jsp");
             return;
         }
-        SessionUtil.setupForward(this, req, resp, "/jsp/common/login.jsp");
+        SessionUtil.setupForward(this, req, resp, LOGIN_JSP_URL);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-
         String userName = req.getParameter("userName");
         String password = req.getParameter("password");
-        Person user = Initializer.personDao.read(userName);
+        Person user = Initializer.adminDao.read(userName); // TODO - add check in studentDao
         if (user == null) {
-            String errorMessage = "No such user in database";
-            req.setAttribute("errorMessage", errorMessage);
-            SessionUtil.setupForward(this, req, resp, "/jsp/common/login.jsp");
-            return;
+            user = Initializer.teacherDao.read(userName);
+            if (user == null) {
+                req.setAttribute(ERROR_MESSAGE, NO_SUCH_USER_IN_DATABASE);
+                SessionUtil.setupForward(this, req, resp, LOGIN_JSP_URL);
+                return;
+            }
         }
         boolean isCorrectPassword = PasswordHasher.authenticate(password, user.getPwd(), user.getSalt());
         if (!isCorrectPassword) {
             String errorMessage = "Wrong password";
-            req.setAttribute("errorMessage", errorMessage);
-            SessionUtil.setupForward(this, req, resp, "/jsp/common/login.jsp");
+            req.setAttribute(ERROR_MESSAGE, errorMessage);
+            SessionUtil.setupForward(this, req, resp, LOGIN_JSP_URL);
             return;
         }
         SessionUtil.setSessionUser(req, user);
@@ -59,8 +62,8 @@ public class LoginServlet extends HttpServlet {
                 break;
             default:
                 String errorMessage = "Error - role is filled incorrectly. Please contact admin to fix it";
-                req.setAttribute("errorMessage", errorMessage);
-                SessionUtil.setupForward(this, req, resp, "/jsp/common/login.jsp");
+                req.setAttribute(ERROR_MESSAGE, errorMessage);
+                SessionUtil.setupForward(this, req, resp, LOGIN_JSP_URL);
         }
     }
 }

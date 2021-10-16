@@ -25,4 +25,10 @@ public class SessionUtil {
         dispatcher.forward(req, resp);
     }
 
+    public static void setupInclude(HttpServlet servlet, HttpServletRequest req, HttpServletResponse resp, String url)
+            throws ServletException, IOException {
+        RequestDispatcher dispatcher = servlet.getServletContext().getRequestDispatcher(url);
+        dispatcher.include(req, resp);
+    }
+
 }

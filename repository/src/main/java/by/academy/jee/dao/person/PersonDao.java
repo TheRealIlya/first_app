@@ -4,17 +4,17 @@ import by.academy.jee.model.person.Person;
 
 import java.util.List;
 
-public interface PersonDao {
+public interface PersonDao<T extends Person> {
 
-    boolean create(Person person);
+    boolean create(T t);
 
-    Person read(int id);
+    T read(int id);
 
-    Person read(String name);
+    T read(String name);
 
-    boolean update(int id, Person newPerson);
+    boolean update(int id, T newT);
 
     boolean delete (int id);
 
-    List<Person> readAll();
+    List<T> readAll();
 }

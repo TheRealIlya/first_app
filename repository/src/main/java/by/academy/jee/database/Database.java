@@ -1,36 +1,63 @@
 package by.academy.jee.database;
 
-import by.academy.jee.model.person.Person;
+import by.academy.jee.model.person.Admin;
+import by.academy.jee.model.person.Student;
+import by.academy.jee.model.person.Teacher;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Database {
 
-    private static Map<Integer, Person> persons = new HashMap<>();
+    private static Map<Integer, Admin> admins = new HashMap<>();
+    private static Map<Integer, Teacher> teachers = new HashMap<>();
+    private static Map<Integer, Student> students = new HashMap<>();
 
-    private static int count = 1;
+    private static int adminCount = 0;
+    private static int teacherCount = 0;
+    private static int studentCount = 0;
 
-    public static void addPerson(Person person) {
-        int id = count++;
-        person.setId(id);
-        persons.put(id, person);
+    public static void addAdmin(Admin admin) {
+        int id = adminCount++;
+        admin.setId(id);
+        admins.put(id, admin);
     }
 
-    public static Person getPerson(int id) {
-        return persons.get(id);
+    public static void addTeacher(Teacher teacher) {
+        int id = teacherCount++;
+        teacher.setId(id);
+        teachers.put(id, teacher);
     }
 
-    public static Person getPerson(String login) {
-        for (int key : persons.keySet()) {
-            if (login.equals(persons.get(key).getLogin())) {
-                return persons.get(key);
+    public static void addStudent(Student student) {
+        int id = studentCount++;
+        student.setId(id);
+        students.put(id, student);
+    }
+
+    public static Teacher getTeacher(int id) {
+        return teachers.get(id);
+    }
+
+    public static Admin getAdmin(String login) {
+        for (int key : admins.keySet()) {
+            if (login.equals(admins.get(key).getLogin())) {
+                return admins.get(key);
             }
         }
         return null;
     }
 
-    public static Map<Integer, Person> getMap() {
-        return persons;
+    public static Teacher getTeacher(String login) {
+        for (int key : teachers.keySet()) {
+            if (login.equals(teachers.get(key).getLogin())) {
+                return teachers.get(key);
+            }
+        }
+        return null;
+    }
+
+    public static Map<Integer, Teacher> getTeacherMap() {
+        return teachers;
     }
 }

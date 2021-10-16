@@ -2,6 +2,7 @@ package by.academy.jee.model.person;
 
 import by.academy.jee.model.person.role.Role;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Teacher extends Person {
@@ -15,7 +16,7 @@ public class Teacher extends Person {
         this.salaries = salaries;
     }
 
-    private Map<Integer, Double> salaries;
+    private Map<Integer, Double> salaries = new HashMap();
 
     public Map<Integer, Double> getSalaries() {
         return salaries;
