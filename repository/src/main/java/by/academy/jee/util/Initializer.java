@@ -6,8 +6,12 @@ import by.academy.jee.dao.person.teacher.TeacherDaoForMemoryDatabase;
 import by.academy.jee.database.Database;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.Teacher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class Initializer {
+
+    private static final Logger log = LoggerFactory.getLogger(Initializer.class);
 
     public static PersonDao<Admin> adminDao;
     public static PersonDao<Teacher> teacherDao;
@@ -15,6 +19,7 @@ public abstract class Initializer {
     static {
         adminDao = new AdminDaoForMemoryDatabase();
         teacherDao = new TeacherDaoForMemoryDatabase();
+        log.info("Static DAO initialization completed");
         initDatabase();
     }
 
@@ -28,5 +33,6 @@ public abstract class Initializer {
         pwd = PasswordHasher.getEncryptedPassword("1234", salt);
         Database.addTeacher(new Teacher("Mike_", pwd, salt, "Mike", 35,
                 SalaryGenerator.generate(200, 2000))); // Mike_, 1234
+        log.info("In-memory database initialized");
     }
 }

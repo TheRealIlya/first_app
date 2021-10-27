@@ -11,6 +11,7 @@ import java.io.IOException;
 
 @WebFilter("/*")
 public class LoginFilter implements Filter {
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
@@ -26,8 +27,9 @@ public class LoginFilter implements Filter {
             RequestDispatcher dispatcher = req.getServletContext().
                     getRequestDispatcher("/");
             dispatcher.forward(req, resp);
+        } else {
+            filterChain.doFilter(req, resp);
         }
-        filterChain.doFilter(req, resp);
     }
 
     @Override

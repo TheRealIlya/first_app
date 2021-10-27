@@ -6,6 +6,8 @@ import by.academy.jee.util.Initializer;
 import by.academy.jee.util.PasswordHasher;
 import by.academy.jee.util.SalaryGenerator;
 import by.academy.jee.web.util.SessionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,6 +21,8 @@ import static by.academy.jee.web.constant.Constant.*;
 
 @WebServlet(value = "/addTeacher")
 public class AddTeacherServlet extends HttpServlet {
+
+    private static final Logger log = LoggerFactory.getLogger(AddTeacherServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -39,6 +43,7 @@ public class AddTeacherServlet extends HttpServlet {
             user = Initializer.teacherDao.read(userName);
         }
         if (user != null) {
+            log.info("Error - attempt to add already existed user {}", userName);
             req.setAttribute(ERROR_MESSAGE, USER_IS_ALREADY_EXIST);
             SessionUtil.setupForward(this, req, resp, ADD_TEACHER_JSP_URL);
             return;
@@ -50,6 +55,7 @@ public class AddTeacherServlet extends HttpServlet {
             minSalary = Double.parseDouble(minSalaryString);
             maxSalary = Double.parseDouble(maxSalaryString);
         } catch (NumberFormatException e) {
+            log.info("Error - wrong numbers format");
             String errorMessage = "Error - age and salaries must be numbers!";
             req.setAttribute(ERROR_MESSAGE, errorMessage);
             SessionUtil.setupForward(this, req, resp, ADD_TEACHER_JSP_URL);
@@ -66,6 +72,7 @@ public class AddTeacherServlet extends HttpServlet {
         Map<Integer, Double> salaries = SalaryGenerator.generate(minSalary, maxSalary);
         Teacher teacher = new Teacher(userName, hashPwd, salt, fio, age, salaries);
         Initializer.teacherDao.create(teacher);
+        log.info("Teacher {} is successfully added", userName);
         String approveMessage = "Teacher is successfully added!";
         req.setAttribute(APPROVE_MESSAGE, approveMessage);
         SessionUtil.setupInclude(this, req, resp, ADD_TEACHER_JSP_URL);
