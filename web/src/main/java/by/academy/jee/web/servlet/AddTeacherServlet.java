@@ -17,7 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
-import static by.academy.jee.web.constant.Constant.*;
+import static by.academy.jee.web.constant.Constant.ADD_TEACHER_JSP_URL;
+import static by.academy.jee.web.constant.Constant.APPROVE_MESSAGE;
+import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
+import static by.academy.jee.web.constant.Constant.USER_IS_ALREADY_EXIST;
 
 @WebServlet(value = "/addTeacher")
 public class AddTeacherServlet extends HttpServlet {
@@ -38,9 +41,9 @@ public class AddTeacherServlet extends HttpServlet {
         String ageString = req.getParameter("age");
         String minSalaryString = req.getParameter("minSalary");
         String maxSalaryString = req.getParameter("maxSalary");
-        Person user = Initializer.adminDao.read(userName); // TODO - add check in studentDao
+        Person user = Initializer.getAdminDao().read(userName); // TODO - add check in studentDao
         if (user == null) {
-            user = Initializer.teacherDao.read(userName);
+            user = Initializer.getTeacherDao().read(userName);
         }
         if (user != null) {
             log.info("Error - attempt to add already existed user {}", userName);
@@ -55,7 +58,7 @@ public class AddTeacherServlet extends HttpServlet {
             minSalary = Double.parseDouble(minSalaryString);
             maxSalary = Double.parseDouble(maxSalaryString);
         } catch (NumberFormatException e) {
-            log.info("Error - wrong numbers format");
+            log.error("Error - wrong numbers format");
             String errorMessage = "Error - age and salaries must be numbers!";
             req.setAttribute(ERROR_MESSAGE, errorMessage);
             SessionUtil.setupForward(this, req, resp, ADD_TEACHER_JSP_URL);
@@ -70,8 +73,14 @@ public class AddTeacherServlet extends HttpServlet {
         byte[] salt = PasswordHasher.generateSalt();
         byte[] hashPwd = PasswordHasher.getEncryptedPassword(password, salt);
         Map<Integer, Double> salaries = SalaryGenerator.generate(minSalary, maxSalary);
-        Teacher teacher = new Teacher(userName, hashPwd, salt, fio, age, salaries);
-        Initializer.teacherDao.create(teacher);
+        Teacher teacher = new Teacher()
+                .withLogin(userName)
+                .withPwd(hashPwd)
+                .withSalt(salt)
+                .withName(fio)
+                .withAge(age)
+                .withSalaries(salaries);
+        Initializer.getTeacherDao().create(teacher);
         log.info("Teacher {} is successfully added", userName);
         String approveMessage = "Teacher is successfully added!";
         req.setAttribute(APPROVE_MESSAGE, approveMessage);

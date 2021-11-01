@@ -11,6 +11,10 @@ import java.io.IOException;
 
 public class SessionUtil {
 
+    private SessionUtil() {
+        //util class
+    }
+
     public static void setSessionUser(HttpServletRequest req, Person user) {
         req.getSession().setAttribute("user", user);
     }

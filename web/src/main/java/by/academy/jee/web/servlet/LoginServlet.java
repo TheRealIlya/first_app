@@ -36,9 +36,9 @@ public class LoginServlet extends HttpServlet {
 
         String userName = req.getParameter("userName");
         String password = req.getParameter("password");
-        Person user = Initializer.adminDao.read(userName); // TODO - add check in studentDao
+        Person user = Initializer.getAdminDao().read(userName); // TODO - add check in studentDao
         if (user == null) {
-            user = Initializer.teacherDao.read(userName);
+            user = Initializer.getTeacherDao().read(userName);
             if (user == null) {
                 log.info("Error - no user {} in database", userName);
                 req.setAttribute(ERROR_MESSAGE, NO_SUCH_USER_IN_DATABASE);

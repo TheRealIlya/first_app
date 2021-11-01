@@ -3,7 +3,11 @@ package by.academy.jee.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class SalaryGenerator {
+public class SalaryGenerator {
+
+    private SalaryGenerator() {
+        //util class
+    }
 
     public static Map<Integer, Double> generate(double minSalary, double maxSalary) {
         Map<Integer, Double> salaries = new HashMap();

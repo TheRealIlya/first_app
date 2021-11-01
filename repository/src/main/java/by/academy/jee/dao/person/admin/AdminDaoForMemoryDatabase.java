@@ -24,7 +24,7 @@ public class AdminDaoForMemoryDatabase implements PersonDao<Admin> {
     }
 
     @Override
-    public boolean update(int id, Admin newAdmin) {
+    public boolean update(Admin newAdmin) {
         return false; //TODO
     }
 

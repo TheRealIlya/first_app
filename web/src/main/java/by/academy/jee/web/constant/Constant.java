@@ -1,6 +1,10 @@
 package by.academy.jee.web.constant;
 
-public abstract class Constant {
+public class Constant {
+
+    private Constant() {
+        //util class
+    }
 
     public static final String ERROR_MESSAGE = "errorMessage";
     public static final String APPROVE_MESSAGE = "approveMessage";

@@ -8,12 +8,42 @@ import java.util.Map;
 public class Teacher extends Person {
 
     public Teacher() {
+        setRole(Role.TEACHER);
     }
 
-    public Teacher(String login, byte[] pwd, byte[] salt, String name, int age, Map<Integer, Double> salaries) {
-        super(login, pwd, salt, name, age);
-        setRole(Role.TEACHER);
-        this.salaries = salaries;
+    public Teacher withId(int id) {
+        setId(id);
+        return this;
+    }
+
+    public Teacher withLogin(String login) {
+        setLogin(login);
+        return this;
+    }
+
+    public Teacher withPwd(byte[] pwd) {
+        setPwd(pwd);
+        return this;
+    }
+
+    public Teacher withSalt(byte[] salt) {
+        setSalt(salt);
+        return this;
+    }
+
+    public Teacher withName(String name) {
+        setName(name);
+        return this;
+    }
+
+    public Teacher withAge(int age) {
+        setAge(age);
+        return this;
+    }
+
+    public Teacher withSalaries(Map<Integer, Double> salaries) {
+        setSalaries(salaries);
+        return this;
     }
 
     private Map<Integer, Double> salaries = new HashMap();

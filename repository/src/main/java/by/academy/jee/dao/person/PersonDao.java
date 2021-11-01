@@ -12,7 +12,7 @@ public interface PersonDao<T extends Person> {
 
     T read(String name);
 
-    boolean update(int id, T newT);
+    boolean update(T newT);
 
     boolean delete (int id);
 

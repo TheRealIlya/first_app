@@ -7,7 +7,11 @@ import by.academy.jee.model.person.Teacher;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Database {
+public class Database {
+
+    private Database() {
+        //util class
+    }
 
     private static Map<Integer, Admin> admins = new HashMap<>();
     private static Map<Integer, Teacher> teachers = new HashMap<>();

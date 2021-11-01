@@ -25,7 +25,7 @@ public class TeacherDaoForMemoryDatabase implements PersonDao<Teacher> {
     }
 
     @Override
-    public boolean update(int id, Teacher newTeacher) {
+    public boolean update(Teacher newTeacher) {
         return false; //TODO
     }
 
