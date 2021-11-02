@@ -41,6 +41,11 @@ public class Teacher extends Person {
         return this;
     }
 
+    public Teacher withRole(Role role) {
+        setRole(role);
+        return this;
+    }
+
     public Teacher withSalaries(Map<Integer, Double> salaries) {
         setSalaries(salaries);
         return this;

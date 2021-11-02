@@ -1,8 +1,8 @@
 package by.academy.jee.web.servlet;
 
-import by.academy.jee.util.Initializer;
+import by.academy.jee.exception.ServiceException;
 import by.academy.jee.model.person.Person;
-import by.academy.jee.util.PasswordHasher;
+import by.academy.jee.web.service.Service;
 import by.academy.jee.web.util.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static by.academy.jee.web.constant.Constant.*;
+import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
+import static by.academy.jee.web.constant.Constant.LOGIN_JSP_URL;
 
 @WebServlet(value = {"/", "/login"})
 public class LoginServlet extends HttpServlet {
@@ -34,43 +35,19 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        String userName = req.getParameter("userName");
-        String password = req.getParameter("password");
-        Person user = Initializer.getAdminDao().read(userName); // TODO - add check in studentDao
-        if (user == null) {
-            user = Initializer.getTeacherDao().read(userName);
-            if (user == null) {
-                log.info("Error - no user {} in database", userName);
-                req.setAttribute(ERROR_MESSAGE, NO_SUCH_USER_IN_DATABASE);
-                SessionUtil.setupForward(this, req, resp, LOGIN_JSP_URL);
-                return;
-            }
-        }
-        boolean isCorrectPassword = PasswordHasher.authenticate(password, user.getPwd(), user.getSalt());
-        if (!isCorrectPassword) {
-            log.info("someone tried to enter as user {} with wrong password", userName);
-            String errorMessage = "Wrong password";
-            req.setAttribute(ERROR_MESSAGE, errorMessage);
+        try {
+            String userName = req.getParameter("userName");
+            Person user = Service.getUserIfExist(userName);
+            String password = req.getParameter("password");
+            Service.checkPassword(password, user);
+            SessionUtil.setSessionUser(req, user);
+            String role = user.getRole().toString();
+            log.info("User {} is successfully authorised, role - {}", user.getLogin(), role);
+            String menuUrl = Service.getMenuUrlAfterLogin(role);
+            SessionUtil.setupForward(this, req, resp, menuUrl);
+        } catch (ServiceException e) {
+            req.setAttribute(ERROR_MESSAGE, e.getMessage());
             SessionUtil.setupForward(this, req, resp, LOGIN_JSP_URL);
-            return;
-        }
-        SessionUtil.setSessionUser(req, user);
-        String role = user.getRole().toString();
-        log.info("User {} is successfully authorised, role - {}", userName, role);
-        switch (role) {
-            case "ADMIN":
-                SessionUtil.setupForward(this, req, resp, "/jsp/admin/adminMenu.jsp");
-                break;
-            case "TEACHER":
-                SessionUtil.setupForward(this, req, resp, "/jsp/teacher/teacherMenu.jsp");
-                break;
-            case "STUDENT":
-                SessionUtil.setupForward(this, req, resp, "/jsp/student/studentMenu.jsp");
-                break;
-            default:
-                String errorMessage = "Error - role is filled incorrectly. Please contact admin to fix it";
-                req.setAttribute(ERROR_MESSAGE, errorMessage);
-                SessionUtil.setupForward(this, req, resp, LOGIN_JSP_URL);
         }
     }
 }

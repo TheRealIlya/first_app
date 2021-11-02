@@ -37,4 +37,9 @@ public class Admin extends Person {
         setAge(age);
         return this;
     }
+
+    public Admin withRole(Role role) {
+        setRole(role);
+        return this;
+    }
 }

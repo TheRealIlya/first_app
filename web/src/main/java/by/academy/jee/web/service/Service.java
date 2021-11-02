@@ -6,17 +6,18 @@ import by.academy.jee.model.person.Teacher;
 import by.academy.jee.util.Initializer;
 import by.academy.jee.util.PasswordHasher;
 import by.academy.jee.util.SalaryGenerator;
-import by.academy.jee.web.util.SessionUtil;
-import java.io.IOException;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static by.academy.jee.web.constant.Constant.ADD_TEACHER_JSP_URL;
-import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
+
+import static by.academy.jee.web.constant.Constant.ADMIN;
+import static by.academy.jee.web.constant.Constant.ADMIN_MENU_JSP_URL;
+import static by.academy.jee.web.constant.Constant.NO_SUCH_USER_IN_DATABASE;
+import static by.academy.jee.web.constant.Constant.STUDENT;
+import static by.academy.jee.web.constant.Constant.STUDENT_MENU_JSP_URL;
+import static by.academy.jee.web.constant.Constant.TEACHER;
+import static by.academy.jee.web.constant.Constant.TEACHER_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.USER_IS_ALREADY_EXIST;
 
 public class Service {
@@ -27,8 +28,7 @@ public class Service {
 
     private static final Logger log = LoggerFactory.getLogger(Service.class);
 
-    public Teacher getTeacher(HttpServlet servlet, HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException, ServiceException {
+    public static Teacher getTeacher(HttpServletRequest req) throws ServiceException { //TODO - probably wrap some if/try into private methods
 
         String userName = req.getParameter("login");
         String password = req.getParameter("password");
@@ -57,8 +57,58 @@ public class Service {
         return new Teacher()
                 .withLogin(userName)
                 .withPwd(encryptedPassword)
+                .withSalt(salt)
                 .withName(fio)
                 .withAge(age)
                 .withSalaries(salaries);
+    }
+
+    public static void checkIsUserNotExist(String login) throws ServiceException {
+
+        Person user = Initializer.getAdminDao().read(login); // TODO - add check in studentDao
+        if (user == null) {
+            user = Initializer.getTeacherDao().read(login);
+        }
+        if (user != null) {
+            log.error("Error - attempt to add already existed user {}", login);
+            throw new ServiceException(USER_IS_ALREADY_EXIST);
+        }
+    }
+
+    public static Person getUserIfExist(String login) throws ServiceException {
+
+        Person user = Initializer.getAdminDao().read(login); // TODO - add check in studentDao
+        if (user == null) {
+            user = Initializer.getTeacherDao().read(login);
+            if (user == null) {
+                log.error("Error - no user {} in database", login);
+                throw new ServiceException(NO_SUCH_USER_IN_DATABASE);
+            }
+        }
+        return user;
+    }
+
+    public static String getMenuUrlAfterLogin(String roleString) throws ServiceException {
+
+        switch (roleString) {
+            case ADMIN:
+                return ADMIN_MENU_JSP_URL;
+            case TEACHER:
+                return TEACHER_MENU_JSP_URL;
+            case STUDENT:
+                return STUDENT_MENU_JSP_URL;
+            default:
+                log.error("Error - incorrect role \"{}\"", roleString);
+                throw new ServiceException("Error - role is filled incorrectly. Please contact admin to fix it");
+        }
+    }
+
+    public static void checkPassword(String attemptedPassword, Person user) throws ServiceException {
+
+        boolean isCorrectPassword = PasswordHasher.authenticate(attemptedPassword, user.getPwd(), user.getSalt());
+        if (!isCorrectPassword) {
+            log.error("Someone tried to enter as user {} with wrong password", user.getLogin());
+            throw new ServiceException("Wrong password");
+        }
     }
 }
