@@ -11,5 +11,8 @@
         <p>
         <a href="${pageContext.request.contextPath}/addTeacher">Add new teacher</a>
         </p>
+        <p>
+        <a href="${pageContext.request.contextPath}/avgSalary">Get average salary</a>
+        </p>
     </body>
 </html>

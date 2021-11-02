@@ -8,6 +8,7 @@ public class Constant {
 
     public static final String ERROR_MESSAGE = "errorMessage";
     public static final String APPROVE_MESSAGE = "approveMessage";
+    public static final String RESULT = "result";
     public static final String ADD_TEACHER_JSP_URL = "/jsp/admin/addTeacher.jsp";
     public static final String LOGIN_JSP_URL = "/jsp/common/login.jsp";
     public static final String NO_SUCH_USER_IN_DATABASE = "No such user in database";
@@ -19,4 +20,6 @@ public class Constant {
     public static final String TEACHER_MENU_JSP_URL = "/jsp/teacher/teacherMenu.jsp";
     public static final String STUDENT_MENU_JSP_URL = "/jsp/student/studentMenu.jsp";
     public static final String AVG_SALARY_JSP_URL = "/jsp/admin/avgSalary.jsp";
+    public static final String ERROR_WRONG_MONTHS_INPUT = "Error - wrong months input";
+    public static final String ERROR_WRONG_MONTHS_FORMAT = "Error - wrong months format - must be numbers";
 }

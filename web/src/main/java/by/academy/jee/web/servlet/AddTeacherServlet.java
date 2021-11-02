@@ -33,7 +33,7 @@ public class AddTeacherServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         try {
-            Teacher teacher = Service.getTeacher(req);
+            Teacher teacher = Service.getTeacherFromRequest(req);
             Service.checkIsUserNotExist(teacher.getLogin());
             Initializer.getTeacherDao().create(teacher);
             log.info("Teacher {} is successfully added", teacher.getLogin());
