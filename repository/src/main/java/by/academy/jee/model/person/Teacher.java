@@ -7,6 +7,12 @@ import java.util.Map;
 
 public class Teacher extends Person {
 
+    private Map<Integer, Double> salaries = new HashMap();
+
+    public Map<Integer, Double> getSalaries() {
+        return salaries;
+    }
+
     public Teacher() {
         setRole(Role.TEACHER);
     }
@@ -44,12 +50,6 @@ public class Teacher extends Person {
     public Teacher withSalaries(Map<Integer, Double> salaries) {
         setSalaries(salaries);
         return this;
-    }
-
-    private Map<Integer, Double> salaries = new HashMap();
-
-    public Map<Integer, Double> getSalaries() {
-        return salaries;
     }
 
     public void setSalaries(Map<Integer, Double> salaries) {

@@ -4,10 +4,6 @@ import by.academy.jee.model.person.role.Role;
 
 public class Admin extends Person {
 
-    public Admin() {
-        setRole(Role.ADMIN);
-    }
-
     public Admin withId(int id) {
         setId(id);
         return this;
@@ -35,6 +31,11 @@ public class Admin extends Person {
 
     public Admin withAge(int age) {
         setAge(age);
+        return this;
+    }
+
+    public Admin withRole(Role role) {
+        setRole(role);
         return this;
     }
 }

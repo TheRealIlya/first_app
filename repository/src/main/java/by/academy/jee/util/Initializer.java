@@ -6,6 +6,7 @@ import by.academy.jee.dao.person.teacher.TeacherDaoForMemoryDatabase;
 import by.academy.jee.database.Database;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.Teacher;
+import by.academy.jee.model.person.role.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +56,8 @@ public class Initializer {
                 .withPwd(pwd)
                 .withSalt(salt)
                 .withName("Ilya")
-                .withAge(25)); // Admin, qwe
+                .withAge(25)
+                .withRole(Role.ADMIN)); // Admin, qwe
 
         salt = PasswordHasher.generateSalt();
         pwd = PasswordHasher.getEncryptedPassword("1234", salt);
