@@ -45,6 +45,7 @@ public class Initializer {
                     .withSalt(salt)
                     .withName("Mike")
                     .withAge(35)
+                    .withRole(Role.TEACHER)
                     .withSalaries(salaries)); // Mike_, 1234
         }
     }

@@ -14,7 +14,7 @@ import java.util.List;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static by.academy.jee.constant.Constant.ADMIN_LOGIN_FILTER_POSTGRES;
+import static by.academy.jee.constant.Constant.LOGIN_FILTER_POSTGRES;
 import static by.academy.jee.constant.Constant.INSERT_ADMIN_POSTGRES;
 import static by.academy.jee.constant.Constant.R_TITLE;
 import static by.academy.jee.constant.Constant.SELECT_ALL_ADMINS_POSTGRES;
@@ -28,7 +28,7 @@ import static by.academy.jee.constant.Constant.U_SALT;
 public class AdminDaoForPostgres implements PersonDao<Admin> {
 
     private static final Logger log = LoggerFactory.getLogger(AdminDaoForPostgres.class);
-    private static final String SELECT_ONE_ADMIN = SELECT_ALL_ADMINS_POSTGRES + ADMIN_LOGIN_FILTER_POSTGRES;
+    private static final String SELECT_ONE_ADMIN = SELECT_ALL_ADMINS_POSTGRES + LOGIN_FILTER_POSTGRES;
     private final DataSource dataSource;
 
     private static volatile AdminDaoForPostgres instance;
