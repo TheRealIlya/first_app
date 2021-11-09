@@ -9,41 +9,53 @@ import java.util.Map;
 
 public class Database {
 
-    private Database() {
-        //util class
-    }
-
-    private static Map<Integer, Admin> admins = new HashMap<>();
-    private static Map<Integer, Teacher> teachers = new HashMap<>();
-    private static Map<Integer, Student> students = new HashMap<>();
-
+    private Map<Integer, Admin> admins = new HashMap<>();
+    private Map<Integer, Teacher> teachers = new HashMap<>();
+    private Map<Integer, Student> students = new HashMap<>();
     private static int adminCount = 0;
     private static int teacherCount = 0;
     private static int studentCount = 0;
 
-    public static void addAdmin(Admin admin) {
+    private static volatile Database instance;
+
+    private Database() {
+        //singleton
+    }
+
+    public static Database getInstance() {
+        if (instance == null) {
+            synchronized (Database.class) {
+                if (instance == null) {
+                    instance = new Database();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public void addAdmin(Admin admin) {
         int id = adminCount++;
         admin.setId(id);
         admins.put(id, admin);
     }
 
-    public static void addTeacher(Teacher teacher) {
+    public void addTeacher(Teacher teacher) {
         int id = teacherCount++;
         teacher.setId(id);
         teachers.put(id, teacher);
     }
 
-    public static void addStudent(Student student) {
+    public void addStudent(Student student) {
         int id = studentCount++;
         student.setId(id);
         students.put(id, student);
     }
 
-    public static Teacher getTeacher(int id) {
+    public Teacher getTeacher(int id) {
         return teachers.get(id);
     }
 
-    public static Admin getAdmin(String login) {
+    public Admin getAdmin(String login) {
         for (int key : admins.keySet()) {
             if (login.equals(admins.get(key).getLogin())) {
                 return admins.get(key);
@@ -52,7 +64,7 @@ public class Database {
         return null;
     }
 
-    public static Teacher getTeacher(String login) {
+    public Teacher getTeacher(String login) {
         for (int key : teachers.keySet()) {
             if (login.equals(teachers.get(key).getLogin())) {
                 return teachers.get(key);
@@ -61,7 +73,7 @@ public class Database {
         return null;
     }
 
-    public static Map<Integer, Teacher> getTeacherMap() {
+    public Map<Integer, Teacher> getTeacherMap() {
         return teachers;
     }
 }

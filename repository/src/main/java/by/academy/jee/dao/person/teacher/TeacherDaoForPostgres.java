@@ -1,24 +1,30 @@
 package by.academy.jee.dao.person.teacher;
 
 import by.academy.jee.dao.person.PersonDao;
-import by.academy.jee.database.Database;
 import by.academy.jee.model.person.Teacher;
-
 import java.util.List;
+import javax.sql.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class TeacherDaoForMemoryDatabase implements PersonDao<Teacher> {
+public class TeacherDaoForPostgres implements PersonDao<Teacher> {
 
-    private static volatile TeacherDaoForMemoryDatabase instance;
+    private static final Logger log = LoggerFactory.getLogger(TeacherDaoForPostgres.class);
 
-    private TeacherDaoForMemoryDatabase() {
+    private final DataSource dataSource;
+
+    private static volatile TeacherDaoForPostgres instance;
+
+    private TeacherDaoForPostgres(DataSource dataSource) {
         //singleton
+        this.dataSource = dataSource;
     }
 
-    public static TeacherDaoForMemoryDatabase getInstance() {
+    public static TeacherDaoForPostgres getInstance(DataSource dataSource) {
         if (instance == null) {
-            synchronized (TeacherDaoForMemoryDatabase.class) {
+            synchronized (TeacherDaoForPostgres.class) {
                 if (instance == null) {
-                    instance = new TeacherDaoForMemoryDatabase();
+                    instance = new TeacherDaoForPostgres(dataSource);
                 }
             }
         }
@@ -27,8 +33,7 @@ public class TeacherDaoForMemoryDatabase implements PersonDao<Teacher> {
 
     @Override
     public boolean create(Teacher teacher) {
-        Database.getInstance().addTeacher(teacher);
-        return true;
+        return false; //TODO
     }
 
     @Override
@@ -38,11 +43,11 @@ public class TeacherDaoForMemoryDatabase implements PersonDao<Teacher> {
 
     @Override
     public Teacher read(String name) {
-        return Database.getInstance().getTeacher(name);
+        return null; //TODO
     }
 
     @Override
-    public boolean update(Teacher newTeacher) {
+    public boolean update(Teacher newT) {
         return false; //TODO
     }
 

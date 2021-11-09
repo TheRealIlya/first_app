@@ -1,10 +1,10 @@
 package by.academy.jee.dao.person.admin;
 
-import by.academy.jee.dao.DaoDataSource;
 import by.academy.jee.dao.person.PersonDao;
-import by.academy.jee.exception.AdminDaoException;
+import by.academy.jee.exception.PersonDaoException;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.role.Role;
+import by.academy.jee.util.DataBaseUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,22 +14,56 @@ import java.util.List;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static by.academy.jee.constant.Constant.ADMIN_LOGIN_FILTER_POSTGRES;
+import static by.academy.jee.constant.Constant.INSERT_ADMIN_POSTGRES;
+import static by.academy.jee.constant.Constant.R_TITLE;
+import static by.academy.jee.constant.Constant.SELECT_ALL_ADMINS_POSTGRES;
+import static by.academy.jee.constant.Constant.U_AGE;
+import static by.academy.jee.constant.Constant.U_ID;
+import static by.academy.jee.constant.Constant.U_LOGIN;
+import static by.academy.jee.constant.Constant.U_NAME;
+import static by.academy.jee.constant.Constant.U_PASSWORD;
+import static by.academy.jee.constant.Constant.U_SALT;
 
 public class AdminDaoForPostgres implements PersonDao<Admin> {
 
     private static final Logger log = LoggerFactory.getLogger(AdminDaoForPostgres.class);
-    private static final String SELECT_ALL_ADMINS = "select u.id, u.login, u.password," +
-            "u.salt, u.name, u.age, r.title \n" +
-            "from \"user\" u\n" +
-            "join \"role\" r\n" +
-            "on u.role_id = r.id; ";
-    private static final String ADMIN_LOGIN_FILTER = "where u.login = ?";
-    private static final String SELECT_ONE_ADMIN = SELECT_ALL_ADMINS + ADMIN_LOGIN_FILTER;
-    private final DataSource dataSource = new DaoDataSource();
+    private static final String SELECT_ONE_ADMIN = SELECT_ALL_ADMINS_POSTGRES + ADMIN_LOGIN_FILTER_POSTGRES;
+    private final DataSource dataSource;
+
+    private static volatile AdminDaoForPostgres instance;
+
+    private AdminDaoForPostgres(DataSource dataSource) {
+        //singleton
+        this.dataSource = dataSource;
+    }
+
+    public static AdminDaoForPostgres getInstance(DataSource dataSource) {
+        if (instance == null) {
+            synchronized (AdminDaoForPostgres.class) {
+                if (instance == null) {
+                    instance = new AdminDaoForPostgres(dataSource);
+                }
+            }
+        }
+        return instance;
+    }
 
     @Override
     public boolean create(Admin admin) {
-        return false; //TODO
+
+        try (Connection con = dataSource.getConnection();
+             PreparedStatement ps = con.prepareStatement(INSERT_ADMIN_POSTGRES)) {
+            ps.setString(1, admin.getLogin());
+            ps.setBytes(2, admin.getPwd());
+            ps.setBytes(3, admin.getSalt());
+            ps.setString(4, admin.getName());
+            ps.setInt(5, admin.getAge());
+            ps.execute();
+        } catch (SQLException e) {
+            logAndThrowMyException(e);
+        }
+        return true;
     }
 
     @Override
@@ -43,15 +77,14 @@ public class AdminDaoForPostgres implements PersonDao<Admin> {
         List<Admin> result = new ArrayList<>();
         ResultSet rs = null;
         try (Connection con = dataSource.getConnection();
-             PreparedStatement ps = con.prepareStatement(SELECT_ONE_ADMIN);
-        ) {
+             PreparedStatement ps = con.prepareStatement(SELECT_ONE_ADMIN)) {
             ps.setString(1, name);
             rs = ps.executeQuery();
             result = resultSetToAdmins(rs);
         } catch (SQLException e) {
             logAndThrowMyException(e);
         } finally {
-            closeQuietly(rs);
+            DataBaseUtil.closeQuietly(rs);
         }
         return result.stream().findFirst().orElse(null);
     }
@@ -71,33 +104,22 @@ public class AdminDaoForPostgres implements PersonDao<Admin> {
         return null; //TODO
     }
 
-    private static void closeQuietly(AutoCloseable closeable) {
-        if (closeable == null) {
-            return;
-        }
-        try {
-            closeable.close();
-        } catch (Exception e) {
-            log.error("Couldn't close {}", closeable);
-        }
-    }
-
     private void logAndThrowMyException(Exception e) {
         log.error(e.getMessage(), e);
-        throw new AdminDaoException(e.getMessage(), e);
+        throw new PersonDaoException(e.getMessage(), e);
     }
 
     private List<Admin> resultSetToAdmins(ResultSet rs) throws SQLException {
 
         List<Admin> result = new ArrayList<>();
         while (rs.next()) {
-            int id = rs.getInt("u.id");
-            String login = rs.getString("u.login");
-            byte[] pwd = rs.getBytes("u.password");
-            byte[] salt = rs.getBytes("u.salt");
-            String name = rs.getString("u.name");
-            int age = rs.getInt("u.age");
-            Role role = Role.valueOf(rs.getString("r.title"));
+            int id = rs.getInt(U_ID);
+            String login = rs.getString(U_LOGIN);
+            byte[] pwd = rs.getBytes(U_PASSWORD);
+            byte[] salt = rs.getBytes(U_SALT);
+            String name = rs.getString(U_NAME);
+            int age = rs.getInt(U_AGE);
+            Role role = Role.valueOf(rs.getString(R_TITLE));
             Admin admin = new Admin()
                     .withId(id)
                     .withLogin(login)
@@ -108,6 +130,7 @@ public class AdminDaoForPostgres implements PersonDao<Admin> {
                     .withRole(role);
             result.add(admin);
         }
+        result.removeIf(admin -> !Role.ADMIN.equals(admin.getRole()));
         return result;
     }
 }

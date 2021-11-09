@@ -15,8 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static by.academy.jee.web.constant.Constant.AVERAGE_SALARY_CALCULATED;
 import static by.academy.jee.web.constant.Constant.AVG_SALARY_JSP_URL;
 import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
+import static by.academy.jee.web.constant.Constant.FIRST_MONTH;
+import static by.academy.jee.web.constant.Constant.LAST_MONTH;
+import static by.academy.jee.web.constant.Constant.LOGIN;
 import static by.academy.jee.web.constant.Constant.RESULT;
 
 @WebServlet(value = "/avgSalary")
@@ -32,14 +36,14 @@ public class AverageSalaryServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            String login = req.getParameter("login");
+            String login = req.getParameter(LOGIN);
             Person person = Service.getUserIfExist(login);
             Service.checkIsNotATeacher(person);
             Teacher teacher = (Teacher) person;
-            String firstMonth = req.getParameter("firstMonth");
-            String lastMonth = req.getParameter("lastMonth");
+            String firstMonth = req.getParameter(FIRST_MONTH);
+            String lastMonth = req.getParameter(LAST_MONTH);
             String averageSalaryString = Service.getAverageSalaryByMonths(teacher, firstMonth, lastMonth);
-            log.info("Average salary is successfully calculated ");
+            log.info(AVERAGE_SALARY_CALCULATED);
             String result = "Average salary: " + averageSalaryString;
             req.setAttribute(RESULT, result);
             SessionUtil.setupInclude(this, req, resp, AVG_SALARY_JSP_URL);
