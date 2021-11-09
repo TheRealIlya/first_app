@@ -131,7 +131,7 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
     @Override
     public List<Teacher> readAll() {
 
-        List<Teacher> result = new ArrayList<>();
+        List<Teacher> result;
         ResultSet rs = null;
         try (Connection con = dataSource.getConnection();
              PreparedStatement ps = con.prepareStatement(SELECT_ALL_TEACHERS_POSTGRES)) {
@@ -161,21 +161,21 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
             Role role = Role.valueOf(rs.getString(R_TITLE));
             int month = rs.getInt(S_MONTH);
             double salary = rs.getDouble(S_VALUE);
-            salaries.put(month, salary);
-            if (login.equals(previousLogin)) {
-                continue;
+            if (!login.equals(previousLogin)) {
+                salaries = new HashMap<>();
+                Teacher teacher = new Teacher()
+                        .withId(id)
+                        .withLogin(login)
+                        .withPwd(pwd)
+                        .withSalt(salt)
+                        .withName(name)
+                        .withAge(age)
+                        .withRole(role)
+                        .withSalaries(salaries);
+                result.add(teacher);
+                previousLogin = login;
             }
-            previousLogin = login;
-            Teacher teacher = new Teacher()
-                    .withId(id)
-                    .withLogin(login)
-                    .withPwd(pwd)
-                    .withSalt(salt)
-                    .withName(name)
-                    .withAge(age)
-                    .withRole(role)
-                    .withSalaries(salaries);
-            result.add(teacher);
+            salaries.put(month, salary);
         }
         result.removeIf(teacher -> !Role.TEACHER.equals(teacher.getRole()));
         return result;
