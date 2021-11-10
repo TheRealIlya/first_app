@@ -2,6 +2,7 @@ package by.academy.jee.web.service;
 
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.dao.person.PersonDaoFactory;
+import by.academy.jee.exception.PersonDaoException;
 import by.academy.jee.exception.ServiceException;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.Person;
@@ -16,7 +17,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import static by.academy.jee.web.constant.Constant.ADMIN;
 import static by.academy.jee.web.constant.Constant.ADMIN_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.AGE;
@@ -91,22 +91,28 @@ public class Service {
 
     public static void checkIsUserNotExist(String login) throws ServiceException {
 
-        Person user = adminDao.read(login); // TODO - add check in studentDao
-        if (user == null) {
-            user = teacherDao.read(login);
+        try { //TODO - add check in studentDao
+            adminDao.read(login);
+        } catch (PersonDaoException e) {
+            try {
+                teacherDao.read(login);
+            } catch (PersonDaoException f) {
+                return;
+            }
         }
-        if (user != null) {
-            log.error("Error - attempt to add already existed user {}", login);
-            throw new ServiceException(USER_IS_ALREADY_EXIST);
-        }
+        log.error("Error - attempt to add already existed user {}", login);
+        throw new ServiceException(USER_IS_ALREADY_EXIST);
     }
 
     public static Person getUserIfExist(String login) throws ServiceException {
 
-        Person user = adminDao.read(login); // TODO - add check in studentDao
-        if (user == null) {
-            user = teacherDao.read(login);
-            if (user == null) {
+        Person user; // TODO - add check in studentDao
+        try {
+            user = adminDao.read(login);
+        } catch (PersonDaoException e) {
+            try {
+                user = teacherDao.read(login);
+            } catch (PersonDaoException f) {
                 log.error("Error - no user {} in database", login);
                 throw new ServiceException(NO_SUCH_USER_IN_DATABASE);
             }

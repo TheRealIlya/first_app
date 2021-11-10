@@ -2,6 +2,7 @@ package by.academy.jee.util;
 
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.dao.person.PersonDaoFactory;
+import by.academy.jee.exception.PersonDaoException;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.person.role.Role;
@@ -23,7 +24,9 @@ public class Initializer {
 
     public static void initDatabase() {
 
-        if (adminDao.read("Admin") == null) {
+        try {
+            adminDao.read("Admin");
+        } catch (PersonDaoException e) {
             byte[] salt = PasswordHasher.generateSalt();
             byte[] pwd = PasswordHasher.getEncryptedPassword("qwe", salt);
             adminDao.create(new Admin()
@@ -35,7 +38,9 @@ public class Initializer {
                     .withRole(Role.ADMIN)); // Admin, qwe
         }
 
-        if (teacherDao.read("Mike_") == null) {
+        try {
+            teacherDao.read("Mike_");
+        } catch (PersonDaoException e) {
             byte[] salt = PasswordHasher.generateSalt();
             byte[] pwd = PasswordHasher.getEncryptedPassword("1234", salt);
             Map<Integer, Double> salaries = SalaryGenerator.generate(200, 2000);

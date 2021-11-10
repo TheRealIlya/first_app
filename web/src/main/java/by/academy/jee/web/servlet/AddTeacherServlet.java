@@ -2,10 +2,10 @@ package by.academy.jee.web.servlet;
 
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.dao.person.PersonDaoFactory;
+import by.academy.jee.exception.PersonDaoException;
 import by.academy.jee.exception.ServiceException;
 import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.person.role.Role;
-import by.academy.jee.util.Initializer;
 import by.academy.jee.web.service.Service;
 import by.academy.jee.web.util.SessionUtil;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ public class AddTeacherServlet extends HttpServlet {
             String approveMessage = TEACHER_IS_SUCCESSFULLY_ADDED;
             req.setAttribute(APPROVE_MESSAGE, approveMessage);
             SessionUtil.setupInclude(this, req, resp, ADD_TEACHER_JSP_URL);
-        } catch (ServiceException e) {
+        } catch (ServiceException | PersonDaoException e) {
             req.setAttribute(ERROR_MESSAGE, e.getMessage());
             SessionUtil.setupForward(this, req, resp, ADD_TEACHER_JSP_URL);
         }

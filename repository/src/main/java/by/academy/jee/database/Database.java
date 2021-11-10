@@ -1,11 +1,14 @@
 package by.academy.jee.database;
 
+import by.academy.jee.exception.PersonDaoException;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.Teacher;
 
 import java.util.HashMap;
 import java.util.Map;
+import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_ADMIN;
+import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_TEACHER;
 
 public class Database {
 
@@ -61,7 +64,7 @@ public class Database {
                 return admins.get(key);
             }
         }
-        return null;
+        throw new PersonDaoException(ERROR_NO_SUCH_ADMIN);
     }
 
     public Teacher getTeacher(String login) {
@@ -70,7 +73,7 @@ public class Database {
                 return teachers.get(key);
             }
         }
-        return null;
+        throw new PersonDaoException(ERROR_NO_SUCH_TEACHER);
     }
 
     public Map<Integer, Teacher> getTeacherMap() {

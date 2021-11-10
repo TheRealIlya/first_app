@@ -14,6 +14,8 @@ import java.util.List;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_ADMIN;
+import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_TEACHER;
 import static by.academy.jee.constant.Constant.LOGIN_FILTER_POSTGRES;
 import static by.academy.jee.constant.Constant.INSERT_ADMIN_POSTGRES;
 import static by.academy.jee.constant.Constant.R_TITLE;
@@ -86,7 +88,8 @@ public class AdminDaoForPostgres implements PersonDao<Admin> {
         } finally {
             DataBaseUtil.closeQuietly(rs);
         }
-        return result.stream().findFirst().orElse(null);
+        return result.stream().findFirst()
+                .orElseThrow(() -> new PersonDaoException(ERROR_NO_SUCH_ADMIN));
     }
 
     @Override

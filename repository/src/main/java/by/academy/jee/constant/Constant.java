@@ -45,4 +45,12 @@ public class Constant {
             "on u.role_id = r.id " +
             "join salary s " +
             "on u.id = s.teacher_id ";
+    public static final String INSERT_SALARIES_POSTGRES = "insert into salary (month, value, teacher_id) values (?, ?, " +
+            "(select id from \"user\" where login = ?))";
+    public static final String USER_CREATE_TRANSACTION_ERROR = "User creation error - something went wrong with transaction";
+    public static final String ERROR_NO_TEACHERS_IN_DATABASE = "Error - no teachers in database";
+    public static final String ERROR_NO_SUCH_TEACHER = "Error - no such teacher in database";
+    public static final String ERROR_NO_SUCH_ADMIN = "Error - no such admin in database";
+    public static final String COULDNT_CLOSE_SOME_CLOSEABLE_ELEMENT = "Couldn't close some closeable element";
+    public static final String FAILED_TO_ROLLBACK = "Failed to rollback";
 }
