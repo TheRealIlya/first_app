@@ -10,10 +10,15 @@ import java.security.spec.KeySpec;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static by.academy.jee.constant.Constant.HASHING_ALGORITHM;
+import static by.academy.jee.constant.Constant.SECURE_RANDOM_TYPE;
+import static by.academy.jee.constant.Constant.WRONG_ALGORITHM;
+import static by.academy.jee.constant.Constant.WRONG_ENCRYPTING_ALGORITHMS;
 
 public class PasswordHasher {
 
     private static final Logger log = LoggerFactory.getLogger(PasswordHasher.class);
+
 
     private PasswordHasher() {
         //util class
@@ -22,16 +27,16 @@ public class PasswordHasher {
     public static byte[] generateSalt() {
         byte[] salt = new byte[8];
         try {
-            SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+            SecureRandom random = SecureRandom.getInstance(SECURE_RANDOM_TYPE);
             random.nextBytes(salt);
         } catch (NoSuchAlgorithmException e) {
-            logAndThrowMyException("Wrong algorithm", e);
+            logAndThrowMyException(WRONG_ALGORITHM, e);
         }
         return salt;
     }
 
     public static byte[] getEncryptedPassword(String password, byte[] salt) {
-        String algorithm = "PBKDF2WithHmacSHA1";
+        String algorithm = HASHING_ALGORITHM;
         int derivedKeyLength = 160;
         int iterations = 20000;
         byte[] pwd = new byte[8];
@@ -40,7 +45,7 @@ public class PasswordHasher {
             SecretKeyFactory f = SecretKeyFactory.getInstance(algorithm);
             pwd = f.generateSecret(spec).getEncoded();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            logAndThrowMyException("Wrong encrypting algorithms", e);
+            logAndThrowMyException(WRONG_ENCRYPTING_ALGORITHMS, e);
         }
         return pwd;
     }

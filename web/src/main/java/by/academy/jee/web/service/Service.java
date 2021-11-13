@@ -1,6 +1,10 @@
 package by.academy.jee.web.service;
 
+import by.academy.jee.dao.person.PersonDao;
+import by.academy.jee.dao.person.PersonDaoFactory;
+import by.academy.jee.exception.PersonDaoException;
 import by.academy.jee.exception.ServiceException;
+import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.Person;
 import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.person.role.Role;
@@ -13,34 +17,52 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import static by.academy.jee.web.constant.Constant.ADMIN;
 import static by.academy.jee.web.constant.Constant.ADMIN_MENU_JSP_URL;
+import static by.academy.jee.web.constant.Constant.AGE;
+import static by.academy.jee.web.constant.Constant.ERROR_AGE_AND_SALARIES_MUST_BE_NUMBERS;
+import static by.academy.jee.web.constant.Constant.ERROR_INCORRECT_ROLE;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_MONTHS_FORMAT;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_MONTHS_INPUT;
+import static by.academy.jee.web.constant.Constant.ERROR_WRONG_NUMBERS_FORMAT;
+import static by.academy.jee.web.constant.Constant.ERROR_WRONG_PASSWORD;
+import static by.academy.jee.web.constant.Constant.ERROR_WRONG_SALARIES_INPUT;
+import static by.academy.jee.web.constant.Constant.ERROR_WRONG_SALARIES_LOGIC;
+import static by.academy.jee.web.constant.Constant.LOGIN;
+import static by.academy.jee.web.constant.Constant.MAX_SALARY;
+import static by.academy.jee.web.constant.Constant.MIN_SALARY;
 import static by.academy.jee.web.constant.Constant.NO_SUCH_USER_IN_DATABASE;
+import static by.academy.jee.web.constant.Constant.PASSWORD;
 import static by.academy.jee.web.constant.Constant.STUDENT;
 import static by.academy.jee.web.constant.Constant.STUDENT_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.TEACHER;
 import static by.academy.jee.web.constant.Constant.TEACHER_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.USER_IS_ALREADY_EXIST;
+import static by.academy.jee.web.constant.Constant.USER_NAME;
 
 public class Service {
 
     private static final Logger log = LoggerFactory.getLogger(Service.class);
 
+    private static PersonDao<Admin> adminDao = PersonDaoFactory.getPersonDao(Role.ADMIN);
+    private static PersonDao<Teacher> teacherDao = PersonDaoFactory.getPersonDao(Role.TEACHER);
+
     private Service() {
         //util class
     }
 
+    static {
+        Initializer.initDatabase();
+    }
+
     public static Teacher getTeacherFromRequest(HttpServletRequest req) throws ServiceException { //TODO - probably wrap some if/try into private methods
 
-        String userName = req.getParameter("login");
-        String password = req.getParameter("password");
-        String fio = req.getParameter("userName");
-        String ageString = req.getParameter("age");
-        String minSalaryString = req.getParameter("minSalary");
-        String maxSalaryString = req.getParameter("maxSalary");
+        String userName = req.getParameter(LOGIN);
+        String password = req.getParameter(PASSWORD);
+        String fio = req.getParameter(USER_NAME);
+        String ageString = req.getParameter(AGE);
+        String minSalaryString = req.getParameter(MIN_SALARY);
+        String maxSalaryString = req.getParameter(MAX_SALARY);
         byte[] salt = PasswordHasher.generateSalt();
         byte[] encryptedPassword = PasswordHasher.getEncryptedPassword(password, salt);
         int age;
@@ -50,13 +72,12 @@ public class Service {
             minSalary = Double.parseDouble(minSalaryString);
             maxSalary = Double.parseDouble(maxSalaryString);
         } catch (NumberFormatException e) {
-            log.error("Error - wrong numbers format");
-            throw new ServiceException("Error - age and salaries must be numbers!");
+            log.error(ERROR_WRONG_NUMBERS_FORMAT);
+            throw new ServiceException(ERROR_AGE_AND_SALARIES_MUST_BE_NUMBERS);
         }
         if (minSalary <= 0 || maxSalary <= 0 || minSalary > maxSalary) {
-            log.error("Error - wrong salaries input");
-            throw new ServiceException("Error - salaries can't be < 0 and minimal salary must be " +
-                    "lower than maximal salary!");
+            log.error(ERROR_WRONG_SALARIES_INPUT);
+            throw new ServiceException(ERROR_WRONG_SALARIES_LOGIC);
         }
         Map<Integer, Double> salaries = SalaryGenerator.generate(minSalary, maxSalary);
         return new Teacher()
@@ -70,22 +91,28 @@ public class Service {
 
     public static void checkIsUserNotExist(String login) throws ServiceException {
 
-        Person user = Initializer.getAdminDao().read(login); // TODO - add check in studentDao
-        if (user == null) {
-            user = Initializer.getTeacherDao().read(login);
+        try { //TODO - add check in studentDao
+            adminDao.read(login);
+        } catch (PersonDaoException e) {
+            try {
+                teacherDao.read(login);
+            } catch (PersonDaoException f) {
+                return;
+            }
         }
-        if (user != null) {
-            log.error("Error - attempt to add already existed user {}", login);
-            throw new ServiceException(USER_IS_ALREADY_EXIST);
-        }
+        log.error("Error - attempt to add already existed user {}", login);
+        throw new ServiceException(USER_IS_ALREADY_EXIST);
     }
 
     public static Person getUserIfExist(String login) throws ServiceException {
 
-        Person user = Initializer.getAdminDao().read(login); // TODO - add check in studentDao
-        if (user == null) {
-            user = Initializer.getTeacherDao().read(login);
-            if (user == null) {
+        Person user; // TODO - add check in studentDao
+        try {
+            user = adminDao.read(login);
+        } catch (PersonDaoException e) {
+            try {
+                user = teacherDao.read(login);
+            } catch (PersonDaoException f) {
                 log.error("Error - no user {} in database", login);
                 throw new ServiceException(NO_SUCH_USER_IN_DATABASE);
             }
@@ -104,7 +131,7 @@ public class Service {
                 return STUDENT_MENU_JSP_URL;
             default:
                 log.error("Error - incorrect role \"{}\"", roleString);
-                throw new ServiceException("Error - role is filled incorrectly. Please contact admin to fix it");
+                throw new ServiceException(ERROR_INCORRECT_ROLE);
         }
     }
 
@@ -113,7 +140,7 @@ public class Service {
         boolean isCorrectPassword = PasswordHasher.authenticate(attemptedPassword, user.getPwd(), user.getSalt());
         if (!isCorrectPassword) {
             log.error("Someone tried to enter as user {} with wrong password", user.getLogin());
-            throw new ServiceException("Wrong password");
+            throw new ServiceException(ERROR_WRONG_PASSWORD);
         }
     }
 

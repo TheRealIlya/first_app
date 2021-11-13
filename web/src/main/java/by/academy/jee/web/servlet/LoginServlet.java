@@ -13,9 +13,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
+import static by.academy.jee.web.constant.Constant.ALREADY_LOGGED_IN_JSP_URL;
 import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
 import static by.academy.jee.web.constant.Constant.LOGIN_JSP_URL;
+import static by.academy.jee.web.constant.Constant.PASSWORD;
+import static by.academy.jee.web.constant.Constant.USER_NAME;
 
 @WebServlet(value = {"/", "/login"})
 public class LoginServlet extends HttpServlet {
@@ -26,7 +28,7 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         if (SessionUtil.getSessionUser(req) != null) {
-            SessionUtil.setupForward(this, req, resp, "/jsp/common/alreadyLoggedIn.jsp");
+            SessionUtil.setupForward(this, req, resp, ALREADY_LOGGED_IN_JSP_URL);
             return;
         }
         SessionUtil.setupForward(this, req, resp, LOGIN_JSP_URL);
@@ -36,9 +38,9 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         try {
-            String userName = req.getParameter("userName");
+            String userName = req.getParameter(USER_NAME);
             Person user = Service.getUserIfExist(userName);
-            String password = req.getParameter("password");
+            String password = req.getParameter(PASSWORD);
             Service.checkPassword(password, user);
             SessionUtil.setSessionUser(req, user);
             String role = user.getRole().toString();

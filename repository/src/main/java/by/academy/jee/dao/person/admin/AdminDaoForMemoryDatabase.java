@@ -8,9 +8,27 @@ import java.util.List;
 
 public class AdminDaoForMemoryDatabase implements PersonDao<Admin> {
 
+    private static volatile AdminDaoForMemoryDatabase instance;
+
+    private AdminDaoForMemoryDatabase() {
+        //singleton
+    }
+
+    public static AdminDaoForMemoryDatabase getInstance() {
+        if (instance == null) {
+            synchronized (AdminDaoForMemoryDatabase.class) {
+                if (instance == null) {
+                    instance = new AdminDaoForMemoryDatabase();
+                }
+            }
+        }
+        return instance;
+    }
+
     @Override
     public boolean create(Admin admin) {
-        return false; //TODO
+        Database.getInstance().addAdmin(admin);
+        return true;
     }
 
     @Override
@@ -20,7 +38,7 @@ public class AdminDaoForMemoryDatabase implements PersonDao<Admin> {
 
     @Override
     public Admin read(String name) {
-        return Database.getAdmin(name);
+        return Database.getInstance().getAdmin(name);
     }
 
     @Override

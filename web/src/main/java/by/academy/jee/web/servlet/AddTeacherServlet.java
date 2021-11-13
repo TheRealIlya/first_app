@@ -1,8 +1,11 @@
 package by.academy.jee.web.servlet;
 
+import by.academy.jee.dao.person.PersonDao;
+import by.academy.jee.dao.person.PersonDaoFactory;
+import by.academy.jee.exception.PersonDaoException;
 import by.academy.jee.exception.ServiceException;
 import by.academy.jee.model.person.Teacher;
-import by.academy.jee.util.Initializer;
+import by.academy.jee.model.person.role.Role;
 import by.academy.jee.web.service.Service;
 import by.academy.jee.web.util.SessionUtil;
 import org.slf4j.Logger;
@@ -18,11 +21,14 @@ import java.io.IOException;
 import static by.academy.jee.web.constant.Constant.ADD_TEACHER_JSP_URL;
 import static by.academy.jee.web.constant.Constant.APPROVE_MESSAGE;
 import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
+import static by.academy.jee.web.constant.Constant.TEACHER_IS_SUCCESSFULLY_ADDED;
 
 @WebServlet(value = "/addTeacher")
 public class AddTeacherServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(AddTeacherServlet.class);
+
+    private static PersonDao<Teacher> teacherDao = PersonDaoFactory.getPersonDao(Role.TEACHER);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -35,12 +41,12 @@ public class AddTeacherServlet extends HttpServlet {
         try {
             Teacher teacher = Service.getTeacherFromRequest(req);
             Service.checkIsUserNotExist(teacher.getLogin());
-            Initializer.getTeacherDao().create(teacher);
+            teacherDao.create(teacher);
             log.info("Teacher {} is successfully added", teacher.getLogin());
-            String approveMessage = "Teacher is successfully added!";
+            String approveMessage = TEACHER_IS_SUCCESSFULLY_ADDED;
             req.setAttribute(APPROVE_MESSAGE, approveMessage);
             SessionUtil.setupInclude(this, req, resp, ADD_TEACHER_JSP_URL);
-        } catch (ServiceException e) {
+        } catch (ServiceException | PersonDaoException e) {
             req.setAttribute(ERROR_MESSAGE, e.getMessage());
             SessionUtil.setupForward(this, req, resp, ADD_TEACHER_JSP_URL);
         }
