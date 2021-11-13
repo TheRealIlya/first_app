@@ -22,4 +22,27 @@ public class Constant {
     public static final String AVG_SALARY_JSP_URL = "/jsp/admin/avgSalary.jsp";
     public static final String ERROR_WRONG_MONTHS_INPUT = "Error - wrong months input";
     public static final String ERROR_WRONG_MONTHS_FORMAT = "Error - wrong months format - must be numbers";
+    public static final String LOGIN = "login";
+    public static final String PASSWORD = "password";
+    public static final String USER_NAME = "userName";
+    public static final String AGE = "age";
+    public static final String MIN_SALARY = "minSalary";
+    public static final String MAX_SALARY = "maxSalary";
+    public static final String ERROR_WRONG_NUMBERS_FORMAT = "Error - wrong numbers format";
+    public static final String ERROR_AGE_AND_SALARIES_MUST_BE_NUMBERS = "Error - age and salaries must be numbers!";
+    public static final String ERROR_WRONG_SALARIES_INPUT = "Error - wrong salaries input";
+    public static final String ERROR_WRONG_SALARIES_LOGIC = "Error - salaries can't be < 0 and minimal salary must be " +
+            "lower than maximal salary!";
+    public static final String ERROR_INCORRECT_ROLE = "Error - role is filled incorrectly. Please contact admin to fix it";
+    public static final String ERROR_WRONG_PASSWORD = "Error - wrong password";
+    public static final String TEACHER_IS_SUCCESSFULLY_ADDED = "Teacher is successfully added!";
+    public static final String FIRST_MONTH = "firstMonth";
+    public static final String LAST_MONTH = "lastMonth";
+    public static final String AVERAGE_SALARY_CALCULATED = "Average salary is successfully calculated";
+    public static final String HOME_PAGE_JSP_URL = "/jsp/common/homePage.jsp";
+    public static final String ALREADY_LOGGED_IN_JSP_URL = "/jsp/common/alreadyLoggedIn.jsp";
+    public static final String USER_IS_LOGGED_OUT = "User is logged out";
+    public static final String SUCCESSFULLY_LOGGED_OUT = "Successfully logged out!";
+    public static final String USER_INFO_JSP_URL = "/jsp/common/userInfo.jsp";
+    public static final String USER = "user";
 }

@@ -8,9 +8,26 @@ import java.util.List;
 
 public class TeacherDaoForMemoryDatabase implements PersonDao<Teacher> {
 
+    private static volatile TeacherDaoForMemoryDatabase instance;
+
+    private TeacherDaoForMemoryDatabase() {
+        //singleton
+    }
+
+    public static TeacherDaoForMemoryDatabase getInstance() {
+        if (instance == null) {
+            synchronized (TeacherDaoForMemoryDatabase.class) {
+                if (instance == null) {
+                    instance = new TeacherDaoForMemoryDatabase();
+                }
+            }
+        }
+        return instance;
+    }
+
     @Override
     public boolean create(Teacher teacher) {
-        Database.addTeacher(teacher);
+        Database.getInstance().addTeacher(teacher);
         return true;
     }
 
@@ -21,7 +38,7 @@ public class TeacherDaoForMemoryDatabase implements PersonDao<Teacher> {
 
     @Override
     public Teacher read(String name) {
-        return Database.getTeacher(name);
+        return Database.getInstance().getTeacher(name);
     }
 
     @Override

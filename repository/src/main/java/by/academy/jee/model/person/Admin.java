@@ -4,10 +4,6 @@ import by.academy.jee.model.person.role.Role;
 
 public class Admin extends Person {
 
-    public Admin() {
-        setRole(Role.ADMIN);
-    }
-
     public Admin withId(int id) {
         setId(id);
         return this;

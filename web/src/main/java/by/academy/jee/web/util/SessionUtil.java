@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import static by.academy.jee.web.constant.Constant.USER;
 
 public class SessionUtil {
 
@@ -16,11 +17,11 @@ public class SessionUtil {
     }
 
     public static void setSessionUser(HttpServletRequest req, Person user) {
-        req.getSession().setAttribute("user", user);
+        req.getSession().setAttribute(USER, user);
     }
 
     public static Person getSessionUser(HttpServletRequest req) {
-        return (Person) req.getSession().getAttribute("user");
+        return (Person) req.getSession().getAttribute(USER);
     }
 
     public static void setupForward(HttpServlet servlet, HttpServletRequest req, HttpServletResponse resp, String url)
