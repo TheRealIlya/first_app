@@ -1,15 +1,18 @@
 package by.academy.jee.model.person;
 
-import by.academy.jee.model.person.role.Role;
 import java.util.Map;
+import javax.persistence.Entity;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
+@NoArgsConstructor
+@Entity
 public class Student extends Person {
 
     private Map<Integer, Integer> marks;
-
-    public Student() {
-        setRole(Role.STUDENT);
-    }
 
     public Map<Integer, Integer> getMarks() {
         return marks;

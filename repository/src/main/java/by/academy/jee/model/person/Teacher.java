@@ -4,17 +4,21 @@ import by.academy.jee.model.person.role.Role;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.persistence.Entity;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
+@NoArgsConstructor
+@Entity
 public class Teacher extends Person {
 
-    private Map<Integer, Double> salaries = new HashMap();
+    private Map<Integer, Double> salaries = new HashMap<>();
 
     public Map<Integer, Double> getSalaries() {
         return salaries;
-    }
-
-    public Teacher() {
-        setRole(Role.TEACHER);
     }
 
     public Teacher withId(int id) {

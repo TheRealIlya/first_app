@@ -1,7 +1,15 @@
 package by.academy.jee.model.person;
 
 import by.academy.jee.model.person.role.Role;
+import javax.persistence.Entity;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
+@NoArgsConstructor
+@Entity(name = "users")
 public class Admin extends Person {
 
     public Admin withId(int id) {
@@ -37,5 +45,9 @@ public class Admin extends Person {
     public Admin withRole(Role role) {
         setRole(role);
         return this;
+    }
+
+    public String toString() {
+        return super.toString();
     }
 }
