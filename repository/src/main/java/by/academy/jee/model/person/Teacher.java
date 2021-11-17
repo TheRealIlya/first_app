@@ -4,7 +4,15 @@ import by.academy.jee.model.person.role.Role;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapKey;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -13,8 +21,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @Entity
+@Table(name = "users")
+@SecondaryTable(name = "roles", pkJoinColumns = {@PrimaryKeyJoinColumn(name = "id")})
 public class Teacher extends Person {
-
+    @ElementCollection
+    @CollectionTable(name = "salary", joinColumns = @JoinColumn(name = "teacher_id"))
+    @Column(name = "value")
     private Map<Integer, Double> salaries = new HashMap<>();
 
     public Map<Integer, Double> getSalaries() {

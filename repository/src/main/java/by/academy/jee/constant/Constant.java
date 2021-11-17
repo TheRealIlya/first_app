@@ -21,7 +21,7 @@ public class Constant {
     public static final String U_PASSWORD = "u_password";
     public static final String U_SALT = "u_salt";
     public static final String U_NAME = "u_name";
-    public static final String S_MONTH = "s_month";
+    public static final String S_SALARIES_KEY = "s_salaries_key";
     public static final String S_VALUE = "s_value";
     public static final String U_AGE = "u_age";
     public static final String R_TITLE = "r_title";
@@ -39,13 +39,13 @@ public class Constant {
     public static final String HASHING_ALGORITHM = "PBKDF2WithHmacSHA1";
     public static final String WRONG_ENCRYPTING_ALGORITHMS = "Wrong encrypting algorithms";
     public static final String SELECT_ALL_TEACHERS_POSTGRES = "select u.id u_id, u.login u_login, u.password u_password," +
-            "u.salt u_salt, u.name u_name, u.age u_age, r.title r_title, s.month s_month, s.value s_value " +
+            "u.salt u_salt, u.name u_name, u.age u_age, r.title r_title, s.salaries_key s_salaries_key, s.value s_value " +
             "from users u " +
             "join roles r " +
             "on u.role_id = r.id " +
             "join salary s " +
             "on u.id = s.teacher_id ";
-    public static final String INSERT_SALARIES_POSTGRES = "insert into salary (month, value, teacher_id) values (?, ?, " +
+    public static final String INSERT_SALARIES_POSTGRES = "insert into salary (salaries_key, value, teacher_id) values (?, ?, " +
             "(select id from users where login = ?))";
     public static final String USER_CREATE_TRANSACTION_ERROR = "User creation error - something went wrong with transaction";
     public static final String ERROR_NO_TEACHERS_IN_DATABASE = "Error - no teachers in database";

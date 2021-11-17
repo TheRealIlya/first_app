@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,7 +23,7 @@ public abstract class Person {
     private byte[] salt;
     private String name;
     private int age;
-    @Transient
+    @Column(name = "role_id")
     private Role role;
 
     @Override

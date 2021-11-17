@@ -23,7 +23,7 @@ import static by.academy.jee.constant.Constant.LOGIN_FILTER_POSTGRES;
 import static by.academy.jee.constant.Constant.INSERT_TEACHER_POSTGRES;
 import static by.academy.jee.constant.Constant.R_TITLE;
 import static by.academy.jee.constant.Constant.SELECT_ALL_TEACHERS_POSTGRES;
-import static by.academy.jee.constant.Constant.S_MONTH;
+import static by.academy.jee.constant.Constant.S_SALARIES_KEY;
 import static by.academy.jee.constant.Constant.S_VALUE;
 import static by.academy.jee.constant.Constant.USER_CREATE_TRANSACTION_ERROR;
 import static by.academy.jee.constant.Constant.U_AGE;
@@ -169,7 +169,7 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
             String name = rs.getString(U_NAME);
             int age = rs.getInt(U_AGE);
             Role role = Role.valueOf(rs.getString(R_TITLE));
-            int month = rs.getInt(S_MONTH);
+            int month = rs.getInt(S_SALARIES_KEY);
             double salary = rs.getDouble(S_VALUE);
             if (!login.equals(previousLogin)) {
                 salaries = new ConcurrentHashMap<>();
