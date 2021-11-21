@@ -86,7 +86,8 @@ public class Service {
                 .withSalt(salt)
                 .withName(fio)
                 .withAge(age)
-                .withSalaries(salaries);
+                .withSalaries(salaries)
+                .withRole(Role.TEACHER);
     }
 
     public static void checkIsUserNotExist(String login) throws ServiceException {

@@ -51,4 +51,14 @@ public class DataBaseUtil {
         log.error(e.getMessage(), e);
         throw new PersonDaoException(e.getMessage(), e);
     }
+
+    public static void closeEntityManager(EntityManager em) {
+        if (em != null) {
+            try {
+                em.close();
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+    }
 }

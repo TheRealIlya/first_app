@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public abstract class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String login;
     @Column(name = "password")
     private byte[] pwd;

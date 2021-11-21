@@ -55,7 +55,7 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            closeEntityManager(em);
+            DataBaseUtil.closeEntityManager(em);
         }
         return admin;
     }
@@ -77,7 +77,7 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            closeEntityManager(em);
+            DataBaseUtil.closeEntityManager(em);
         }
         return admin;
     }
@@ -106,7 +106,7 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            closeEntityManager(em);
+            DataBaseUtil.closeEntityManager(em);
         }
         return admins;
     }
@@ -115,15 +115,5 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
         TypedQuery<Admin> query = em.createQuery("from Admin a where a.role = :role", Admin.class);
         query.setParameter("role", Role.ADMIN);
         return query.getResultList();
-    }
-
-    private void closeEntityManager(EntityManager em) {
-        if (em != null) {
-            try {
-                em.close();
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
-        }
     }
 }

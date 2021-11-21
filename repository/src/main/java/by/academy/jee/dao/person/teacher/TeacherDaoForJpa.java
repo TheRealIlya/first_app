@@ -40,7 +40,23 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
 
     @Override
     public boolean create(Teacher teacher) {
-        return false;
+
+        EntityManager em = null;
+        try {
+            em = helper.getEntityManager();
+            em.getTransaction().begin();
+            if (teacher.getId() == null) {
+                em.persist(teacher);
+            }
+            em.merge(teacher);
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            DataBaseUtil.rollBack(em, e);
+        } finally {
+            DataBaseUtil.closeEntityManager(em);
+        }
+        return true;
     }
 
     @Override
@@ -57,7 +73,7 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            closeEntityManager(em);
+            DataBaseUtil.closeEntityManager(em);
         }
         return teacher;
     }
@@ -70,16 +86,13 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
         try {
             em = helper.getEntityManager();
             em.getTransaction().begin();
-            TypedQuery<Teacher> query = em.createQuery(SELECT_ONE_TEACHER, Teacher.class);
-            query.setParameter("role", Role.TEACHER);
-            query.setParameter("name", name);
-            teacher = query.getSingleResult();
+            teacher = getTeacherByName(name, em);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            closeEntityManager(em);
+            DataBaseUtil.closeEntityManager(em);
         }
         return teacher;
     }
@@ -108,19 +121,16 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            closeEntityManager(em);
+            DataBaseUtil.closeEntityManager(em);
         }
         return teachers;
     }
 
-    private void closeEntityManager(EntityManager em) {
-        if (em != null) {
-            try {
-                em.close();
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
-        }
+    private Teacher getTeacherByName(String name, EntityManager em) {
+        TypedQuery<Teacher> query = em.createQuery(SELECT_ONE_TEACHER, Teacher.class);
+        query.setParameter("role", Role.TEACHER);
+        query.setParameter("name", name);
+        return query.getSingleResult();
     }
 
     private List<Teacher> getAllTeachers(EntityManager em) {

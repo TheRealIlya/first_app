@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 @SecondaryTable(name = "roles", pkJoinColumns = {@PrimaryKeyJoinColumn(name = "id")})
 public class Teacher extends Person {
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @CollectionTable(name = "salary", joinColumns = @JoinColumn(name = "teacher_id"))
     @Column(name = "value")
     private Map<Integer, Double> salaries = new HashMap<>();
