@@ -5,15 +5,19 @@ import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.exception.PersonDaoException;
 import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.person.role.Role;
+import by.academy.jee.util.DataBaseUtil;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import lombok.extern.slf4j.Slf4j;
-import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_ADMIN;
+import static by.academy.jee.constant.Constant.ERROR_NO_TEACHERS_IN_DATABASE;
+import static by.academy.jee.constant.Constant.JPA_LOGIN_FILTER;
+import static by.academy.jee.constant.Constant.SELECT_ALL_TEACHERS_JPA;
 
 @Slf4j
 public class TeacherDaoForJpa implements PersonDao<Teacher> {
 
+    private static final String SELECT_ONE_TEACHER = SELECT_ALL_TEACHERS_JPA + JPA_LOGIN_FILTER;
     private final EntityManagerHelper helper = EntityManagerHelper.getInstance();
 
     private static volatile TeacherDaoForJpa instance;
@@ -51,7 +55,7 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
-            safeRollback(em, e);
+            DataBaseUtil.rollBack(em, e);
         } finally {
             closeEntityManager(em);
         }
@@ -61,11 +65,23 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
     @Override
     public Teacher read(String name) {
 
-        List<Teacher> teachers = readAll();
-        return teachers.stream()
-                .filter(teacher -> name.equals(teacher.getLogin()))
-                .findAny()
-                .orElseThrow(() -> new PersonDaoException(ERROR_NO_SUCH_ADMIN));
+        EntityManager em = null;
+        Teacher teacher = null;
+        try {
+            em = helper.getEntityManager();
+            em.getTransaction().begin();
+            TypedQuery<Teacher> query = em.createQuery(SELECT_ONE_TEACHER, Teacher.class);
+            query.setParameter("role", Role.TEACHER);
+            query.setParameter("name", name);
+            teacher = query.getSingleResult();
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            DataBaseUtil.rollBack(em, e);
+        } finally {
+            closeEntityManager(em);
+        }
+        return teacher;
     }
 
     @Override
@@ -90,19 +106,11 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
-            safeRollback(em, e);
+            DataBaseUtil.rollBack(em, e);
         } finally {
             closeEntityManager(em);
         }
         return teachers;
-    }
-
-    private void safeRollback(EntityManager em, Exception e) {
-        if (em != null) {
-            em.getTransaction().rollback();
-        }
-        log.error(e.getMessage(), e);
-        throw new PersonDaoException(e.getMessage(), e);
     }
 
     private void closeEntityManager(EntityManager em) {
@@ -116,8 +124,13 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
     }
 
     private List<Teacher> getAllTeachers(EntityManager em) {
-        TypedQuery<Teacher> query = em.createQuery("from Teacher a where a.role = :role", Teacher.class);
+        TypedQuery<Teacher> query = em.createQuery(SELECT_ALL_TEACHERS_JPA, Teacher.class);
         query.setParameter("role", Role.TEACHER);
-        return query.getResultList();
+        List<Teacher> teachers = query.getResultList();
+        if (teachers.size() == 0) {
+            log.error(ERROR_NO_TEACHERS_IN_DATABASE);
+            throw new PersonDaoException(ERROR_NO_TEACHERS_IN_DATABASE);
+        }
+        return teachers;
     }
 }

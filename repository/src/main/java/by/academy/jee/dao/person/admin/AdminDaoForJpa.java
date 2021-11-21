@@ -2,18 +2,20 @@ package by.academy.jee.dao.person.admin;
 
 import by.academy.jee.dao.EntityManagerHelper;
 import by.academy.jee.dao.person.PersonDao;
-import by.academy.jee.exception.PersonDaoException;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.role.Role;
+import by.academy.jee.util.DataBaseUtil;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import lombok.extern.slf4j.Slf4j;
-import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_ADMIN;
+import static by.academy.jee.constant.Constant.JPA_LOGIN_FILTER;
+import static by.academy.jee.constant.Constant.SELECT_ALL_ADMINS_JPA;
 
 @Slf4j
 public class AdminDaoForJpa implements PersonDao<Admin> {
 
+    private static final String SELECT_ONE_ADMIN = SELECT_ALL_ADMINS_JPA + JPA_LOGIN_FILTER;
     private final EntityManagerHelper helper = EntityManagerHelper.getInstance();
 
     private static volatile AdminDaoForJpa instance;
@@ -51,7 +53,7 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
-            safeRollback(em, e);
+            DataBaseUtil.rollBack(em, e);
         } finally {
             closeEntityManager(em);
         }
@@ -61,11 +63,23 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
     @Override
     public Admin read(String name) {
 
-        List<Admin> admins = readAll();
-        return admins.stream()
-                .filter(admin -> name.equals(admin.getLogin()))
-                .findAny()
-                .orElseThrow(() -> new PersonDaoException(ERROR_NO_SUCH_ADMIN));
+        EntityManager em = null;
+        Admin admin = null;
+        try {
+            em = helper.getEntityManager();
+            em.getTransaction().begin();
+            TypedQuery<Admin> query = em.createQuery(SELECT_ONE_ADMIN, Admin.class);
+            query.setParameter("role", Role.ADMIN);
+            query.setParameter("name", name);
+            admin = query.getSingleResult();
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            DataBaseUtil.rollBack(em, e);
+        } finally {
+            closeEntityManager(em);
+        }
+        return admin;
     }
 
     @Override
@@ -90,7 +104,7 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
-            safeRollback(em, e);
+            DataBaseUtil.rollBack(em, e);
         } finally {
             closeEntityManager(em);
         }
@@ -101,14 +115,6 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
         TypedQuery<Admin> query = em.createQuery("from Admin a where a.role = :role", Admin.class);
         query.setParameter("role", Role.ADMIN);
         return query.getResultList();
-    }
-
-    private void safeRollback(EntityManager em, Exception e) {
-        if (em != null) {
-            em.getTransaction().rollback();
-        }
-        log.error(e.getMessage(), e);
-        throw new PersonDaoException(e.getMessage(), e);
     }
 
     private void closeEntityManager(EntityManager em) {

@@ -1,7 +1,9 @@
 package by.academy.jee.util;
 
+import by.academy.jee.exception.PersonDaoException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static by.academy.jee.constant.Constant.COULDNT_CLOSE_SOME_CLOSEABLE_ELEMENT;
@@ -30,6 +32,7 @@ public class DataBaseUtil {
     }
 
     public static void rollBack(Connection con) {
+
         if (con == null) {
             return;
         }
@@ -38,5 +41,14 @@ public class DataBaseUtil {
         } catch (SQLException e) {
             log.error(FAILED_TO_ROLLBACK, e);
         }
+    }
+
+    public static void rollBack(EntityManager em, Exception e) {
+
+        if (em != null) {
+            em.getTransaction().rollback();
+        }
+        log.error(e.getMessage(), e);
+        throw new PersonDaoException(e.getMessage(), e);
     }
 }

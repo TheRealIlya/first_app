@@ -53,4 +53,7 @@ public class Constant {
     public static final String ERROR_NO_SUCH_ADMIN = "Error - no such admin in database";
     public static final String COULDNT_CLOSE_SOME_CLOSEABLE_ELEMENT = "Couldn't close some closeable element";
     public static final String FAILED_TO_ROLLBACK = "Failed to rollback";
+    public static final String SELECT_ALL_ADMINS_JPA = "from Admin u where u.role = :role";
+    public static final String JPA_LOGIN_FILTER = " and u.login = :name";
+    public static final String SELECT_ALL_TEACHERS_JPA = "from Teacher u where u.role = :role";
 }
