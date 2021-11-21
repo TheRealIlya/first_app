@@ -49,11 +49,13 @@ public class Constant {
             "(select id from users where login = ?))";
     public static final String USER_CREATE_TRANSACTION_ERROR = "User creation error - something went wrong with transaction";
     public static final String ERROR_NO_TEACHERS_IN_DATABASE = "Error - no teachers in database";
+    public static final String ERROR_NO_STUDENTS_IN_DATABASE = "Error - no students in database";
     public static final String ERROR_NO_SUCH_TEACHER = "Error - no such teacher in database";
     public static final String ERROR_NO_SUCH_ADMIN = "Error - no such admin in database";
     public static final String COULDNT_CLOSE_SOME_CLOSEABLE_ELEMENT = "Couldn't close some closeable element";
     public static final String FAILED_TO_ROLLBACK = "Failed to rollback";
-    public static final String SELECT_ALL_ADMINS_JPA = "from Admin u where u.role = :role";
-    public static final String JPA_LOGIN_FILTER = " and u.login = :name";
     public static final String SELECT_ALL_TEACHERS_JPA = "from Teacher u where u.role = :role";
+    public static final String SELECT_ALL_ADMINS_JPA = "from Admin u where u.role = :role";
+    public static final String SELECT_ALL_STUDENTS_JPA = "from Student u where u.role = :role";
+    public static final String JPA_LOGIN_FILTER = " and u.login = :name";
 }

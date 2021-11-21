@@ -4,6 +4,7 @@ import by.academy.jee.dao.DaoDataSource;
 import by.academy.jee.dao.person.admin.AdminDaoForJpa;
 import by.academy.jee.dao.person.admin.AdminDaoForMemoryDatabase;
 import by.academy.jee.dao.person.admin.AdminDaoForPostgres;
+import by.academy.jee.dao.person.student.StudentDaoForJpa;
 import by.academy.jee.dao.person.teacher.TeacherDaoForJpa;
 import by.academy.jee.dao.person.teacher.TeacherDaoForMemoryDatabase;
 import by.academy.jee.dao.person.teacher.TeacherDaoForPostgres;
@@ -102,7 +103,7 @@ public class PersonDaoFactory {
                 return TeacherDaoForJpa.getInstance();
             case STUDENT:
             default:
-                return null; //TODO
+                return StudentDaoForJpa.getInstance();
         }
     }
 }

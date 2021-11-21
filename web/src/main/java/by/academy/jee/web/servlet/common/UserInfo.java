@@ -1,4 +1,4 @@
-package by.academy.jee.web.servlet;
+package by.academy.jee.web.servlet.common;
 
 import by.academy.jee.web.util.SessionUtil;
 

@@ -6,6 +6,8 @@ import by.academy.jee.exception.PersonDaoException;
 import by.academy.jee.exception.ServiceException;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.Person;
+import by.academy.jee.model.person.PersonContext;
+import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.person.role.Role;
 import by.academy.jee.util.Initializer;
@@ -20,7 +22,8 @@ import org.slf4j.LoggerFactory;
 import static by.academy.jee.web.constant.Constant.ADMIN;
 import static by.academy.jee.web.constant.Constant.ADMIN_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.AGE;
-import static by.academy.jee.web.constant.Constant.ERROR_AGE_AND_SALARIES_MUST_BE_NUMBERS;
+import static by.academy.jee.web.constant.Constant.SALARIES_MUST_BE_NUMBERS;
+import static by.academy.jee.web.constant.Constant.ERROR_AGE_MUST_BE_A_NUMBER;
 import static by.academy.jee.web.constant.Constant.ERROR_INCORRECT_ROLE;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_MONTHS_FORMAT;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_MONTHS_INPUT;
@@ -46,6 +49,7 @@ public class Service {
 
     private static PersonDao<Admin> adminDao = PersonDaoFactory.getPersonDao(Role.ADMIN);
     private static PersonDao<Teacher> teacherDao = PersonDaoFactory.getPersonDao(Role.TEACHER);
+    private static PersonDao<Student> studentDao = PersonDaoFactory.getPersonDao(Role.STUDENT);
 
     private Service() {
         //util class
@@ -55,25 +59,30 @@ public class Service {
         Initializer.initDatabase();
     }
 
-    public static Teacher getTeacherFromRequest(HttpServletRequest req) throws ServiceException { //TODO - probably wrap some if/try into private methods
+    public static Student getStudentFromRequest(HttpServletRequest req) throws ServiceException {
 
-        String userName = req.getParameter(LOGIN);
-        String password = req.getParameter(PASSWORD);
-        String fio = req.getParameter(USER_NAME);
-        String ageString = req.getParameter(AGE);
+        PersonContext context = getPersonContextFromRequest(req);
+        return new Student()
+                .withLogin(context.getLogin())
+                .withPwd(context.getPwd())
+                .withSalt(context.getSalt())
+                .withName(context.getName())
+                .withAge(context.getAge())
+                .withRole(Role.STUDENT);
+    }
+
+    public static Teacher getTeacherFromRequest(HttpServletRequest req) throws ServiceException {
+
+        PersonContext context = getPersonContextFromRequest(req);
         String minSalaryString = req.getParameter(MIN_SALARY);
         String maxSalaryString = req.getParameter(MAX_SALARY);
-        byte[] salt = PasswordHasher.generateSalt();
-        byte[] encryptedPassword = PasswordHasher.getEncryptedPassword(password, salt);
-        int age;
         double minSalary, maxSalary;
         try {
-            age = Integer.parseInt(ageString);
             minSalary = Double.parseDouble(minSalaryString);
             maxSalary = Double.parseDouble(maxSalaryString);
         } catch (NumberFormatException e) {
             log.error(ERROR_WRONG_NUMBERS_FORMAT);
-            throw new ServiceException(ERROR_AGE_AND_SALARIES_MUST_BE_NUMBERS);
+            throw new ServiceException(SALARIES_MUST_BE_NUMBERS);
         }
         if (minSalary <= 0 || maxSalary <= 0 || minSalary > maxSalary) {
             log.error(ERROR_WRONG_SALARIES_INPUT);
@@ -81,24 +90,28 @@ public class Service {
         }
         Map<Integer, Double> salaries = SalaryGenerator.generate(minSalary, maxSalary);
         return new Teacher()
-                .withLogin(userName)
-                .withPwd(encryptedPassword)
-                .withSalt(salt)
-                .withName(fio)
-                .withAge(age)
+                .withLogin(context.getLogin())
+                .withPwd(context.getPwd())
+                .withSalt(context.getSalt())
+                .withName(context.getName())
+                .withAge(context.getAge())
                 .withSalaries(salaries)
                 .withRole(Role.TEACHER);
     }
 
     public static void checkIsUserNotExist(String login) throws ServiceException {
 
-        try { //TODO - add check in studentDao
+        try {
             adminDao.read(login);
         } catch (PersonDaoException e) {
             try {
                 teacherDao.read(login);
             } catch (PersonDaoException f) {
-                return;
+                try {
+                    studentDao.read(login);
+                } catch (PersonDaoException g) {
+                    return;
+                }
             }
         }
         log.error("Error - attempt to add already existed user {}", login);
@@ -107,15 +120,19 @@ public class Service {
 
     public static Person getUserIfExist(String login) throws ServiceException {
 
-        Person user; // TODO - add check in studentDao
+        Person user;
         try {
             user = adminDao.read(login);
         } catch (PersonDaoException e) {
             try {
                 user = teacherDao.read(login);
             } catch (PersonDaoException f) {
-                log.error("Error - no user {} in database", login);
-                throw new ServiceException(NO_SUCH_USER_IN_DATABASE);
+                try {
+                    user = studentDao.read(login);
+                } catch (PersonDaoException g) {
+                    log.error("Error - no user {} in database", login);
+                    throw new ServiceException(NO_SUCH_USER_IN_DATABASE);
+                }
             }
         }
         return user;
@@ -172,6 +189,30 @@ public class Service {
             log.error("Error - user {} is not a teacher", person.getLogin());
             throw new ServiceException("Error - this user isn't a teacher");
         }
+    }
+
+    private static PersonContext getPersonContextFromRequest(HttpServletRequest req) throws ServiceException {
+
+        String userName = req.getParameter(LOGIN);
+        String password = req.getParameter(PASSWORD);
+        String fio = req.getParameter(USER_NAME);
+        String ageString = req.getParameter(AGE);
+        byte[] salt = PasswordHasher.generateSalt();
+        byte[] encryptedPassword = PasswordHasher.getEncryptedPassword(password, salt);
+        int age;
+        try {
+            age = Integer.parseInt(ageString);
+        } catch (NumberFormatException e) {
+            log.error(ERROR_WRONG_NUMBERS_FORMAT);
+            throw new ServiceException(ERROR_AGE_MUST_BE_A_NUMBER);
+        }
+        return PersonContext.builder()
+                .login(userName)
+                .pwd(encryptedPassword)
+                .salt(salt)
+                .name(fio)
+                .age(age)
+                .build();
     }
 
     private static String calculateAverageSalaryByMonths(Teacher teacher, List<Integer> months) {

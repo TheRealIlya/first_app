@@ -1,4 +1,4 @@
-package by.academy.jee.web.servlet;
+package by.academy.jee.web.servlet.admin;
 
 import by.academy.jee.exception.ServiceException;
 import by.academy.jee.model.person.Person;

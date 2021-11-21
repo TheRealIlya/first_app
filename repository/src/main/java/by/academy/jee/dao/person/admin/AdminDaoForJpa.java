@@ -15,7 +15,7 @@ import static by.academy.jee.constant.Constant.SELECT_ALL_ADMINS_JPA;
 @Slf4j
 public class AdminDaoForJpa implements PersonDao<Admin> {
 
-    private static final String SELECT_ONE_ADMIN = SELECT_ALL_ADMINS_JPA + JPA_LOGIN_FILTER;
+    private final String SELECT_ONE_ADMIN = SELECT_ALL_ADMINS_JPA + JPA_LOGIN_FILTER;
     private final EntityManagerHelper helper = EntityManagerHelper.getInstance();
 
     private static volatile AdminDaoForJpa instance;
@@ -68,10 +68,7 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
         try {
             em = helper.getEntityManager();
             em.getTransaction().begin();
-            TypedQuery<Admin> query = em.createQuery(SELECT_ONE_ADMIN, Admin.class);
-            query.setParameter("role", Role.ADMIN);
-            query.setParameter("name", name);
-            admin = query.getSingleResult();
+            admin = getAdminByName(name, em);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
@@ -111,8 +108,15 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
         return admins;
     }
 
+    private Admin getAdminByName(String name, EntityManager em) {
+        TypedQuery<Admin> query = em.createQuery(SELECT_ONE_ADMIN, Admin.class);
+        query.setParameter("role", Role.ADMIN);
+        query.setParameter("name", name);
+        return query.getSingleResult();
+    }
+
     private List<Admin> getAllAdmins(EntityManager em) {
-        TypedQuery<Admin> query = em.createQuery("from Admin a where a.role = :role", Admin.class);
+        TypedQuery<Admin> query = em.createQuery(SELECT_ALL_ADMINS_JPA, Admin.class);
         query.setParameter("role", Role.ADMIN);
         return query.getResultList();
     }

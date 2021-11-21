@@ -1,37 +1,36 @@
-package by.academy.jee.dao.person.teacher;
+package by.academy.jee.dao.person.student;
 
 import by.academy.jee.dao.EntityManagerHelper;
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.exception.PersonDaoException;
-import by.academy.jee.model.person.Teacher;
+import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.role.Role;
 import by.academy.jee.util.DataBaseUtil;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import lombok.extern.slf4j.Slf4j;
-import static by.academy.jee.constant.Constant.ERROR_NO_TEACHERS_IN_DATABASE;
+import static by.academy.jee.constant.Constant.ERROR_NO_STUDENTS_IN_DATABASE;
 import static by.academy.jee.constant.Constant.JPA_LOGIN_FILTER;
-import static by.academy.jee.constant.Constant.SELECT_ALL_TEACHERS_JPA;
+import static by.academy.jee.constant.Constant.SELECT_ALL_STUDENTS_JPA;
 
 @Slf4j
-public class TeacherDaoForJpa implements PersonDao<Teacher> {
+public class StudentDaoForJpa implements PersonDao<Student> {
 
-    private final String SELECT_ONE_TEACHER = SELECT_ALL_TEACHERS_JPA + JPA_LOGIN_FILTER;
     private final EntityManagerHelper helper = EntityManagerHelper.getInstance();
+    private final String SELECT_ONE_STUDENT = SELECT_ALL_STUDENTS_JPA + JPA_LOGIN_FILTER;
 
-    private static volatile TeacherDaoForJpa instance;
+    private static volatile StudentDaoForJpa instance;
 
-    private TeacherDaoForJpa() {
+    private StudentDaoForJpa() {
         //singleton
     }
 
-    public static TeacherDaoForJpa getInstance() {
-
+    public static StudentDaoForJpa getInstance() {
         if (instance == null) {
-            synchronized (TeacherDaoForJpa.class) {
+            synchronized ((StudentDaoForJpa.class)) {
                 if (instance == null) {
-                    instance = new TeacherDaoForJpa();
+                    instance = new StudentDaoForJpa();
                 }
             }
         }
@@ -39,16 +38,16 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
     }
 
     @Override
-    public boolean create(Teacher teacher) {
+    public boolean create(Student student) {
 
         EntityManager em = null;
         try {
             em = helper.getEntityManager();
             em.getTransaction().begin();
-            if (teacher.getId() == null) {
-                em.persist(teacher);
+            if (student.getId() == null) {
+                em.persist(student);
             }
-            em.merge(teacher);
+            em.merge(student);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
@@ -60,14 +59,14 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
     }
 
     @Override
-    public Teacher read(int id) {
+    public Student read(int id) {
 
         EntityManager em = null;
-        Teacher teacher = null;
+        Student student = null;
         try {
             em = helper.getEntityManager();
             em.getTransaction().begin();
-            teacher = em.find(Teacher.class, id);
+            student = em.find(Student.class, id);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
@@ -75,18 +74,18 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
         } finally {
             DataBaseUtil.closeEntityManager(em);
         }
-        return teacher;
+        return student;
     }
 
     @Override
-    public Teacher read(String name) {
+    public Student read(String name) {
 
         EntityManager em = null;
-        Teacher teacher = null;
+        Student student = null;
         try {
             em = helper.getEntityManager();
             em.getTransaction().begin();
-            teacher = getTeacherByName(name, em);
+            student = getStudentByName(name, em);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
@@ -94,11 +93,11 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
         } finally {
             DataBaseUtil.closeEntityManager(em);
         }
-        return teacher;
+        return student;
     }
 
     @Override
-    public boolean update(Teacher newT) {
+    public boolean update(Student newT) {
         return false;
     }
 
@@ -108,14 +107,14 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
     }
 
     @Override
-    public List<Teacher> readAll() {
+    public List<Student> readAll() {
 
         EntityManager em = null;
-        List<Teacher> teachers = null;
+        List<Student> students = null;
         try {
             em = helper.getEntityManager();
             em.getTransaction().begin();
-            teachers = getAllTeachers(em);
+            students = getAllStudents(em);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
@@ -123,24 +122,24 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
         } finally {
             DataBaseUtil.closeEntityManager(em);
         }
-        return teachers;
+        return students;
     }
 
-    private Teacher getTeacherByName(String name, EntityManager em) {
-        TypedQuery<Teacher> query = em.createQuery(SELECT_ONE_TEACHER, Teacher.class);
-        query.setParameter("role", Role.TEACHER);
+    private Student getStudentByName(String name, EntityManager em) {
+        TypedQuery<Student> query = em.createQuery(SELECT_ONE_STUDENT, Student.class);
+        query.setParameter("role", Role.STUDENT);
         query.setParameter("name", name);
         return query.getSingleResult();
     }
 
-    private List<Teacher> getAllTeachers(EntityManager em) {
-        TypedQuery<Teacher> query = em.createQuery(SELECT_ALL_TEACHERS_JPA, Teacher.class);
-        query.setParameter("role", Role.TEACHER);
-        List<Teacher> teachers = query.getResultList();
-        if (teachers.size() == 0) {
-            log.error(ERROR_NO_TEACHERS_IN_DATABASE);
-            throw new PersonDaoException(ERROR_NO_TEACHERS_IN_DATABASE);
+    private List<Student> getAllStudents(EntityManager em) {
+        TypedQuery<Student> query = em.createQuery(SELECT_ALL_STUDENTS_JPA, Student.class);
+        query.setParameter("role", Role.STUDENT);
+        List<Student> students = query.getResultList();
+        if (students.size() == 0) {
+            log.error(ERROR_NO_STUDENTS_IN_DATABASE);
+            throw new PersonDaoException(ERROR_NO_STUDENTS_IN_DATABASE);
         }
-        return teachers;
+        return students;
     }
 }

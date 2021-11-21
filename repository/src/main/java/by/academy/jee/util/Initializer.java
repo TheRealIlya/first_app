@@ -4,6 +4,7 @@ import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.dao.person.PersonDaoFactory;
 import by.academy.jee.exception.PersonDaoException;
 import by.academy.jee.model.person.Admin;
+import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.person.role.Role;
 
@@ -21,6 +22,7 @@ public class Initializer {
 
     private static PersonDao<Admin> adminDao = PersonDaoFactory.getPersonDao(Role.ADMIN);
     private static PersonDao<Teacher> teacherDao = PersonDaoFactory.getPersonDao(Role.TEACHER);
+    private static PersonDao<Student> studentDao = PersonDaoFactory.getPersonDao(Role.STUDENT);
 
     public static void initDatabase() {
 
@@ -52,6 +54,20 @@ public class Initializer {
                     .withAge(35)
                     .withRole(Role.TEACHER)
                     .withSalaries(salaries)); // Mike_, 1234
+        }
+
+        try {
+            studentDao.read("Stud");
+        } catch (PersonDaoException e) {
+            byte[] salt = PasswordHasher.generateSalt();
+            byte[] pwd = PasswordHasher.getEncryptedPassword("qwer", salt);
+            studentDao.create(new Student()
+            .withLogin("Stud")
+            .withPwd(pwd)
+            .withSalt(salt)
+            .withName("Dan")
+            .withAge(20)
+            .withRole(Role.STUDENT)); //Stud, qwer
         }
     }
 }
