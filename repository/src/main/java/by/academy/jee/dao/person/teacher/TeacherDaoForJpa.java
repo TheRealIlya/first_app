@@ -40,23 +40,7 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
 
     @Override
     public boolean create(Teacher teacher) {
-
-        EntityManager em = null;
-        try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
-            if (teacher.getId() == null) {
-                em.persist(teacher);
-            }
-            em.merge(teacher);
-            em.getTransaction().commit();
-            em.close();
-        } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
-        } finally {
-            DataBaseUtil.closeEntityManager(em);
-        }
-        return true;
+        return save(teacher);
     }
 
     @Override
@@ -98,13 +82,27 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
     }
 
     @Override
-    public boolean update(Teacher newT) {
-        return false;
+    public boolean update(Teacher newTeacher) {
+        return save(newTeacher);
     }
 
     @Override
-    public boolean delete(int id) {
-        return false;
+    public boolean delete(String name) {
+
+        EntityManager em = null;
+        try {
+            em = helper.getEntityManager();
+            em.getTransaction().begin();
+            Teacher teacher = read(name);
+            em.remove(teacher);
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            DataBaseUtil.rollBack(em, e);
+        } finally {
+            DataBaseUtil.closeEntityManager(em);
+        }
+        return true;
     }
 
     @Override
@@ -124,6 +122,26 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
             DataBaseUtil.closeEntityManager(em);
         }
         return teachers;
+    }
+
+    private boolean save(Teacher teacher) {
+
+        EntityManager em = null;
+        try {
+            em = helper.getEntityManager();
+            em.getTransaction().begin();
+            if (teacher.getId() == null) {
+                em.persist(teacher);
+            }
+            em.merge(teacher);
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            DataBaseUtil.rollBack(em, e);
+        } finally {
+            DataBaseUtil.closeEntityManager(em);
+        }
+        return true;
     }
 
     private Teacher getTeacherByName(String name, EntityManager em) {

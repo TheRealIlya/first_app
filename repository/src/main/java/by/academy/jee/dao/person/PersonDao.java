@@ -14,7 +14,7 @@ public interface PersonDao<T extends Person> {
 
     boolean update(T newT);
 
-    boolean delete (int id);
+    boolean delete (String name);
 
     List<T> readAll();
 }

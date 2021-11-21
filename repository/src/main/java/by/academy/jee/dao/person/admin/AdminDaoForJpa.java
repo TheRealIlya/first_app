@@ -38,7 +38,7 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
 
     @Override
     public boolean create(Admin admin) {
-        return false;
+        return save(admin);
     }
 
     @Override
@@ -80,13 +80,27 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
     }
 
     @Override
-    public boolean update(Admin newT) {
-        return false;
+    public boolean update(Admin newAdmin) {
+        return save(newAdmin);
     }
 
     @Override
-    public boolean delete(int id) {
-        return false;
+    public boolean delete(String name) {
+
+        EntityManager em = null;
+        try {
+            em = helper.getEntityManager();
+            em.getTransaction().begin();
+            Admin admin = read(name);
+            em.remove(admin);
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            DataBaseUtil.rollBack(em, e);
+        } finally {
+            DataBaseUtil.closeEntityManager(em);
+        }
+        return true;
     }
 
     @Override
@@ -106,6 +120,26 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
             DataBaseUtil.closeEntityManager(em);
         }
         return admins;
+    }
+
+    private boolean save(Admin admin) {
+
+        EntityManager em = null;
+        try {
+            em = helper.getEntityManager();
+            em.getTransaction().begin();
+            if (admin.getId() == null) {
+                em.persist(admin);
+            }
+            em.merge(admin);
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            DataBaseUtil.rollBack(em, e);
+        } finally {
+            DataBaseUtil.closeEntityManager(em);
+        }
+        return true;
     }
 
     private Admin getAdminByName(String name, EntityManager em) {

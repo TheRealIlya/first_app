@@ -47,7 +47,7 @@ public class TeacherDaoForMemoryDatabase implements PersonDao<Teacher> {
     }
 
     @Override
-    public boolean delete(int id) {
+    public boolean delete(String name) {
         return false; //TODO
     }
 

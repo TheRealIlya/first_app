@@ -39,8 +39,7 @@ public class AddStudentServlet extends HttpServlet {
             Service.checkIsUserNotExist(student.getLogin());
             studentDao.create(student);
             log.info("Student {} is successfully added", student.getLogin());
-            String approveMessage = STUDENT_IS_SUCCESSFULLY_ADDED;
-            req.setAttribute(APPROVE_MESSAGE, approveMessage);
+            req.setAttribute(APPROVE_MESSAGE, STUDENT_IS_SUCCESSFULLY_ADDED);
             SessionUtil.setupInclude(this, req, resp, ADD_STUDENT_JSP_URL);
         } catch (ServiceException | PersonDaoException e) {
             req.setAttribute(ERROR_MESSAGE, e.getMessage());

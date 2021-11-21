@@ -43,8 +43,7 @@ public class AddTeacherServlet extends HttpServlet {
             Service.checkIsUserNotExist(teacher.getLogin());
             teacherDao.create(teacher);
             log.info("Teacher {} is successfully added", teacher.getLogin());
-            String approveMessage = TEACHER_IS_SUCCESSFULLY_ADDED;
-            req.setAttribute(APPROVE_MESSAGE, approveMessage);
+            req.setAttribute(APPROVE_MESSAGE, TEACHER_IS_SUCCESSFULLY_ADDED);
             SessionUtil.setupInclude(this, req, resp, ADD_TEACHER_JSP_URL);
         } catch (ServiceException | PersonDaoException e) {
             req.setAttribute(ERROR_MESSAGE, e.getMessage());
