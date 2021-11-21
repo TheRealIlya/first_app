@@ -1,8 +1,10 @@
 package by.academy.jee.dao.person;
 
 import by.academy.jee.dao.DaoDataSource;
+import by.academy.jee.dao.person.admin.AdminDaoForJpa;
 import by.academy.jee.dao.person.admin.AdminDaoForMemoryDatabase;
 import by.academy.jee.dao.person.admin.AdminDaoForPostgres;
+import by.academy.jee.dao.person.teacher.TeacherDaoForJpa;
 import by.academy.jee.dao.person.teacher.TeacherDaoForMemoryDatabase;
 import by.academy.jee.dao.person.teacher.TeacherDaoForPostgres;
 import by.academy.jee.exception.PersonDaoException;
@@ -58,8 +60,10 @@ public class PersonDaoFactory {
             case MEMORY:
                 return getMemoryDao(role);
             case POSTGRES:
-            default:
                 return getPostgresDao(role);
+            case JPA:
+            default:
+                return getJpaDao(role);
         }
     }
 
@@ -83,6 +87,19 @@ public class PersonDaoFactory {
                 return AdminDaoForPostgres.getInstance(dataSource);
             case TEACHER:
                 return TeacherDaoForPostgres.getInstance(dataSource);
+            case STUDENT:
+            default:
+                return null; //TODO
+        }
+    }
+
+    private static PersonDao getJpaDao(Role role) {
+
+        switch (role.toString()) {
+            case ADMIN:
+                return AdminDaoForJpa.getInstance();
+            case TEACHER:
+                return TeacherDaoForJpa.getInstance();
             case STUDENT:
             default:
                 return null; //TODO

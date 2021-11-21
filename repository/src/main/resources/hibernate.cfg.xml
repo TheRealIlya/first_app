@@ -25,7 +25,6 @@
         <property name="hibernate.dbcp.maxWaitMillis">-1</property>
 
         <!-- mapping classes -->
-<!--        <mapping resource="Admin.hbm.xml"/>-->
         <mapping class="by.academy.jee.model.person.Admin"/>
         <mapping class="by.academy.jee.model.person.Teacher"/>
 <!--        <mapping class="by.academy.jee.model.person.Student"/>-->

@@ -8,8 +8,8 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.MapKey;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 @SecondaryTable(name = "roles", pkJoinColumns = {@PrimaryKeyJoinColumn(name = "id")})
 public class Teacher extends Person {
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "salary", joinColumns = @JoinColumn(name = "teacher_id"))
     @Column(name = "value")
     private Map<Integer, Double> salaries = new HashMap<>();

@@ -8,7 +8,8 @@ import java.util.Map;
 public enum RepositoryType {
 
     MEMORY("memory"),
-    POSTGRES("postgres");
+    POSTGRES("postgres"),
+    JPA("jpa");
 
     private final String type;
     private static Map<String, RepositoryType> valueToEnum = initValueToEnum();
