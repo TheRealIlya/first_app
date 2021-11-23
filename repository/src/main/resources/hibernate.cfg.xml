@@ -29,6 +29,7 @@
         <mapping class="by.academy.jee.model.person.Admin"/>
         <mapping class="by.academy.jee.model.person.Teacher"/>
         <mapping class="by.academy.jee.model.person.Student"/>
+        <mapping class="by.academy.jee.model.group.Group"/>
 
     </session-factory>
 

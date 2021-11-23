@@ -1,8 +1,13 @@
 package by.academy.jee.model.person;
 
+import by.academy.jee.model.group.Group;
 import by.academy.jee.model.person.role.Role;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
@@ -21,6 +26,13 @@ public class Student extends Person {
 
     @Transient
     private Map<Integer, Integer> marks;
+    @ManyToMany
+    @JoinTable(
+            name = "group_student",
+            joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id")
+    )
+    private List<Group> groups;
 
     public Map<Integer, Integer> getMarks() {
         return marks;
