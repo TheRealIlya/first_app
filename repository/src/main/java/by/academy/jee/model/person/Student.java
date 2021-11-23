@@ -1,17 +1,18 @@
 package by.academy.jee.model.person;
 
+import by.academy.jee.model.grade.Grade;
 import by.academy.jee.model.group.Group;
 import by.academy.jee.model.person.role.Role;
 import java.util.List;
-import java.util.Map;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -24,8 +25,8 @@ import lombok.NoArgsConstructor;
 @SecondaryTable(name = "roles", pkJoinColumns = {@PrimaryKeyJoinColumn(name = "id")})
 public class Student extends Person {
 
-    @Transient
-    private Map<Integer, Integer> marks;
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Grade> grades;
     @ManyToMany
     @JoinTable(
             name = "group_student",
@@ -33,14 +34,6 @@ public class Student extends Person {
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     private List<Group> groups;
-
-    public Map<Integer, Integer> getMarks() {
-        return marks;
-    }
-
-    public void setMarks(Map<Integer, Integer> marks) {
-        this.marks = marks;
-    }
 
     public Student withId(int id) {
         setId(id);
