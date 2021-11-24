@@ -1,9 +1,13 @@
 package by.academy.jee.web.service;
 
+import by.academy.jee.dao.group.GroupDao;
+import by.academy.jee.dao.group.GroupDaoFactory;
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.dao.person.PersonDaoFactory;
-import by.academy.jee.exception.PersonDaoException;
+import by.academy.jee.exception.DaoException;
+import by.academy.jee.exception.MyNoResultException;
 import by.academy.jee.exception.ServiceException;
+import by.academy.jee.model.group.Group;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.Person;
 import by.academy.jee.model.person.PersonContext;
@@ -22,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import static by.academy.jee.web.constant.Constant.ADMIN;
 import static by.academy.jee.web.constant.Constant.ADMIN_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.AGE;
+import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
 import static by.academy.jee.web.constant.Constant.SALARIES_MUST_BE_NUMBERS;
 import static by.academy.jee.web.constant.Constant.ERROR_AGE_MUST_BE_A_NUMBER;
 import static by.academy.jee.web.constant.Constant.ERROR_INCORRECT_ROLE;
@@ -50,6 +55,7 @@ public class Service {
     private static PersonDao<Admin> adminDao = PersonDaoFactory.getPersonDao(Role.ADMIN);
     private static PersonDao<Teacher> teacherDao = PersonDaoFactory.getPersonDao(Role.TEACHER);
     private static PersonDao<Student> studentDao = PersonDaoFactory.getPersonDao(Role.STUDENT);
+    private static GroupDao groupDao = GroupDaoFactory.getGroupDao();
 
     private Service() {
         //util class
@@ -103,13 +109,13 @@ public class Service {
 
         try {
             adminDao.read(login);
-        } catch (PersonDaoException e) {
+        } catch (DaoException e) {
             try {
                 teacherDao.read(login);
-            } catch (PersonDaoException f) {
+            } catch (DaoException f) {
                 try {
                     studentDao.read(login);
-                } catch (PersonDaoException g) {
+                } catch (DaoException g) {
                     return;
                 }
             }
@@ -123,13 +129,13 @@ public class Service {
         Person user;
         try {
             user = adminDao.read(login);
-        } catch (PersonDaoException e) {
+        } catch (DaoException e) {
             try {
                 user = teacherDao.read(login);
-            } catch (PersonDaoException f) {
+            } catch (DaoException f) {
                 try {
                     user = studentDao.read(login);
-                } catch (PersonDaoException g) {
+                } catch (DaoException g) {
                     log.error("Error - no user {} in database", login);
                     throw new ServiceException(NO_SUCH_USER_IN_DATABASE);
                 }
@@ -188,6 +194,19 @@ public class Service {
         if (!Role.TEACHER.equals(person.getRole())) {
             log.error("Error - user {} is not a teacher", person.getLogin());
             throw new ServiceException("Error - this user isn't a teacher");
+        }
+    }
+
+    public static Group getGroupByTeacher(Teacher teacher) throws ServiceException {
+
+        try {
+            return groupDao.read(teacher);
+        } catch (MyNoResultException e) {
+            log.error(e.getMessage());
+            return null;
+        } catch (DaoException e) {
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
         }
     }
 

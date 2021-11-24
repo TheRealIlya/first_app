@@ -1,6 +1,6 @@
 package by.academy.jee.util;
 
-import by.academy.jee.exception.PersonDaoException;
+import by.academy.jee.exception.DaoException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.persistence.EntityManager;
@@ -49,10 +49,10 @@ public class DataBaseUtil {
             em.getTransaction().rollback();
         }
         log.error(e.getMessage(), e);
-        throw new PersonDaoException(e.getMessage(), e);
+        throw new DaoException(e.getMessage(), e);
     }
 
-    public static void closeEntityManager(EntityManager em) {
+    public static void finallyCloseEntityManager(EntityManager em) {
         if (em != null) {
             try {
                 em.close();
@@ -60,5 +60,10 @@ public class DataBaseUtil {
                 log.error(e.getMessage(), e);
             }
         }
+    }
+
+    public static void closeEntityManager(EntityManager em) {
+        em.getTransaction().commit();
+        em.close();
     }
 }

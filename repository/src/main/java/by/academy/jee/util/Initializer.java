@@ -2,7 +2,7 @@ package by.academy.jee.util;
 
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.dao.person.PersonDaoFactory;
-import by.academy.jee.exception.PersonDaoException;
+import by.academy.jee.exception.DaoException;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.Teacher;
@@ -28,7 +28,7 @@ public class Initializer {
 
         try {
             adminDao.read("Admin");
-        } catch (PersonDaoException e) {
+        } catch (DaoException e) {
             byte[] salt = PasswordHasher.generateSalt();
             byte[] pwd = PasswordHasher.getEncryptedPassword("qwe", salt);
             adminDao.create(new Admin()
@@ -42,7 +42,7 @@ public class Initializer {
 
         try {
             teacherDao.read("Mike_");
-        } catch (PersonDaoException e) {
+        } catch (DaoException e) {
             byte[] salt = PasswordHasher.generateSalt();
             byte[] pwd = PasswordHasher.getEncryptedPassword("1234", salt);
             Map<Integer, Double> salaries = SalaryGenerator.generate(200, 2000);
@@ -58,7 +58,7 @@ public class Initializer {
 
         try {
             studentDao.read("Stud");
-        } catch (PersonDaoException e) {
+        } catch (DaoException e) {
             byte[] salt = PasswordHasher.generateSalt();
             byte[] pwd = PasswordHasher.getEncryptedPassword("qwer", salt);
             studentDao.create(new Student()

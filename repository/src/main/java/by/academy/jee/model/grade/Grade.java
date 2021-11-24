@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -23,14 +24,17 @@ public class Grade {
     private int value;
     @ToString.Exclude
     @ManyToOne
+    @EqualsAndHashCode.Exclude
     @JoinColumn(name = "student_id")
     private Student student;
     @ToString.Exclude
     @ManyToOne
+    @EqualsAndHashCode.Exclude
     @JoinColumn(name = "group_id")
     private Group group;
     @ToString.Exclude
     @ManyToOne
+    @EqualsAndHashCode.Exclude
     @JoinColumn(name = "theme_id")
     private Theme theme;
 }

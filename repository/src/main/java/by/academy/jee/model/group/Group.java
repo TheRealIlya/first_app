@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -29,8 +30,10 @@ public class Group {
     private Integer id;
     private String title;
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @EqualsAndHashCode.Exclude
     private Teacher teacher;
     @ManyToMany(mappedBy = "groups", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @EqualsAndHashCode.Exclude
     private List<Student> students;
     @ManyToMany
     @JoinTable(
@@ -38,7 +41,9 @@ public class Group {
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "theme_id")
     )
+    @EqualsAndHashCode.Exclude
     private List<Theme> themes;
     @OneToMany(mappedBy = "group", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @EqualsAndHashCode.Exclude
     private List<Grade> grades;
 }

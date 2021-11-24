@@ -11,6 +11,8 @@ public class Constant {
     public static final String RESULT = "result";
     public static final String ADD_TEACHER_JSP_URL = "/jsp/admin/addTeacher.jsp";
     public static final String ADD_STUDENT_JSP_URL = "/jsp/admin/addStudent.jsp";
+    public static final String GROUP_INFO_JSP_URL = "/jsp/teacher/groupInfo.jsp";
+    public static final String ERROR_PAGE_JSP_URL = "/jsp/common/errorPage.jsp";
     public static final String LOGIN_JSP_URL = "/jsp/common/login.jsp";
     public static final String NO_SUCH_USER_IN_DATABASE = "No such user in database";
     public static final String USER_IS_ALREADY_EXIST = "Error - user with this login is already exist";

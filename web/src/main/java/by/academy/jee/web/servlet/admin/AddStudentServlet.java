@@ -2,7 +2,7 @@ package by.academy.jee.web.servlet.admin;
 
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.dao.person.PersonDaoFactory;
-import by.academy.jee.exception.PersonDaoException;
+import by.academy.jee.exception.DaoException;
 import by.academy.jee.exception.ServiceException;
 import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.role.Role;
@@ -41,7 +41,7 @@ public class AddStudentServlet extends HttpServlet {
             log.info("Student {} is successfully added", student.getLogin());
             req.setAttribute(APPROVE_MESSAGE, STUDENT_IS_SUCCESSFULLY_ADDED);
             SessionUtil.setupInclude(this, req, resp, ADD_STUDENT_JSP_URL);
-        } catch (ServiceException | PersonDaoException e) {
+        } catch (ServiceException | DaoException e) {
             req.setAttribute(ERROR_MESSAGE, e.getMessage());
             SessionUtil.setupForward(this, req, resp, ADD_STUDENT_JSP_URL);
         }

@@ -1,7 +1,7 @@
 package by.academy.jee.dao.person.teacher;
 
 import by.academy.jee.dao.person.PersonDao;
-import by.academy.jee.exception.PersonDaoException;
+import by.academy.jee.exception.DaoException;
 import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.person.role.Role;
 import by.academy.jee.util.DataBaseUtil;
@@ -75,7 +75,7 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
             if (ps1.executeUpdate() <= 0) {
                 DataBaseUtil.rollBack(con);
                 log.error(USER_CREATE_TRANSACTION_ERROR);
-                throw new PersonDaoException(USER_CREATE_TRANSACTION_ERROR);
+                throw new DaoException(USER_CREATE_TRANSACTION_ERROR);
             }
             for (int i = 1; i < 13; i++) {
                 ps2 = con.prepareStatement(INSERT_SALARIES_POSTGRES);
@@ -85,7 +85,7 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
                 if (ps2.executeUpdate() <= 0) {
                     DataBaseUtil.rollBack(con);
                     log.error(USER_CREATE_TRANSACTION_ERROR);
-                    throw new PersonDaoException(USER_CREATE_TRANSACTION_ERROR);
+                    throw new DaoException(USER_CREATE_TRANSACTION_ERROR);
                 }
             }
             con.commit();
@@ -93,7 +93,7 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
         } catch (SQLException e) {
             DataBaseUtil.rollBack(con);
             log.error(e.getMessage(), e);
-            throw new PersonDaoException(e.getMessage(), e);
+            throw new DaoException(e.getMessage(), e);
         } finally {
             DataBaseUtil.closeQuietly(ps2, ps1, con);
         }
@@ -116,12 +116,12 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
             result = resultSetToTeachers(rs);
         } catch (SQLException e) {
             log.error(e.getMessage(), e);
-            throw new PersonDaoException(e.getMessage(), e);
+            throw new DaoException(e.getMessage(), e);
         } finally {
             DataBaseUtil.closeQuietly(rs);
         }
         return result.stream().findFirst()
-                .orElseThrow(() -> new PersonDaoException(ERROR_NO_SUCH_TEACHER));
+                .orElseThrow(() -> new DaoException(ERROR_NO_SUCH_TEACHER));
     }
 
     @Override
@@ -145,13 +145,13 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
             result = resultSetToTeachers(rs);
         } catch (SQLException e) {
             log.error(e.getMessage(), e);
-            throw new PersonDaoException(e.getMessage(), e);
+            throw new DaoException(e.getMessage(), e);
         } finally {
             DataBaseUtil.closeQuietly(rs);
         }
         if (result.size() == 0) {
             log.error(ERROR_NO_TEACHERS_IN_DATABASE);
-            throw new PersonDaoException(ERROR_NO_TEACHERS_IN_DATABASE);
+            throw new DaoException(ERROR_NO_TEACHERS_IN_DATABASE);
         }
         return result;
     }

@@ -1,6 +1,7 @@
 package by.academy.jee.dao.person;
 
 import by.academy.jee.dao.DaoDataSource;
+import by.academy.jee.dao.RepositoryType;
 import by.academy.jee.dao.person.admin.AdminDaoForJpa;
 import by.academy.jee.dao.person.admin.AdminDaoForMemoryDatabase;
 import by.academy.jee.dao.person.admin.AdminDaoForPostgres;
@@ -8,7 +9,7 @@ import by.academy.jee.dao.person.student.StudentDaoForJpa;
 import by.academy.jee.dao.person.teacher.TeacherDaoForJpa;
 import by.academy.jee.dao.person.teacher.TeacherDaoForMemoryDatabase;
 import by.academy.jee.dao.person.teacher.TeacherDaoForPostgres;
-import by.academy.jee.exception.PersonDaoException;
+import by.academy.jee.exception.DaoException;
 import by.academy.jee.model.person.role.Role;
 import java.io.IOException;
 import java.util.Properties;
@@ -39,7 +40,7 @@ public class PersonDaoFactory {
                     .getContextClassLoader().getResourceAsStream(REPOSITORY_PROPERTIES));
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            throw new PersonDaoException(e.getMessage(), e);
+            throw new DaoException(e.getMessage(), e);
         }
         TYPE = RepositoryType.getTypeByString(repositoryProperties.getProperty(REPOSITORY_TYPE));
         if (TYPE == RepositoryType.POSTGRES) {
@@ -77,7 +78,7 @@ public class PersonDaoFactory {
                 return TeacherDaoForMemoryDatabase.getInstance();
             case STUDENT:
             default:
-                return null; //TODO
+                return null;
         }
     }
 
@@ -90,7 +91,7 @@ public class PersonDaoFactory {
                 return TeacherDaoForPostgres.getInstance(dataSource);
             case STUDENT:
             default:
-                return null; //TODO
+                return null;
         }
     }
 

@@ -2,7 +2,7 @@ package by.academy.jee.dao.person.teacher;
 
 import by.academy.jee.dao.EntityManagerHelper;
 import by.academy.jee.dao.person.PersonDao;
-import by.academy.jee.exception.PersonDaoException;
+import by.academy.jee.exception.DaoException;
 import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.person.role.Role;
 import by.academy.jee.util.DataBaseUtil;
@@ -52,12 +52,11 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
             em = helper.getEntityManager();
             em.getTransaction().begin();
             teacher = em.find(Teacher.class, id);
-            em.getTransaction().commit();
-            em.close();
+            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            DataBaseUtil.closeEntityManager(em);
+            DataBaseUtil.finallyCloseEntityManager(em);
         }
         return teacher;
     }
@@ -71,12 +70,11 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
             em = helper.getEntityManager();
             em.getTransaction().begin();
             teacher = getTeacherByName(name, em);
-            em.getTransaction().commit();
-            em.close();
+            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            DataBaseUtil.closeEntityManager(em);
+            DataBaseUtil.finallyCloseEntityManager(em);
         }
         return teacher;
     }
@@ -95,12 +93,11 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
             em.getTransaction().begin();
             Teacher teacher = read(name);
             em.remove(teacher);
-            em.getTransaction().commit();
-            em.close();
+            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            DataBaseUtil.closeEntityManager(em);
+            DataBaseUtil.finallyCloseEntityManager(em);
         }
         return true;
     }
@@ -114,12 +111,11 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
             em = helper.getEntityManager();
             em.getTransaction().begin();
             teachers = getAllTeachers(em);
-            em.getTransaction().commit();
-            em.close();
+            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            DataBaseUtil.closeEntityManager(em);
+            DataBaseUtil.finallyCloseEntityManager(em);
         }
         return teachers;
     }
@@ -134,12 +130,11 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
                 em.persist(teacher);
             }
             em.merge(teacher);
-            em.getTransaction().commit();
-            em.close();
+            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            DataBaseUtil.closeEntityManager(em);
+            DataBaseUtil.finallyCloseEntityManager(em);
         }
         return true;
     }
@@ -157,7 +152,7 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
         List<Teacher> teachers = query.getResultList();
         if (teachers.size() == 0) {
             log.error(ERROR_NO_TEACHERS_IN_DATABASE);
-            throw new PersonDaoException(ERROR_NO_TEACHERS_IN_DATABASE);
+            throw new DaoException(ERROR_NO_TEACHERS_IN_DATABASE);
         }
         return teachers;
     }

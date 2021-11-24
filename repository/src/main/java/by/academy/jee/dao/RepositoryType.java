@@ -1,4 +1,4 @@
-package by.academy.jee.dao.person;
+package by.academy.jee.dao;
 
 import java.util.Collections;
 import java.util.EnumMap;

@@ -50,12 +50,11 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
             em = helper.getEntityManager();
             em.getTransaction().begin();
             admin = em.find(Admin.class, id);
-            em.getTransaction().commit();
-            em.close();
+            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            DataBaseUtil.closeEntityManager(em);
+            DataBaseUtil.finallyCloseEntityManager(em);
         }
         return admin;
     }
@@ -69,12 +68,11 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
             em = helper.getEntityManager();
             em.getTransaction().begin();
             admin = getAdminByName(name, em);
-            em.getTransaction().commit();
-            em.close();
+            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            DataBaseUtil.closeEntityManager(em);
+            DataBaseUtil.finallyCloseEntityManager(em);
         }
         return admin;
     }
@@ -93,12 +91,11 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
             em.getTransaction().begin();
             Admin admin = read(name);
             em.remove(admin);
-            em.getTransaction().commit();
-            em.close();
+            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            DataBaseUtil.closeEntityManager(em);
+            DataBaseUtil.finallyCloseEntityManager(em);
         }
         return true;
     }
@@ -112,12 +109,11 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
             em = helper.getEntityManager();
             em.getTransaction().begin();
             admins = getAllAdmins(em);
-            em.getTransaction().commit();
-            em.close();
+            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            DataBaseUtil.closeEntityManager(em);
+            DataBaseUtil.finallyCloseEntityManager(em);
         }
         return admins;
     }
@@ -132,12 +128,11 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
                 em.persist(admin);
             }
             em.merge(admin);
-            em.getTransaction().commit();
-            em.close();
+            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
             DataBaseUtil.rollBack(em, e);
         } finally {
-            DataBaseUtil.closeEntityManager(em);
+            DataBaseUtil.finallyCloseEntityManager(em);
         }
         return true;
     }

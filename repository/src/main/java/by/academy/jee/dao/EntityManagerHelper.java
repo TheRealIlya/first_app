@@ -21,7 +21,6 @@ public class EntityManagerHelper {
         return EntityManagerHelper.EntityManagerHelperHolder.HOLDER_INSTANCE;
     }
 
-
     public EntityManager getEntityManager() {
         return factory.createEntityManager();
     }

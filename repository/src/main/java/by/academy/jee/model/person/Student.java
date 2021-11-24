@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @SecondaryTable(name = "roles", pkJoinColumns = {@PrimaryKeyJoinColumn(name = "id")})
 public class Student extends Person {
 
-    @OneToMany(mappedBy = "student", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.ALL})
     private List<Grade> grades;
     @ManyToMany
     @JoinTable(
@@ -33,6 +33,7 @@ public class Student extends Person {
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
+    @EqualsAndHashCode.Exclude
     private List<Group> groups;
 
     public Student withId(int id) {

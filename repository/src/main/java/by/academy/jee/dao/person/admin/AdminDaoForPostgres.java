@@ -1,7 +1,7 @@
 package by.academy.jee.dao.person.admin;
 
 import by.academy.jee.dao.person.PersonDao;
-import by.academy.jee.exception.PersonDaoException;
+import by.academy.jee.exception.DaoException;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.role.Role;
 import by.academy.jee.util.DataBaseUtil;
@@ -88,7 +88,7 @@ public class AdminDaoForPostgres implements PersonDao<Admin> {
             DataBaseUtil.closeQuietly(rs);
         }
         return result.stream().findFirst()
-                .orElseThrow(() -> new PersonDaoException(ERROR_NO_SUCH_ADMIN));
+                .orElseThrow(() -> new DaoException(ERROR_NO_SUCH_ADMIN));
     }
 
     @Override
@@ -108,7 +108,7 @@ public class AdminDaoForPostgres implements PersonDao<Admin> {
 
     private void logAndThrowMyException(Exception e) {
         log.error(e.getMessage(), e);
-        throw new PersonDaoException(e.getMessage(), e);
+        throw new DaoException(e.getMessage(), e);
     }
 
     private List<Admin> resultSetToAdmins(ResultSet rs) throws SQLException {
