@@ -10,6 +10,7 @@ public class Constant {
     public static final String APPROVE_MESSAGE = "approveMessage";
     public static final String RESULT = "result";
     public static final String ADD_TEACHER_JSP_URL = "/jsp/admin/addTeacher.jsp";
+    public static final String CREATE_GRADE_JSP_URL = "/jsp/teacher/createGrade.jsp";
     public static final String ADD_STUDENT_JSP_URL = "/jsp/admin/addStudent.jsp";
     public static final String GROUP_INFO_JSP_URL = "/jsp/teacher/groupInfo.jsp";
     public static final String ERROR_PAGE_JSP_URL = "/jsp/common/errorPage.jsp";

@@ -52,6 +52,15 @@ public class DataBaseUtil {
         throw new DaoException(e.getMessage(), e);
     }
 
+    public static void rollBack(EntityManager em, Exception e, String errorMessage) {
+
+        if (em != null) {
+            em.getTransaction().rollback();
+        }
+        log.error(e.getMessage(), e);
+        throw new DaoException(errorMessage, e);
+    }
+
     public static void finallyCloseEntityManager(EntityManager em) {
         if (em != null) {
             try {

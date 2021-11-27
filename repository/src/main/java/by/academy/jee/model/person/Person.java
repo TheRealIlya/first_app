@@ -2,6 +2,7 @@ package by.academy.jee.model.person;
 
 import by.academy.jee.model.person.role.Role;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,5 +32,22 @@ public abstract class Person {
         return "User: " + login + " (" + role + ") <br>" +
                 "Name: " + name + " <br>" +
                 "Age: " + age;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return Objects.equals(id, person.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public String getStringForJsp() {
+        return toString();
     }
 }

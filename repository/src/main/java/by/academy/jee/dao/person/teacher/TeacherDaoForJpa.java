@@ -54,7 +54,7 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
             teacher = em.find(Teacher.class, id);
             DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
+            DataBaseUtil.rollBack(em, e, "No teacher with id + " + id + " in database");
         } finally {
             DataBaseUtil.finallyCloseEntityManager(em);
         }
@@ -95,7 +95,7 @@ public class TeacherDaoForJpa implements PersonDao<Teacher> {
             em.remove(teacher);
             DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
+            DataBaseUtil.rollBack(em, e, "No such teacher in database");
         } finally {
             DataBaseUtil.finallyCloseEntityManager(em);
         }

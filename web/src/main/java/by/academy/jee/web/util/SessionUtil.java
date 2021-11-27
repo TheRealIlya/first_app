@@ -1,5 +1,6 @@
 package by.academy.jee.web.util;
 
+import by.academy.jee.model.group.Group;
 import by.academy.jee.model.person.Person;
 
 import javax.servlet.RequestDispatcher;
@@ -22,6 +23,14 @@ public class SessionUtil {
 
     public static Person getSessionUser(HttpServletRequest req) {
         return (Person) req.getSession().getAttribute(USER);
+    }
+
+    public static void setSessionGroup(HttpServletRequest req, Group group) {
+        req.getSession().setAttribute("group", group);
+    }
+
+    public static Group getSessionGroup(HttpServletRequest req) {
+        return (Group) req.getSession().getAttribute("group");
     }
 
     public static void setupForward(HttpServlet servlet, HttpServletRequest req, HttpServletResponse resp, String url)

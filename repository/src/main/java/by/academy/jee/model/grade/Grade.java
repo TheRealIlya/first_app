@@ -37,4 +37,29 @@ public class Grade {
     @EqualsAndHashCode.Exclude
     @JoinColumn(name = "theme_id")
     private Theme theme;
+
+    public Grade withId(int id) {
+        setId(id);
+        return this;
+    }
+
+    public Grade withValue(int value) {
+        setValue(value);
+        return this;
+    }
+
+    public Grade withStudent(Student student) {
+        setStudent(student);
+        return this;
+    }
+
+    public Grade withGroup(Group group) {
+        setGroup(group);
+        return this;
+    }
+
+    public Grade withTheme(Theme theme) {
+        setTheme(theme);
+        return this;
+    }
 }

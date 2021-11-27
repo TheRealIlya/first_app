@@ -4,9 +4,12 @@ import by.academy.jee.dao.group.GroupDao;
 import by.academy.jee.dao.group.GroupDaoFactory;
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.dao.person.PersonDaoFactory;
+import by.academy.jee.dao.theme.ThemeDao;
+import by.academy.jee.dao.theme.ThemeDaoFactory;
 import by.academy.jee.exception.DaoException;
 import by.academy.jee.exception.MyNoResultException;
 import by.academy.jee.exception.ServiceException;
+import by.academy.jee.model.grade.Grade;
 import by.academy.jee.model.group.Group;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.Person;
@@ -14,19 +17,21 @@ import by.academy.jee.model.person.PersonContext;
 import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.person.role.Role;
+import by.academy.jee.model.theme.Theme;
 import by.academy.jee.util.Initializer;
 import by.academy.jee.util.PasswordHasher;
 import by.academy.jee.util.SalaryGenerator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static by.academy.jee.web.constant.Constant.ADMIN;
 import static by.academy.jee.web.constant.Constant.ADMIN_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.AGE;
-import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
 import static by.academy.jee.web.constant.Constant.SALARIES_MUST_BE_NUMBERS;
 import static by.academy.jee.web.constant.Constant.ERROR_AGE_MUST_BE_A_NUMBER;
 import static by.academy.jee.web.constant.Constant.ERROR_INCORRECT_ROLE;
@@ -56,6 +61,7 @@ public class Service {
     private static PersonDao<Teacher> teacherDao = PersonDaoFactory.getPersonDao(Role.TEACHER);
     private static PersonDao<Student> studentDao = PersonDaoFactory.getPersonDao(Role.STUDENT);
     private static GroupDao groupDao = GroupDaoFactory.getGroupDao();
+    private static ThemeDao themeDao = ThemeDaoFactory.getThemeDao();
 
     private Service() {
         //util class
@@ -203,8 +209,40 @@ public class Service {
             return groupDao.read(teacher);
         } catch (MyNoResultException e) {
             log.error(e.getMessage());
-            return null;
+            throw new ServiceException("Error - you don't have a group");
         } catch (DaoException e) {
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public static void createGrade(String studentLogin, Group group, String themeString, String gradeString)
+            throws ServiceException {
+
+        try {
+            int gradeValue = Integer.parseInt(gradeString);
+            if (gradeValue < 1 || gradeValue > 10) {
+                throw new NumberFormatException();
+            }
+            Student student = studentDao.read(studentLogin);
+            if (!group.getStudents().contains(student)) {
+                throw new ServiceException("Error - no such student in current group");
+            }
+            Theme theme = themeDao.read(themeString);
+            if (!group.getThemes().contains(theme)) {
+                throw new ServiceException("Error - this group doesn't contain such theme");
+            }
+            Grade grade = new Grade()
+                    .withValue(gradeValue)
+                    .withStudent(student)
+                    .withGroup(group)
+                    .withTheme(theme);
+            student.getGrades().add(grade);
+            studentDao.update(student);
+        } catch (NumberFormatException e) {
+            log.error("Error - wrong grade format - must be a number from 1 to 10");
+            throw new ServiceException("Error - wrong grade format - must be a number from 1 to 10");
+        } catch (MyNoResultException | DaoException e) {
             log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         }

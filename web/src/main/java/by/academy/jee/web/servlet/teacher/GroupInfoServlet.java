@@ -30,11 +30,7 @@ public class GroupInfoServlet extends HttpServlet {
             Service.checkIsNotATeacher(person);
             Teacher teacher = (Teacher) person;
             Group group = Service.getGroupByTeacher(teacher);
-            if (group == null) {
-                req.setAttribute(ERROR_MESSAGE, "Error - you don't have a group");
-                SessionUtil.setupForward(this, req, resp, ERROR_PAGE_JSP_URL);
-            }
-            req.setAttribute("group", group);
+            SessionUtil.setSessionGroup(req, group);
             SessionUtil.setupForward(this, req, resp, GROUP_INFO_JSP_URL);
         } catch (ServiceException e) {
             req.setAttribute(ERROR_MESSAGE, e.getMessage());

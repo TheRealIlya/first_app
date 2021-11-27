@@ -46,4 +46,9 @@ public class Group {
     @OneToMany(mappedBy = "group", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @EqualsAndHashCode.Exclude
     private List<Grade> grades;
+
+    @Override
+    public String toString() {
+        return title + "(themes - " + themes + ")";
+    }
 }

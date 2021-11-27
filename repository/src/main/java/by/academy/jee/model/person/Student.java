@@ -4,6 +4,7 @@ import by.academy.jee.model.grade.Grade;
 import by.academy.jee.model.group.Group;
 import by.academy.jee.model.person.role.Role;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -17,7 +18,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @Entity
@@ -33,7 +33,7 @@ public class Student extends Person {
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
-    @EqualsAndHashCode.Exclude
+
     private List<Group> groups;
 
     public Student withId(int id) {
@@ -72,6 +72,25 @@ public class Student extends Person {
     }
 
     public String toString() {
-        return super.toString();
+        return getLogin();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public String getStringForJsp() {
+        String groupString = "";
+        for (Group group : groups) {
+            groupString += "<br>" + group;
+        }
+        return super.toString() + "<br><br>Groups:" + groupString;
     }
 }

@@ -13,10 +13,8 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @Entity
@@ -83,5 +81,15 @@ public class Teacher extends Person {
             mapString += "<br>" + i + " - " + String.format("%.2f", salaries.get(i)).replace(',', '.');
         }
         return super.toString() + "<br><br> Salaries:" + mapString;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }
