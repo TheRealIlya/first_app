@@ -57,6 +57,26 @@ public class GroupDaoForJpa implements GroupDao {
     }
 
     @Override
+    public Group read(String title) {
+        EntityManager em = null;
+        Group group = null;
+        try {
+            em = helper.getEntityManager();
+            em.getTransaction().begin();
+            group = getGroupByTitle(title, em);
+            DataBaseUtil.closeEntityManager(em);
+        } catch (NoResultException e) {
+            DataBaseUtil.closeEntityManager(em);
+            throw new MyNoResultException(e.getMessage());
+        } catch (Exception e) {
+            DataBaseUtil.rollBack(em, e);
+        } finally {
+            DataBaseUtil.finallyCloseEntityManager(em);
+        }
+        return group;
+    }
+
+    @Override
     public Group read(Teacher teacher) {
         EntityManager em = null;
         Group group = null;
@@ -104,6 +124,13 @@ public class GroupDaoForJpa implements GroupDao {
 
         TypedQuery<Group> query = em.createQuery("from Group g where g.teacher = ?1", Group.class);
         query.setParameter(1, teacher);
+        return query.getSingleResult();
+    }
+
+    private Group getGroupByTitle(String title, EntityManager em) {
+
+        TypedQuery<Group> query = em.createQuery("from Group g where g.title = ?1", Group.class);
+        query.setParameter(1, title);
         return query.getSingleResult();
     }
 }

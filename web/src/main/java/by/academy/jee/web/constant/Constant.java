@@ -10,10 +10,12 @@ public class Constant {
     public static final String APPROVE_MESSAGE = "approveMessage";
     public static final String RESULT = "result";
     public static final String ADD_TEACHER_JSP_URL = "/jsp/admin/addTeacher.jsp";
+    public static final String CHANGE_GROUP_JSP_URL = "/jsp/teacher/changeGroup.jsp";
     public static final String CREATE_GRADE_JSP_URL = "/jsp/teacher/createGrade.jsp";
     public static final String ADD_STUDENT_JSP_URL = "/jsp/admin/addStudent.jsp";
     public static final String GROUP_INFO_JSP_URL = "/jsp/teacher/groupInfo.jsp";
-    public static final String ERROR_PAGE_JSP_URL = "/jsp/common/errorPage.jsp";
+    public static final String CHECK_GRADES_JSP_URL = "/jsp/student/checkGrades.jsp";
+    public static final String GROUP_INFO_ERROR_PAGE_JSP_URL = "/jsp/teacher/groupInfoErrorPage.jsp";
     public static final String LOGIN_JSP_URL = "/jsp/common/login.jsp";
     public static final String NO_SUCH_USER_IN_DATABASE = "No such user in database";
     public static final String USER_IS_ALREADY_EXIST = "Error - user with this login is already exist";
@@ -35,6 +37,7 @@ public class Constant {
     public static final String ERROR_WRONG_NUMBERS_FORMAT = "Error - wrong numbers format";
     public static final String SALARIES_MUST_BE_NUMBERS = "Error - salaries must be numbers!";
     public static final String ERROR_AGE_MUST_BE_A_NUMBER = "Error - age must be a number!";
+    public static final String ERROR_WRONG_GRADE_FORMAT = "Error - wrong grade format - must be a number from 1 to 10";
     public static final String ERROR_WRONG_SALARIES_INPUT = "Error - wrong salaries input";
     public static final String ERROR_WRONG_SALARIES_LOGIC = "Error - salaries can't be < 0 and minimal salary must be " +
             "lower than maximal salary!";

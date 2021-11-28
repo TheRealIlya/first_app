@@ -21,17 +21,17 @@ import by.academy.jee.model.theme.Theme;
 import by.academy.jee.util.Initializer;
 import by.academy.jee.util.PasswordHasher;
 import by.academy.jee.util.SalaryGenerator;
+import by.academy.jee.web.util.SessionUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static by.academy.jee.web.constant.Constant.ADMIN;
 import static by.academy.jee.web.constant.Constant.ADMIN_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.AGE;
+import static by.academy.jee.web.constant.Constant.ERROR_WRONG_GRADE_FORMAT;
 import static by.academy.jee.web.constant.Constant.SALARIES_MUST_BE_NUMBERS;
 import static by.academy.jee.web.constant.Constant.ERROR_AGE_MUST_BE_A_NUMBER;
 import static by.academy.jee.web.constant.Constant.ERROR_INCORRECT_ROLE;
@@ -240,12 +240,42 @@ public class Service {
             student.getGrades().add(grade);
             studentDao.update(student);
         } catch (NumberFormatException e) {
-            log.error("Error - wrong grade format - must be a number from 1 to 10");
-            throw new ServiceException("Error - wrong grade format - must be a number from 1 to 10");
+            log.error(ERROR_WRONG_GRADE_FORMAT);
+            throw new ServiceException(ERROR_WRONG_GRADE_FORMAT);
         } catch (MyNoResultException | DaoException e) {
             log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         }
+    }
+
+    public static void changeGroup(Group oldGroup, String newGroupTitle, Teacher teacher) throws ServiceException {
+
+        try {
+            if (newGroupTitle == null || newGroupTitle.equals("")) {
+                if (oldGroup == null) {
+                    throw new ServiceException("Error - you already don't have a group");
+                }
+                setTeacherForGroup(oldGroup, null);
+                return;
+            }
+            Group newGroup = groupDao.read(newGroupTitle);
+            if (newGroup.getTeacher() != null) {
+                throw new ServiceException("Error - this group already has a teacher");
+            }
+            if (oldGroup != null) {
+                setTeacherForGroup(oldGroup, null);
+            }
+            setTeacherForGroup(newGroup, teacher);
+        } catch (MyNoResultException | DaoException e) {
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    private static void setTeacherForGroup(Group group, Teacher teacher) throws DaoException {
+
+        group.setTeacher(teacher);
+        groupDao.update(group);
     }
 
     private static PersonContext getPersonContextFromRequest(HttpServletRequest req) throws ServiceException {

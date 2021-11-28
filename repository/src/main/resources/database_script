@@ -17,17 +17,17 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: roles; Type: TYPE; Schema: public; Owner: ilya
+-- Name: role_types; Type: TYPE; Schema: public; Owner: ilya
 --
 
-CREATE TYPE public.roles AS ENUM (
+CREATE TYPE public.role_types AS ENUM (
     'ADMIN',
     'TEACHER',
     'STUDENT'
 );
 
 
-ALTER TYPE public.roles OWNER TO ilya;
+ALTER TYPE public.role_types OWNER TO ilya;
 
 SET default_tablespace = '';
 
@@ -71,23 +71,23 @@ ALTER SEQUENCE public.grade_id_seq OWNED BY public.grade.id;
 
 
 --
--- Name: group; Type: TABLE; Schema: public; Owner: ilya
+-- Name: group_s; Type: TABLE; Schema: public; Owner: ilya
 --
 
-CREATE TABLE public."group" (
+CREATE TABLE public.group_s (
     id integer NOT NULL,
     title character varying(50) NOT NULL,
     teacher_id integer
 );
 
 
-ALTER TABLE public."group" OWNER TO ilya;
+ALTER TABLE public.group_s OWNER TO ilya;
 
 --
--- Name: group_id_seq; Type: SEQUENCE; Schema: public; Owner: ilya
+-- Name: group_s_id_seq; Type: SEQUENCE; Schema: public; Owner: ilya
 --
 
-CREATE SEQUENCE public.group_id_seq
+CREATE SEQUENCE public.group_s_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -96,13 +96,13 @@ CREATE SEQUENCE public.group_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.group_id_seq OWNER TO ilya;
+ALTER TABLE public.group_s_id_seq OWNER TO ilya;
 
 --
--- Name: group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ilya
+-- Name: group_s_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ilya
 --
 
-ALTER SEQUENCE public.group_id_seq OWNED BY public."group".id;
+ALTER SEQUENCE public.group_s_id_seq OWNED BY public.group_s.id;
 
 
 --
@@ -130,22 +130,22 @@ CREATE TABLE public.group_theme (
 ALTER TABLE public.group_theme OWNER TO ilya;
 
 --
--- Name: role; Type: TABLE; Schema: public; Owner: ilya
+-- Name: roles; Type: TABLE; Schema: public; Owner: ilya
 --
 
-CREATE TABLE public.role (
+CREATE TABLE public.roles (
     id integer NOT NULL,
-    title public.roles
+    title public.role_types
 );
 
 
-ALTER TABLE public.role OWNER TO ilya;
+ALTER TABLE public.roles OWNER TO ilya;
 
 --
--- Name: role_id_seq; Type: SEQUENCE; Schema: public; Owner: ilya
+-- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: ilya
 --
 
-CREATE SEQUENCE public.role_id_seq
+CREATE SEQUENCE public.roles_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -154,13 +154,13 @@ CREATE SEQUENCE public.role_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.role_id_seq OWNER TO ilya;
+ALTER TABLE public.roles_id_seq OWNER TO ilya;
 
 --
--- Name: role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ilya
+-- Name: roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ilya
 --
 
-ALTER SEQUENCE public.role_id_seq OWNED BY public.role.id;
+ALTER SEQUENCE public.roles_id_seq OWNED BY public.roles.id;
 
 
 --
@@ -169,7 +169,7 @@ ALTER SEQUENCE public.role_id_seq OWNED BY public.role.id;
 
 CREATE TABLE public.salary (
     id integer NOT NULL,
-    month integer NOT NULL,
+    salaries_key integer NOT NULL,
     value real NOT NULL,
     teacher_id integer
 );
@@ -234,10 +234,10 @@ ALTER SEQUENCE public.theme_id_seq OWNED BY public.theme.id;
 
 
 --
--- Name: user; Type: TABLE; Schema: public; Owner: ilya
+-- Name: users; Type: TABLE; Schema: public; Owner: ilya
 --
 
-CREATE TABLE public."user" (
+CREATE TABLE public.users (
     id integer NOT NULL,
     login character varying(50) NOT NULL,
     password bytea,
@@ -248,13 +248,13 @@ CREATE TABLE public."user" (
 );
 
 
-ALTER TABLE public."user" OWNER TO ilya;
+ALTER TABLE public.users OWNER TO ilya;
 
 --
--- Name: user_id_seq; Type: SEQUENCE; Schema: public; Owner: ilya
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: ilya
 --
 
-CREATE SEQUENCE public.user_id_seq
+CREATE SEQUENCE public.users_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -263,13 +263,13 @@ CREATE SEQUENCE public.user_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.user_id_seq OWNER TO ilya;
+ALTER TABLE public.users_id_seq OWNER TO ilya;
 
 --
--- Name: user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ilya
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ilya
 --
 
-ALTER SEQUENCE public.user_id_seq OWNED BY public."user".id;
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
@@ -280,17 +280,17 @@ ALTER TABLE ONLY public.grade ALTER COLUMN id SET DEFAULT nextval('public.grade_
 
 
 --
--- Name: group id; Type: DEFAULT; Schema: public; Owner: ilya
+-- Name: group_s id; Type: DEFAULT; Schema: public; Owner: ilya
 --
 
-ALTER TABLE ONLY public."group" ALTER COLUMN id SET DEFAULT nextval('public.group_id_seq'::regclass);
+ALTER TABLE ONLY public.group_s ALTER COLUMN id SET DEFAULT nextval('public.group_s_id_seq'::regclass);
 
 
 --
--- Name: role id; Type: DEFAULT; Schema: public; Owner: ilya
+-- Name: roles id; Type: DEFAULT; Schema: public; Owner: ilya
 --
 
-ALTER TABLE ONLY public.role ALTER COLUMN id SET DEFAULT nextval('public.role_id_seq'::regclass);
+ALTER TABLE ONLY public.roles ALTER COLUMN id SET DEFAULT nextval('public.roles_id_seq'::regclass);
 
 
 --
@@ -308,10 +308,10 @@ ALTER TABLE ONLY public.theme ALTER COLUMN id SET DEFAULT nextval('public.theme_
 
 
 --
--- Name: user id; Type: DEFAULT; Schema: public; Owner: ilya
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: ilya
 --
 
-ALTER TABLE ONLY public."user" ALTER COLUMN id SET DEFAULT nextval('public.user_id_seq'::regclass);
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
@@ -319,14 +319,23 @@ ALTER TABLE ONLY public."user" ALTER COLUMN id SET DEFAULT nextval('public.user_
 --
 
 COPY public.grade (id, value, student_id, group_id, theme_id) FROM stdin;
+2	4	18	2	3
+3	7	20	1	1
+4	3	20	2	1
+1	8	20	1	1
+5	9	20	1	4
+8	7	18	1	1
+9	9	18	1	4
 \.
 
 
 --
--- Data for Name: group; Type: TABLE DATA; Schema: public; Owner: ilya
+-- Data for Name: group_s; Type: TABLE DATA; Schema: public; Owner: ilya
 --
 
-COPY public."group" (id, title, teacher_id) FROM stdin;
+COPY public.group_s (id, title, teacher_id) FROM stdin;
+1	11 A	5
+2	10 C	\N
 \.
 
 
@@ -335,6 +344,10 @@ COPY public."group" (id, title, teacher_id) FROM stdin;
 --
 
 COPY public.group_student (group_id, student_id) FROM stdin;
+1	20
+2	18
+2	20
+1	18
 \.
 
 
@@ -343,17 +356,22 @@ COPY public.group_student (group_id, student_id) FROM stdin;
 --
 
 COPY public.group_theme (group_id, theme_id) FROM stdin;
+1	1
+1	2
+1	4
+2	1
+2	3
 \.
 
 
 --
--- Data for Name: role; Type: TABLE DATA; Schema: public; Owner: ilya
+-- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: ilya
 --
 
-COPY public.role (id, title) FROM stdin;
-1	ADMIN
-2	TEACHER
-3	STUDENT
+COPY public.roles (id, title) FROM stdin;
+0	ADMIN
+1	TEACHER
+2	STUDENT
 \.
 
 
@@ -361,31 +379,31 @@ COPY public.role (id, title) FROM stdin;
 -- Data for Name: salary; Type: TABLE DATA; Schema: public; Owner: ilya
 --
 
-COPY public.salary (id, month, value, teacher_id) FROM stdin;
-1	1	1715.7577	8
-2	2	670.5976	8
-3	3	1295.1476	8
-4	4	1670.0095	8
-5	5	1553.8256	8
-6	6	1550.5663	8
-7	7	801.6136	8
-8	8	740.4297	8
-9	9	1949.8181	8
-10	10	939.1829	8
-11	11	1544.7993	8
-12	12	1073.1906	8
-39	1	24.9343	13
-40	2	25.334354	13
-41	3	25.599337	13
-42	4	25.600582	13
-43	5	25.938524	13
-44	6	25.370386	13
-45	7	24.318157	13
-46	8	25.83847	13
-47	9	24.067024	13
-48	10	24.221048	13
-49	11	24.67664	13
-50	12	25.553322	13
+COPY public.salary (id, salaries_key, value, teacher_id) FROM stdin;
+133	1	244.22289	22
+134	2	306.22543	22
+135	3	359.78427	22
+136	4	420.1961	22
+137	5	366.4316	22
+138	6	400.25784	22
+139	7	257.92358	22
+140	8	392.7689	22
+141	9	293.71335	22
+142	10	343.67413	22
+143	11	251.28093	22
+144	12	372.84097	22
+25	1	1465.3074	5
+26	2	1476.4669	5
+27	3	1345.0066	5
+28	4	1225.3776	5
+29	5	1924.9646	5
+30	6	1342.4946	5
+31	7	1688.5594	5
+32	8	315.24066	5
+33	9	764.06866	5
+34	10	1002.4911	5
+35	11	940.02875	5
+36	12	1969.7197	5
 \.
 
 
@@ -394,17 +412,23 @@ COPY public.salary (id, month, value, teacher_id) FROM stdin;
 --
 
 COPY public.theme (id, title) FROM stdin;
+1	Math
+2	English
+3	Java
+4	PE
 \.
 
 
 --
--- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: ilya
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: ilya
 --
 
-COPY public."user" (id, login, password, salt, name, age, role_id) FROM stdin;
-4	Admin	\\x80a40c9a73ce45deb8ac5d72ee573854c9d875b2	\\x0a7e33a057e2fe5f	Ilya	25	1
-8	Mike_	\\x36168ab45aa31ed19f81162b96ed22283116bb22	\\x3fefadd5eb4cdf31	Mike	35	2
-13	Mike_2	\\xc25801a0933ee6342f3198ad9b312a4ce3772a1f	\\x02092247abe4bccf	qwe	24	2
+COPY public.users (id, login, password, salt, name, age, role_id) FROM stdin;
+5	Mike_	\\x46a4ec1b0dbb53761ff5d9b2468f96dea50aca65	\\xc197cb36cf178739	Mike	35	1
+18	Stud	\\xfe69c0edebc3c41adb3dddcb85c71445b2d3f70e	\\xaebec1d3df2ce5b4	Dan	20	2
+19	Admin	\\xc059a27cdfe7f489bf2f65a53bdbb6f8d64615c3	\\x0f37a17f39a7c905	Ilya	25	0
+20	Stud2	\\x31037c84fc700937f0a8f5768308abca171c537f	\\xc0232cfb9d079c64	a	24	2
+22	Mike_2	\\xa990d34eea1bdbf9c7b66c3b59ac656c6de0699d	\\x40b38e166b42830e	M2	99	1
 \.
 
 
@@ -412,42 +436,42 @@ COPY public."user" (id, login, password, salt, name, age, role_id) FROM stdin;
 -- Name: grade_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ilya
 --
 
-SELECT pg_catalog.setval('public.grade_id_seq', 1, false);
+SELECT pg_catalog.setval('public.grade_id_seq', 9, true);
 
 
 --
--- Name: group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ilya
+-- Name: group_s_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ilya
 --
 
-SELECT pg_catalog.setval('public.group_id_seq', 1, false);
+SELECT pg_catalog.setval('public.group_s_id_seq', 2, true);
 
 
 --
--- Name: role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ilya
+-- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ilya
 --
 
-SELECT pg_catalog.setval('public.role_id_seq', 3, true);
+SELECT pg_catalog.setval('public.roles_id_seq', 3, true);
 
 
 --
 -- Name: salary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ilya
 --
 
-SELECT pg_catalog.setval('public.salary_id_seq', 74, true);
+SELECT pg_catalog.setval('public.salary_id_seq', 144, true);
 
 
 --
 -- Name: theme_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ilya
 --
 
-SELECT pg_catalog.setval('public.theme_id_seq', 1, false);
+SELECT pg_catalog.setval('public.theme_id_seq', 4, true);
 
 
 --
--- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ilya
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ilya
 --
 
-SELECT pg_catalog.setval('public.user_id_seq', 15, true);
+SELECT pg_catalog.setval('public.users_id_seq', 22, true);
 
 
 --
@@ -459,19 +483,19 @@ ALTER TABLE ONLY public.grade
 
 
 --
--- Name: group group_pkey; Type: CONSTRAINT; Schema: public; Owner: ilya
+-- Name: group_s group_s_pkey; Type: CONSTRAINT; Schema: public; Owner: ilya
 --
 
-ALTER TABLE ONLY public."group"
-    ADD CONSTRAINT group_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.group_s
+    ADD CONSTRAINT group_s_pkey PRIMARY KEY (id);
 
 
 --
--- Name: role role_pkey; Type: CONSTRAINT; Schema: public; Owner: ilya
+-- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: ilya
 --
 
-ALTER TABLE ONLY public.role
-    ADD CONSTRAINT role_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.roles
+    ADD CONSTRAINT roles_pkey PRIMARY KEY (id);
 
 
 --
@@ -491,11 +515,11 @@ ALTER TABLE ONLY public.theme
 
 
 --
--- Name: user user_pkey; Type: CONSTRAINT; Schema: public; Owner: ilya
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: ilya
 --
 
-ALTER TABLE ONLY public."user"
-    ADD CONSTRAINT user_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
 --
@@ -503,7 +527,7 @@ ALTER TABLE ONLY public."user"
 --
 
 ALTER TABLE ONLY public.grade
-    ADD CONSTRAINT grade_group_id_fkey FOREIGN KEY (group_id) REFERENCES public."group"(id);
+    ADD CONSTRAINT grade_group_id_fkey FOREIGN KEY (group_id) REFERENCES public.group_s(id);
 
 
 --
@@ -511,7 +535,7 @@ ALTER TABLE ONLY public.grade
 --
 
 ALTER TABLE ONLY public.grade
-    ADD CONSTRAINT grade_student_id_fkey FOREIGN KEY (student_id) REFERENCES public."user"(id);
+    ADD CONSTRAINT grade_student_id_fkey FOREIGN KEY (student_id) REFERENCES public.users(id);
 
 
 --
@@ -523,11 +547,19 @@ ALTER TABLE ONLY public.grade
 
 
 --
+-- Name: group_s group_s_teacher_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ilya
+--
+
+ALTER TABLE ONLY public.group_s
+    ADD CONSTRAINT group_s_teacher_id_fkey FOREIGN KEY (teacher_id) REFERENCES public.users(id);
+
+
+--
 -- Name: group_student group_student_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ilya
 --
 
 ALTER TABLE ONLY public.group_student
-    ADD CONSTRAINT group_student_group_id_fkey FOREIGN KEY (group_id) REFERENCES public."group"(id);
+    ADD CONSTRAINT group_student_group_id_fkey FOREIGN KEY (group_id) REFERENCES public.group_s(id);
 
 
 --
@@ -535,15 +567,7 @@ ALTER TABLE ONLY public.group_student
 --
 
 ALTER TABLE ONLY public.group_student
-    ADD CONSTRAINT group_student_student_id_fkey FOREIGN KEY (student_id) REFERENCES public."user"(id);
-
-
---
--- Name: group group_teacher_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ilya
---
-
-ALTER TABLE ONLY public."group"
-    ADD CONSTRAINT group_teacher_id_fkey FOREIGN KEY (teacher_id) REFERENCES public."user"(id);
+    ADD CONSTRAINT group_student_student_id_fkey FOREIGN KEY (student_id) REFERENCES public.users(id);
 
 
 --
@@ -551,7 +575,7 @@ ALTER TABLE ONLY public."group"
 --
 
 ALTER TABLE ONLY public.group_theme
-    ADD CONSTRAINT group_theme_group_id_fkey FOREIGN KEY (group_id) REFERENCES public."group"(id);
+    ADD CONSTRAINT group_theme_group_id_fkey FOREIGN KEY (group_id) REFERENCES public.group_s(id);
 
 
 --
@@ -567,15 +591,15 @@ ALTER TABLE ONLY public.group_theme
 --
 
 ALTER TABLE ONLY public.salary
-    ADD CONSTRAINT salary_teacher_id_fkey FOREIGN KEY (teacher_id) REFERENCES public."user"(id);
+    ADD CONSTRAINT salary_teacher_id_fkey FOREIGN KEY (teacher_id) REFERENCES public.users(id);
 
 
 --
--- Name: user user_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ilya
+-- Name: users users_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ilya
 --
 
-ALTER TABLE ONLY public."user"
-    ADD CONSTRAINT user_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.role(id);
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.roles(id);
 
 
 --

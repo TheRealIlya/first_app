@@ -23,6 +23,7 @@
                 </tr>
             </table>
         <p><a href="${pageContext.request.contextPath}/createGrade">Assess student</a></p>
+        <p><a href="${pageContext.request.contextPath}/changeGroup" style="color: red;">Change group</a></p>
         <p style="color: green;">${approveMessage}</p>
     </body>
 </html>

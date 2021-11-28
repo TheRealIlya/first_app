@@ -12,7 +12,6 @@ import javax.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -22,17 +21,14 @@ public class Grade {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private int value;
-    @ToString.Exclude
     @ManyToOne
     @EqualsAndHashCode.Exclude
     @JoinColumn(name = "student_id")
     private Student student;
-    @ToString.Exclude
     @ManyToOne
     @EqualsAndHashCode.Exclude
     @JoinColumn(name = "group_id")
     private Group group;
-    @ToString.Exclude
     @ManyToOne
     @EqualsAndHashCode.Exclude
     @JoinColumn(name = "theme_id")
@@ -61,5 +57,10 @@ public class Grade {
     public Grade withTheme(Theme theme) {
         setTheme(theme);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
     }
 }

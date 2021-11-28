@@ -9,6 +9,8 @@ public interface GroupDao {
 
     Group read(int id);
 
+    Group read(String title);
+
     Group read(Teacher teacher);
 
     boolean update(Group newGroup);

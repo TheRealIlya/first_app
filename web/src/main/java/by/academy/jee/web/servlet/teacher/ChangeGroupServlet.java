@@ -12,34 +12,35 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import static by.academy.jee.web.constant.Constant.APPROVE_MESSAGE;
+import static by.academy.jee.web.constant.Constant.CHANGE_GROUP_JSP_URL;
 import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
-import static by.academy.jee.web.constant.Constant.GROUP_INFO_ERROR_PAGE_JSP_URL;
-import static by.academy.jee.web.constant.Constant.GROUP_INFO_JSP_URL;
+import static by.academy.jee.web.constant.Constant.TEACHER_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.USER;
 
-@Slf4j
-@WebServlet(value = "/groupInfo")
-public class GroupInfoServlet extends HttpServlet {
+@WebServlet(value = "/changeGroup")
+public class ChangeGroupServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        try {
-            Person person = (Person) req.getSession().getAttribute(USER);
-            Service.checkIsNotATeacher(person);
-            Teacher teacher = (Teacher) person;
-            Group group = Service.getGroupByTeacher(teacher);
-            SessionUtil.setSessionGroup(req, group);
-            SessionUtil.setupForward(this, req, resp, GROUP_INFO_JSP_URL);
-        } catch (ServiceException e) {
-            req.setAttribute(ERROR_MESSAGE, e.getMessage());
-            SessionUtil.setupForward(this, req, resp, GROUP_INFO_ERROR_PAGE_JSP_URL);
-        }
+        SessionUtil.setupForward(this, req, resp, CHANGE_GROUP_JSP_URL);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req, resp);
+
+        try {
+            Group oldGroup = SessionUtil.getSessionGroup(req);
+            String newGroupTitle = req.getParameter("title");
+            Person person = (Person) req.getSession().getAttribute(USER);
+            Service.checkIsNotATeacher(person);
+            Teacher teacher = (Teacher) person;
+            Service.changeGroup(oldGroup, newGroupTitle, teacher);
+            req.setAttribute(APPROVE_MESSAGE, "Your group has been changed");
+            SessionUtil.setupForward(this, req, resp, TEACHER_MENU_JSP_URL);
+        } catch (ServiceException e) {
+            req.setAttribute(ERROR_MESSAGE, e.getMessage());
+            SessionUtil.setupForward(this, req, resp, CHANGE_GROUP_JSP_URL);
+        }
     }
 }

@@ -11,5 +11,6 @@
         <p>
         <a href="${pageContext.request.contextPath}/groupInfo">Get group info</a>
         </p>
+        <p style="color: green;">${approveMessage}</p>
     </body>
 </html>
