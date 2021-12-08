@@ -1,29 +1,21 @@
 package by.academy.jee.dao.group;
 
+import by.academy.jee.dao.DaoDataSource;
 import by.academy.jee.dao.RepositoryType;
-import by.academy.jee.exception.DaoException;
-import java.io.IOException;
-import java.util.Properties;
-import lombok.extern.slf4j.Slf4j;
-import static by.academy.jee.constant.Constant.REPOSITORY_PROPERTIES;
-import static by.academy.jee.constant.Constant.REPOSITORY_TYPE;
+import by.academy.jee.util.ThreadLocalForRepositoryType;
 
-@Slf4j
 public class GroupDaoFactory {
 
+    private static DaoDataSource dataSource;
     private static final RepositoryType TYPE;
+    private static final ThreadLocalForRepositoryType repositoryTypeHelper = ThreadLocalForRepositoryType.getInstance();
 
     static {
 
-        Properties repositoryProperties = new Properties();
-        try {
-            repositoryProperties.load(Thread.currentThread()
-                    .getContextClassLoader().getResourceAsStream(REPOSITORY_PROPERTIES));
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new DaoException(e.getMessage(), e);
+        TYPE = repositoryTypeHelper.get();
+        if (TYPE == RepositoryType.POSTGRES) {
+            dataSource = repositoryTypeHelper.getDataSource();
         }
-        TYPE = RepositoryType.getTypeByString(repositoryProperties.getProperty(REPOSITORY_TYPE));
     }
 
     private GroupDaoFactory() {
