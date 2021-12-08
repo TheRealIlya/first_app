@@ -22,14 +22,16 @@ import static by.academy.jee.web.constant.Constant.USER;
 @WebServlet(value = "/groupInfo")
 public class GroupInfoServlet extends HttpServlet {
 
+    private final Service service = Service.getInstance();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         try {
             Person person = (Person) req.getSession().getAttribute(USER);
-            Service.checkIsNotATeacher(person);
+            service.checkIsNotATeacher(person);
             Teacher teacher = (Teacher) person;
-            Group group = Service.getGroupByTeacher(teacher);
+            Group group = service.getGroupByTeacher(teacher);
             SessionUtil.setSessionGroup(req, group);
             SessionUtil.setupForward(this, req, resp, GROUP_INFO_JSP_URL);
         } catch (ServiceException e) {

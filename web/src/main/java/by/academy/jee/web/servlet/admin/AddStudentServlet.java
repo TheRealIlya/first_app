@@ -1,11 +1,8 @@
 package by.academy.jee.web.servlet.admin;
 
-import by.academy.jee.dao.person.PersonDao;
-import by.academy.jee.dao.person.PersonDaoFactory;
 import by.academy.jee.exception.DaoException;
 import by.academy.jee.exception.ServiceException;
 import by.academy.jee.model.person.Student;
-import by.academy.jee.model.person.role.Role;
 import by.academy.jee.web.service.Service;
 import by.academy.jee.web.util.SessionUtil;
 import java.io.IOException;
@@ -24,7 +21,7 @@ import static by.academy.jee.web.constant.Constant.STUDENT_IS_SUCCESSFULLY_ADDED
 @Slf4j
 public class AddStudentServlet extends HttpServlet {
 
-    private static PersonDao<Student> studentDao = PersonDaoFactory.getPersonDao(Role.STUDENT);
+    private final Service service = Service.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -35,9 +32,9 @@ public class AddStudentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         try {
-            Student student = Service.getStudentFromRequest(req);
-            Service.checkIsUserNotExist(student.getLogin());
-            studentDao.create(student);
+            Student student = service.getStudentFromRequest(req);
+            service.checkIsUserNotExist(student.getLogin());
+            service.createStudentAfterChecks(student);
             log.info("Student {} is successfully added", student.getLogin());
             req.setAttribute(APPROVE_MESSAGE, STUDENT_IS_SUCCESSFULLY_ADDED);
             SessionUtil.setupInclude(this, req, resp, ADD_STUDENT_JSP_URL);

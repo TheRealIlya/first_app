@@ -1,16 +1,16 @@
 package by.academy.jee.dao.theme;
 
-import by.academy.jee.dao.EntityManagerHelper;
+import by.academy.jee.exception.DaoException;
 import by.academy.jee.exception.MyNoResultException;
 import by.academy.jee.model.theme.Theme;
-import by.academy.jee.util.DataBaseUtil;
+import by.academy.jee.util.ThreadLocalForEntityManager;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 public class ThemeDaoForJpa implements ThemeDao {
 
-    private final EntityManagerHelper helper = EntityManagerHelper.getInstance();
+    private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
 
     private static volatile ThemeDaoForJpa instance;
 
@@ -33,22 +33,14 @@ public class ThemeDaoForJpa implements ThemeDao {
     @Override
     public Theme read(String title) {
 
-        EntityManager em = null;
-        Theme theme = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
-            theme = getThemeByTitle(title, em);
-            DataBaseUtil.closeEntityManager(em);
+            return getThemeByTitle(title, em);
         } catch (NoResultException e) {
-            DataBaseUtil.closeEntityManager(em);
             throw new MyNoResultException(e.getMessage());
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e, "No theme with such title");
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException("No theme with such title");
         }
-        return theme;
     }
 
     private Theme getThemeByTitle(String title, EntityManager em) {

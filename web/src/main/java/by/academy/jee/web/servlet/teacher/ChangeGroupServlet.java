@@ -21,6 +21,8 @@ import static by.academy.jee.web.constant.Constant.USER;
 @WebServlet(value = "/changeGroup")
 public class ChangeGroupServlet extends HttpServlet {
 
+    private final Service service = Service.getInstance();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         SessionUtil.setupForward(this, req, resp, CHANGE_GROUP_JSP_URL);
@@ -33,9 +35,9 @@ public class ChangeGroupServlet extends HttpServlet {
             Group oldGroup = SessionUtil.getSessionGroup(req);
             String newGroupTitle = req.getParameter("title");
             Person person = (Person) req.getSession().getAttribute(USER);
-            Service.checkIsNotATeacher(person);
+            service.checkIsNotATeacher(person);
             Teacher teacher = (Teacher) person;
-            Service.changeGroup(oldGroup, newGroupTitle, teacher);
+            service.changeGroup(oldGroup, newGroupTitle, teacher);
             req.setAttribute(APPROVE_MESSAGE, "Your group has been changed");
             SessionUtil.setupForward(this, req, resp, TEACHER_MENU_JSP_URL);
         } catch (ServiceException e) {
