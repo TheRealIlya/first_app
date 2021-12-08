@@ -1,18 +1,17 @@
 package by.academy.jee.dao.group;
 
-import by.academy.jee.dao.EntityManagerHelper;
+import by.academy.jee.exception.DaoException;
 import by.academy.jee.exception.MyNoResultException;
 import by.academy.jee.model.group.Group;
-import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.Teacher;
-import by.academy.jee.util.DataBaseUtil;
+import by.academy.jee.util.ThreadLocalForEntityManager;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 public class GroupDaoForJpa implements GroupDao {
 
-    private final EntityManagerHelper helper = EntityManagerHelper.getInstance();
+    private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
 
     private static volatile GroupDaoForJpa instance;
 
@@ -41,59 +40,36 @@ public class GroupDaoForJpa implements GroupDao {
     @Override
     public Group read(int id) {
 
-        EntityManager em = null;
-        Group group = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
-            group = em.find(Group.class, id);
-            DataBaseUtil.closeEntityManager(em);
+            return em.find(Group.class, id);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException(e.getMessage());
         }
-        return group;
     }
 
     @Override
     public Group read(String title) {
-        EntityManager em = null;
-        Group group = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
-            group = getGroupByTitle(title, em);
-            DataBaseUtil.closeEntityManager(em);
+            return getGroupByTitle(title, em);
         } catch (NoResultException e) {
-            DataBaseUtil.closeEntityManager(em);
             throw new MyNoResultException(e.getMessage());
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException(e.getMessage());
         }
-        return group;
     }
 
     @Override
     public Group read(Teacher teacher) {
-        EntityManager em = null;
-        Group group = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
-            group = getGroupByTeacher(teacher, em);
-            DataBaseUtil.closeEntityManager(em);
+            return getGroupByTeacher(teacher, em);
         } catch (NoResultException e) {
-            DataBaseUtil.closeEntityManager(em);
             throw new MyNoResultException(e.getMessage());
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException(e.getMessage());
         }
-        return group;
     }
 
     @Override
@@ -103,19 +79,14 @@ public class GroupDaoForJpa implements GroupDao {
 
     private boolean save(Group group) {
 
-        EntityManager em = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
             if (group.getId() == null) {
                 em.persist(group);
             }
             em.merge(group);
-            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException(e.getMessage());
         }
         return true;
     }

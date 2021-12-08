@@ -19,6 +19,8 @@ import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
 @WebServlet(value = "/createGrade")
 public class CreateGradeServlet extends HttpServlet {
 
+    private final Service service = Service.getInstance();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         SessionUtil.setupForward(this, req, resp, CREATE_GRADE_JSP_URL);
@@ -32,7 +34,7 @@ public class CreateGradeServlet extends HttpServlet {
             Group group = SessionUtil.getSessionGroup(req);
             String themeString = req.getParameter("themeString");
             String gradeString = req.getParameter("gradeString");
-            Service.createGrade(studentLogin, group, themeString, gradeString);
+            service.createGrade(studentLogin, group, themeString, gradeString);
             log.info("Grade has been added");
             req.setAttribute(APPROVE_MESSAGE, "Grade has been added");
             SessionUtil.setupInclude(this, req, resp, CREATE_GRADE_JSP_URL);

@@ -1,11 +1,10 @@
 package by.academy.jee.dao.person.student;
 
-import by.academy.jee.dao.EntityManagerHelper;
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.exception.DaoException;
 import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.role.Role;
-import by.academy.jee.util.DataBaseUtil;
+import by.academy.jee.util.ThreadLocalForEntityManager;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -17,8 +16,8 @@ import static by.academy.jee.constant.Constant.SELECT_ALL_STUDENTS_JPA;
 @Slf4j
 public class StudentDaoForJpa implements PersonDao<Student> {
 
-    private final EntityManagerHelper helper = EntityManagerHelper.getInstance();
     private final String SELECT_ONE_STUDENT = SELECT_ALL_STUDENTS_JPA + JPA_LOGIN_FILTER;
+    private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
 
     private static volatile StudentDaoForJpa instance;
 
@@ -45,37 +44,23 @@ public class StudentDaoForJpa implements PersonDao<Student> {
     @Override
     public Student read(int id) {
 
-        EntityManager em = null;
-        Student student = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
-            student = em.find(Student.class, id);
-            DataBaseUtil.closeEntityManager(em);
+            return em.find(Student.class, id);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e, "No student with id + " + id + " in database");
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException("No student with id + " + id + " in database");
         }
-        return student;
     }
 
     @Override
     public Student read(String name) {
 
-        EntityManager em = null;
-        Student student = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
-            student = getStudentByName(name, em);
-            DataBaseUtil.closeEntityManager(em);
+            return getStudentByName(name, em);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e, "No such student in database");
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException(e.getMessage());
         }
-        return student;
     }
 
     @Override
@@ -86,17 +71,12 @@ public class StudentDaoForJpa implements PersonDao<Student> {
     @Override
     public boolean delete(String name) {
 
-        EntityManager em = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
             Student student = read(name);
             em.remove(student);
-            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException(e.getMessage());
         }
         return true;
     }
@@ -104,36 +84,24 @@ public class StudentDaoForJpa implements PersonDao<Student> {
     @Override
     public List<Student> readAll() {
 
-        EntityManager em = null;
-        List<Student> students = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
-            students = getAllStudents(em);
-            DataBaseUtil.closeEntityManager(em);
+            return getAllStudents(em);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException(e.getMessage());
         }
-        return students;
     }
 
     private boolean save(Student student) {
 
-        EntityManager em = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
             if (student.getId() == null) {
                 em.persist(student);
             }
             em.merge(student);
-            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException(e.getMessage());
         }
         return true;
     }

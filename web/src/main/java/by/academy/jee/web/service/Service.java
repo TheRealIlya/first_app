@@ -1,5 +1,6 @@
 package by.academy.jee.web.service;
 
+import by.academy.jee.dao.RepositoryType;
 import by.academy.jee.dao.group.GroupDao;
 import by.academy.jee.dao.group.GroupDaoFactory;
 import by.academy.jee.dao.person.PersonDao;
@@ -18,16 +19,17 @@ import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.person.role.Role;
 import by.academy.jee.model.theme.Theme;
+import by.academy.jee.util.DataBaseUtil;
 import by.academy.jee.util.Initializer;
 import by.academy.jee.util.PasswordHasher;
 import by.academy.jee.util.SalaryGenerator;
-import by.academy.jee.web.util.SessionUtil;
+import by.academy.jee.util.ThreadLocalForEntityManager;
+import by.academy.jee.util.ThreadLocalForRepositoryType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import static by.academy.jee.web.constant.Constant.ADMIN;
 import static by.academy.jee.web.constant.Constant.ADMIN_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.AGE;
@@ -53,25 +55,42 @@ import static by.academy.jee.web.constant.Constant.TEACHER_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.USER_IS_ALREADY_EXIST;
 import static by.academy.jee.web.constant.Constant.USER_NAME;
 
+@Slf4j
 public class Service {
 
-    private static final Logger log = LoggerFactory.getLogger(Service.class);
+    private static final PersonDao<Admin> adminDao = PersonDaoFactory.getPersonDao(Role.ADMIN);
+    private static final PersonDao<Teacher> teacherDao = PersonDaoFactory.getPersonDao(Role.TEACHER);
+    private static final PersonDao<Student> studentDao = PersonDaoFactory.getPersonDao(Role.STUDENT);
+    private static final GroupDao groupDao = GroupDaoFactory.getGroupDao();
+    private static final ThemeDao themeDao = ThemeDaoFactory.getThemeDao();
+    private static final RepositoryType TYPE;
+    private static final ThreadLocalForRepositoryType repositoryTypeHelper = ThreadLocalForRepositoryType.getInstance();
+    private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
 
-    private static PersonDao<Admin> adminDao = PersonDaoFactory.getPersonDao(Role.ADMIN);
-    private static PersonDao<Teacher> teacherDao = PersonDaoFactory.getPersonDao(Role.TEACHER);
-    private static PersonDao<Student> studentDao = PersonDaoFactory.getPersonDao(Role.STUDENT);
-    private static GroupDao groupDao = GroupDaoFactory.getGroupDao();
-    private static ThemeDao themeDao = ThemeDaoFactory.getThemeDao();
-
-    private Service() {
-        //util class
-    }
+    private static volatile Service instance;
 
     static {
         Initializer.initDatabase();
+        TYPE = repositoryTypeHelper.get();
     }
 
-    public static Student getStudentFromRequest(HttpServletRequest req) throws ServiceException {
+    private Service() {
+        //singleton
+    }
+
+    public static Service getInstance() {
+
+        if (instance == null) {
+            synchronized (Service.class) {
+                if (instance == null) {
+                    instance = new Service();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public Student getStudentFromRequest(HttpServletRequest req) throws ServiceException {
 
         PersonContext context = getPersonContextFromRequest(req);
         return new Student()
@@ -83,7 +102,35 @@ public class Service {
                 .withRole(Role.STUDENT);
     }
 
-    public static Teacher getTeacherFromRequest(HttpServletRequest req) throws ServiceException {
+    public void createStudentAfterChecks(Student student) throws ServiceException {
+
+        try {
+            beginTransaction();
+            studentDao.create(student);
+        } catch (DaoException e) {
+            DataBaseUtil.rollBack(emHelper.get());
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        } finally {
+            closeTransaction();
+        }
+    }
+
+    public void createTeacherAfterChecks(Teacher teacher) throws ServiceException {
+
+        try {
+            beginTransaction();
+            teacherDao.create(teacher);
+        } catch (DaoException e) {
+            DataBaseUtil.rollBack(emHelper.get());
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        } finally {
+            closeTransaction();
+        }
+    }
+
+    public Teacher getTeacherFromRequest(HttpServletRequest req) throws ServiceException {
 
         PersonContext context = getPersonContextFromRequest(req);
         String minSalaryString = req.getParameter(MIN_SALARY);
@@ -111,8 +158,9 @@ public class Service {
                 .withRole(Role.TEACHER);
     }
 
-    public static void checkIsUserNotExist(String login) throws ServiceException {
+    public void checkIsUserNotExist(String login) throws ServiceException {
 
+        beginTransaction();
         try {
             adminDao.read(login);
         } catch (DaoException e) {
@@ -122,17 +170,21 @@ public class Service {
                 try {
                     studentDao.read(login);
                 } catch (DaoException g) {
+                    closeTransaction();
                     return;
                 }
             }
         }
+        DataBaseUtil.rollBack(emHelper.get());
+        closeTransaction();
         log.error("Error - attempt to add already existed user {}", login);
         throw new ServiceException(USER_IS_ALREADY_EXIST);
     }
 
-    public static Person getUserIfExist(String login) throws ServiceException {
+    public Person getUserIfExist(String login) throws ServiceException {
 
         Person user;
+        beginTransaction();
         try {
             user = adminDao.read(login);
         } catch (DaoException e) {
@@ -142,15 +194,18 @@ public class Service {
                 try {
                     user = studentDao.read(login);
                 } catch (DaoException g) {
+                    DataBaseUtil.rollBack(emHelper.get());
                     log.error("Error - no user {} in database", login);
                     throw new ServiceException(NO_SUCH_USER_IN_DATABASE);
                 }
             }
+        } finally {
+            closeTransaction();
         }
         return user;
     }
 
-    public static String getMenuUrlAfterLogin(String roleString) throws ServiceException {
+    public String getMenuUrlAfterLogin(String roleString) throws ServiceException {
 
         switch (roleString) {
             case ADMIN:
@@ -165,7 +220,7 @@ public class Service {
         }
     }
 
-    public static void checkPassword(String attemptedPassword, Person user) throws ServiceException {
+    public void checkPassword(String attemptedPassword, Person user) throws ServiceException {
 
         boolean isCorrectPassword = PasswordHasher.authenticate(attemptedPassword, user.getPwd(), user.getSalt());
         if (!isCorrectPassword) {
@@ -174,7 +229,7 @@ public class Service {
         }
     }
 
-    public static String getAverageSalaryByMonths(Teacher teacher, String firstMonthString, String lastMonthString)
+    public String getAverageSalaryByMonths(Teacher teacher, String firstMonthString, String lastMonthString)
             throws ServiceException {
 
         List<Integer> months = new ArrayList<>();
@@ -195,7 +250,7 @@ public class Service {
         }
     }
 
-    public static void checkIsNotATeacher(Person person) throws ServiceException {
+    public void checkIsNotATeacher(Person person) throws ServiceException {
 
         if (!Role.TEACHER.equals(person.getRole())) {
             log.error("Error - user {} is not a teacher", person.getLogin());
@@ -203,20 +258,25 @@ public class Service {
         }
     }
 
-    public static Group getGroupByTeacher(Teacher teacher) throws ServiceException {
+    public Group getGroupByTeacher(Teacher teacher) throws ServiceException {
 
+        beginTransaction();
         try {
             return groupDao.read(teacher);
         } catch (MyNoResultException e) {
+            DataBaseUtil.rollBack(emHelper.get());
             log.error(e.getMessage());
             throw new ServiceException("Error - you don't have a group");
         } catch (DaoException e) {
+            DataBaseUtil.rollBack(emHelper.get());
             log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
+        } finally {
+            closeTransaction();
         }
     }
 
-    public static void createGrade(String studentLogin, Group group, String themeString, String gradeString)
+    public void createGrade(String studentLogin, Group group, String themeString, String gradeString)
             throws ServiceException {
 
         try {
@@ -224,12 +284,15 @@ public class Service {
             if (gradeValue < 1 || gradeValue > 10) {
                 throw new NumberFormatException();
             }
+            beginTransaction();
             Student student = studentDao.read(studentLogin);
             if (!group.getStudents().contains(student)) {
+                DataBaseUtil.rollBack(emHelper.get());
                 throw new ServiceException("Error - no such student in current group");
             }
             Theme theme = themeDao.read(themeString);
             if (!group.getThemes().contains(theme)) {
+                DataBaseUtil.rollBack(emHelper.get());
                 throw new ServiceException("Error - this group doesn't contain such theme");
             }
             Grade grade = new Grade()
@@ -240,15 +303,19 @@ public class Service {
             student.getGrades().add(grade);
             studentDao.update(student);
         } catch (NumberFormatException e) {
+            DataBaseUtil.rollBack(emHelper.get());
             log.error(ERROR_WRONG_GRADE_FORMAT);
             throw new ServiceException(ERROR_WRONG_GRADE_FORMAT);
         } catch (MyNoResultException | DaoException e) {
+            DataBaseUtil.rollBack(emHelper.get());
             log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
+        } finally {
+            closeTransaction();
         }
     }
 
-    public static void changeGroup(Group oldGroup, String newGroupTitle, Teacher teacher) throws ServiceException {
+    public void changeGroup(Group oldGroup, String newGroupTitle, Teacher teacher) throws ServiceException {
 
         try {
             if (newGroupTitle == null || newGroupTitle.equals("")) {
@@ -258,8 +325,10 @@ public class Service {
                 setTeacherForGroup(oldGroup, null);
                 return;
             }
+            beginTransaction();
             Group newGroup = groupDao.read(newGroupTitle);
             if (newGroup.getTeacher() != null) {
+                DataBaseUtil.rollBack(emHelper.get());
                 throw new ServiceException("Error - this group already has a teacher");
             }
             if (oldGroup != null) {
@@ -267,18 +336,21 @@ public class Service {
             }
             setTeacherForGroup(newGroup, teacher);
         } catch (MyNoResultException | DaoException e) {
+            DataBaseUtil.rollBack(emHelper.get());
             log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
+        } finally {
+            closeTransaction();
         }
     }
 
-    private static void setTeacherForGroup(Group group, Teacher teacher) throws DaoException {
+    private void setTeacherForGroup(Group group, Teacher teacher) throws DaoException {
 
         group.setTeacher(teacher);
         groupDao.update(group);
     }
 
-    private static PersonContext getPersonContextFromRequest(HttpServletRequest req) throws ServiceException {
+    private PersonContext getPersonContextFromRequest(HttpServletRequest req) throws ServiceException {
 
         String userName = req.getParameter(LOGIN);
         String password = req.getParameter(PASSWORD);
@@ -302,7 +374,7 @@ public class Service {
                 .build();
     }
 
-    private static String calculateAverageSalaryByMonths(Teacher teacher, List<Integer> months) {
+    private String calculateAverageSalaryByMonths(Teacher teacher, List<Integer> months) {
 
         double sum = 0;
         int divider = 0;
@@ -316,5 +388,36 @@ public class Service {
         double averageSalary = sum / divider;
         String result = String.format("%.2f", averageSalary).replace(',', '.');
         return result;
+    }
+
+    private void beginTransaction() {
+
+        switch (TYPE) {
+            case MEMORY:
+
+            case POSTGRES:
+
+            case JPA:
+            default:
+                emHelper.set();
+                emHelper.get().getTransaction().begin();
+                log.info("TXX");
+        }
+    }
+
+    private void closeTransaction() {
+
+        switch (TYPE) {
+            case MEMORY:
+
+            case POSTGRES:
+
+            case JPA:
+            default:
+                DataBaseUtil.closeEntityManager(emHelper.get());
+                DataBaseUtil.finallyCloseEntityManager(emHelper.get());
+                emHelper.remove();
+                log.info("TXZ");
+        }
     }
 }

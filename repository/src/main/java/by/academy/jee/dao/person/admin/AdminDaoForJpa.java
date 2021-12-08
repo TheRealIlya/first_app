@@ -1,10 +1,10 @@
 package by.academy.jee.dao.person.admin;
 
-import by.academy.jee.dao.EntityManagerHelper;
 import by.academy.jee.dao.person.PersonDao;
+import by.academy.jee.exception.DaoException;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.role.Role;
-import by.academy.jee.util.DataBaseUtil;
+import by.academy.jee.util.ThreadLocalForEntityManager;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -16,7 +16,7 @@ import static by.academy.jee.constant.Constant.SELECT_ALL_ADMINS_JPA;
 public class AdminDaoForJpa implements PersonDao<Admin> {
 
     private final String SELECT_ONE_ADMIN = SELECT_ALL_ADMINS_JPA + JPA_LOGIN_FILTER;
-    private final EntityManagerHelper helper = EntityManagerHelper.getInstance();
+    private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
 
     private static volatile AdminDaoForJpa instance;
 
@@ -44,37 +44,23 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
     @Override
     public Admin read(int id) {
 
-        EntityManager em = null;
-        Admin admin = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
-            admin = em.find(Admin.class, id);
-            DataBaseUtil.closeEntityManager(em);
+            return em.find(Admin.class, id);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException(e.getMessage());
         }
-        return admin;
     }
 
     @Override
     public Admin read(String name) {
 
-        EntityManager em = null;
-        Admin admin = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
-            admin = getAdminByName(name, em);
-            DataBaseUtil.closeEntityManager(em);
+            return getAdminByName(name, em);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException(e.getMessage());
         }
-        return admin;
     }
 
     @Override
@@ -85,17 +71,12 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
     @Override
     public boolean delete(String name) {
 
-        EntityManager em = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
             Admin admin = read(name);
             em.remove(admin);
-            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException(e.getMessage());
         }
         return true;
     }
@@ -103,36 +84,24 @@ public class AdminDaoForJpa implements PersonDao<Admin> {
     @Override
     public List<Admin> readAll() {
 
-        EntityManager em = null;
-        List<Admin> admins = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
-            admins = getAllAdmins(em);
-            DataBaseUtil.closeEntityManager(em);
+            return getAllAdmins(em);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException(e.getMessage());
         }
-        return admins;
     }
 
     private boolean save(Admin admin) {
 
-        EntityManager em = null;
+        EntityManager em = emHelper.get();
         try {
-            em = helper.getEntityManager();
-            em.getTransaction().begin();
             if (admin.getId() == null) {
                 em.persist(admin);
             }
             em.merge(admin);
-            DataBaseUtil.closeEntityManager(em);
         } catch (Exception e) {
-            DataBaseUtil.rollBack(em, e);
-        } finally {
-            DataBaseUtil.finallyCloseEntityManager(em);
+            throw new DaoException(e.getMessage());
         }
         return true;
     }
