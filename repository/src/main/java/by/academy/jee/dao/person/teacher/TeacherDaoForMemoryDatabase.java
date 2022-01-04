@@ -26,9 +26,9 @@ public class TeacherDaoForMemoryDatabase implements PersonDao<Teacher> {
     }
 
     @Override
-    public boolean create(Teacher teacher) {
+    public Teacher create(Teacher teacher) {
         Database.getInstance().addTeacher(teacher);
-        return true;
+        return teacher;
     }
 
     @Override
@@ -42,8 +42,8 @@ public class TeacherDaoForMemoryDatabase implements PersonDao<Teacher> {
     }
 
     @Override
-    public boolean update(Teacher newTeacher) {
-        return false; //TODO
+    public Teacher update(Teacher newTeacher) {
+        return null; //TODO
     }
 
     @Override

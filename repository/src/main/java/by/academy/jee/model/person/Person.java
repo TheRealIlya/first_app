@@ -1,12 +1,10 @@
 package by.academy.jee.model.person;
 
+import by.academy.jee.model.AbstractEntity;
 import by.academy.jee.model.person.role.Role;
 
 import java.util.Objects;
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,10 +12,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class Person {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public abstract class Person extends AbstractEntity {
+
     private String login;
     @Column(name = "password")
     private byte[] pwd;
@@ -39,12 +35,12 @@ public abstract class Person {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
-        return Objects.equals(id, person.id);
+        return Objects.equals(getId(), person.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(getId());
     }
 
     public String getStringForJsp() {

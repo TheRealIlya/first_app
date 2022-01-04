@@ -26,9 +26,9 @@ public class AdminDaoForMemoryDatabase implements PersonDao<Admin> {
     }
 
     @Override
-    public boolean create(Admin admin) {
+    public Admin create(Admin admin) {
         Database.getInstance().addAdmin(admin);
-        return true;
+        return admin;
     }
 
     @Override
@@ -42,8 +42,8 @@ public class AdminDaoForMemoryDatabase implements PersonDao<Admin> {
     }
 
     @Override
-    public boolean update(Admin newAdmin) {
-        return false; //TODO
+    public Admin update(Admin newAdmin) {
+        return null; //TODO
     }
 
     @Override

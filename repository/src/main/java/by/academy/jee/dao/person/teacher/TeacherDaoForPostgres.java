@@ -58,7 +58,7 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
     }
 
     @Override
-    public boolean create(Teacher teacher) {
+    public Teacher create(Teacher teacher) {
 
         Connection con = null;
         PreparedStatement ps1 = null;
@@ -89,7 +89,7 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
                 }
             }
             con.commit();
-            return true;
+            return teacher;
         } catch (SQLException e) {
             DataBaseUtil.rollBack(con);
             log.error(e.getMessage(), e);
@@ -125,8 +125,8 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
     }
 
     @Override
-    public boolean update(Teacher newT) {
-        return false; //TODO
+    public Teacher update(Teacher newT) {
+        return null; //TODO
     }
 
     @Override

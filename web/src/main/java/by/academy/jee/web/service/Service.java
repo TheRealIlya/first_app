@@ -58,13 +58,13 @@ import static by.academy.jee.web.constant.Constant.USER_NAME;
 @Slf4j
 public class Service {
 
-    private static final PersonDao<Admin> adminDao = PersonDaoFactory.getPersonDao(Role.ADMIN);
-    private static final PersonDao<Teacher> teacherDao = PersonDaoFactory.getPersonDao(Role.TEACHER);
-    private static final PersonDao<Student> studentDao = PersonDaoFactory.getPersonDao(Role.STUDENT);
-    private static final GroupDao groupDao = GroupDaoFactory.getGroupDao();
-    private static final ThemeDao themeDao = ThemeDaoFactory.getThemeDao();
     private static final RepositoryType TYPE;
     private static final ThreadLocalForRepositoryType repositoryTypeHelper = ThreadLocalForRepositoryType.getInstance();
+    private final PersonDao<Admin> adminDao = PersonDaoFactory.getPersonDao(Role.ADMIN);
+    private final PersonDao<Teacher> teacherDao = PersonDaoFactory.getPersonDao(Role.TEACHER);
+    private final PersonDao<Student> studentDao = PersonDaoFactory.getPersonDao(Role.STUDENT);
+    private final GroupDao groupDao = GroupDaoFactory.getGroupDao();
+    private final ThemeDao themeDao = ThemeDaoFactory.getThemeDao();
     private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
 
     private static volatile Service instance;

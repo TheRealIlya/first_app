@@ -13,5 +13,5 @@ public interface GroupDao {
 
     Group read(Teacher teacher);
 
-    boolean update(Group newGroup);
+    Group update(Group newGroup);
 }

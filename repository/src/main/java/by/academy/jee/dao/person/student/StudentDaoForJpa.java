@@ -1,10 +1,10 @@
 package by.academy.jee.dao.person.student;
 
+import by.academy.jee.dao.common.CommonDaoForJpa;
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.exception.DaoException;
 import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.role.Role;
-import by.academy.jee.util.ThreadLocalForEntityManager;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -14,10 +14,9 @@ import static by.academy.jee.constant.Constant.JPA_LOGIN_FILTER;
 import static by.academy.jee.constant.Constant.SELECT_ALL_STUDENTS_JPA;
 
 @Slf4j
-public class StudentDaoForJpa implements PersonDao<Student> {
+public class StudentDaoForJpa extends CommonDaoForJpa<Student> implements PersonDao<Student> {
 
     private final String SELECT_ONE_STUDENT = SELECT_ALL_STUDENTS_JPA + JPA_LOGIN_FILTER;
-    private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
 
     private static volatile StudentDaoForJpa instance;
 
@@ -26,6 +25,7 @@ public class StudentDaoForJpa implements PersonDao<Student> {
     }
 
     public static StudentDaoForJpa getInstance() {
+
         if (instance == null) {
             synchronized ((StudentDaoForJpa.class)) {
                 if (instance == null) {
@@ -34,22 +34,6 @@ public class StudentDaoForJpa implements PersonDao<Student> {
             }
         }
         return instance;
-    }
-
-    @Override
-    public boolean create(Student student) {
-        return save(student);
-    }
-
-    @Override
-    public Student read(int id) {
-
-        EntityManager em = emHelper.get();
-        try {
-            return em.find(Student.class, id);
-        } catch (Exception e) {
-            throw new DaoException("No student with id + " + id + " in database");
-        }
     }
 
     @Override
@@ -64,24 +48,6 @@ public class StudentDaoForJpa implements PersonDao<Student> {
     }
 
     @Override
-    public boolean update(Student newStudent) {
-        return save(newStudent);
-    }
-
-    @Override
-    public boolean delete(String name) {
-
-        EntityManager em = emHelper.get();
-        try {
-            Student student = read(name);
-            em.remove(student);
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
-        return true;
-    }
-
-    @Override
     public List<Student> readAll() {
 
         EntityManager em = emHelper.get();
@@ -90,20 +56,6 @@ public class StudentDaoForJpa implements PersonDao<Student> {
         } catch (Exception e) {
             throw new DaoException(e.getMessage());
         }
-    }
-
-    private boolean save(Student student) {
-
-        EntityManager em = emHelper.get();
-        try {
-            if (student.getId() == null) {
-                em.persist(student);
-            }
-            em.merge(student);
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
-        return true;
     }
 
     private Student getStudentByName(String name, EntityManager em) {

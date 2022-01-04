@@ -1,17 +1,15 @@
 package by.academy.jee.dao.group;
 
+import by.academy.jee.dao.common.CommonDaoForJpa;
 import by.academy.jee.exception.DaoException;
 import by.academy.jee.exception.MyNoResultException;
 import by.academy.jee.model.group.Group;
 import by.academy.jee.model.person.Teacher;
-import by.academy.jee.util.ThreadLocalForEntityManager;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
-public class GroupDaoForJpa implements GroupDao {
-
-    private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
+public class GroupDaoForJpa extends CommonDaoForJpa<Group> implements GroupDao {
 
     private static volatile GroupDaoForJpa instance;
 
@@ -29,23 +27,6 @@ public class GroupDaoForJpa implements GroupDao {
             }
         }
         return instance;
-    }
-
-    @Override
-    public Group create(Group group) {
-        save(group);
-        return group;
-    }
-
-    @Override
-    public Group read(int id) {
-
-        EntityManager em = emHelper.get();
-        try {
-            return em.find(Group.class, id);
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
     }
 
     @Override
@@ -70,25 +51,6 @@ public class GroupDaoForJpa implements GroupDao {
         } catch (Exception e) {
             throw new DaoException(e.getMessage());
         }
-    }
-
-    @Override
-    public boolean update(Group newGroup) {
-        return save(newGroup);
-    }
-
-    private boolean save(Group group) {
-
-        EntityManager em = emHelper.get();
-        try {
-            if (group.getId() == null) {
-                em.persist(group);
-            }
-            em.merge(group);
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
-        return true;
     }
 
     private Group getGroupByTeacher(Teacher teacher, EntityManager em) {

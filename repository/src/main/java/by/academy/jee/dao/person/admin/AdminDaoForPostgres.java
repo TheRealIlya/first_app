@@ -51,7 +51,7 @@ public class AdminDaoForPostgres implements PersonDao<Admin> {
     }
 
     @Override
-    public boolean create(Admin admin) {
+    public Admin create(Admin admin) {
 
         try (Connection con = dataSource.getConnection();
              PreparedStatement ps = con.prepareStatement(INSERT_ADMIN_POSTGRES)) {
@@ -64,7 +64,7 @@ public class AdminDaoForPostgres implements PersonDao<Admin> {
         } catch (SQLException e) {
             logAndThrowMyException(e);
         }
-        return true;
+        return admin;
     }
 
     @Override
@@ -92,8 +92,8 @@ public class AdminDaoForPostgres implements PersonDao<Admin> {
     }
 
     @Override
-    public boolean update(Admin newT) {
-        return false; //TODO
+    public Admin update(Admin newT) {
+        return null; //TODO
     }
 
     @Override

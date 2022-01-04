@@ -1,5 +1,6 @@
 package by.academy.jee.model.group;
 
+import by.academy.jee.model.AbstractEntity;
 import by.academy.jee.model.grade.Grade;
 import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.Teacher;
@@ -24,10 +25,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "group_s")
-public class Group {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Group extends AbstractEntity {
+
     private String title;
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Teacher teacher;
@@ -53,11 +52,11 @@ public class Group {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Group group = (Group) o;
-        return Objects.equals(id, group.id);
+        return Objects.equals(getId(), group.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(getId());
     }
 }
