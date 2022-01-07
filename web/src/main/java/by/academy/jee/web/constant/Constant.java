@@ -54,4 +54,9 @@ public class Constant {
     public static final String SUCCESSFULLY_LOGGED_OUT = "Successfully logged out!";
     public static final String USER_INFO_JSP_URL = "/jsp/common/userInfo.jsp";
     public static final String USER = "user";
+    public static final String ADMIN_PREFIX = "adminDaoFor";
+    public static final String TEACHER_PREFIX = "teacherDaoFor";
+    public static final String STUDENT_PREFIX = "studentDaoFor";
+    public static final String GROUP_PREFIX = "groupDaoFor";
+    public static final String THEME_PREFIX = "themeDaoFor";
 }

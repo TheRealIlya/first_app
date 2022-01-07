@@ -4,12 +4,11 @@ import by.academy.jee.exception.ServiceException;
 import by.academy.jee.model.group.Group;
 import by.academy.jee.model.person.Person;
 import by.academy.jee.model.person.Teacher;
-import by.academy.jee.web.service.Service;
+import by.academy.jee.web.servlet.AbstractServlet;
 import by.academy.jee.web.util.SessionUtil;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +19,7 @@ import static by.academy.jee.web.constant.Constant.USER;
 
 @Slf4j
 @WebServlet(value = "/groupInfo")
-public class GroupInfoServlet extends HttpServlet {
-
-    private final Service service = Service.getInstance();
+public class GroupInfoServlet extends AbstractServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

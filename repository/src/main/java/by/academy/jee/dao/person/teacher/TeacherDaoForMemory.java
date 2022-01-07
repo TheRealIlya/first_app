@@ -10,23 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class TeacherDaoForMemory implements PersonDao<Teacher> {
 
-    private static volatile TeacherDaoForMemory instance;
-
-    private TeacherDaoForMemory() {
-        //singleton
-    }
-
-    public static TeacherDaoForMemory getInstance() {
-        if (instance == null) {
-            synchronized (TeacherDaoForMemory.class) {
-                if (instance == null) {
-                    instance = new TeacherDaoForMemory();
-                }
-            }
-        }
-        return instance;
-    }
-
     @Override
     public Teacher create(Teacher teacher) {
         Database.getInstance().addTeacher(teacher);

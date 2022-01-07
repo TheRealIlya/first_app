@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class DaoDataSource implements DataSource {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(DaoDataSource.class);
-    public final String url;
+    private final String url;
     private final String user;
     private final String password;
     private final String driver;

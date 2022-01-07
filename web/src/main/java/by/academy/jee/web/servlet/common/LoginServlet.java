@@ -3,14 +3,12 @@ package by.academy.jee.web.servlet.common;
 import by.academy.jee.exception.ServiceException;
 import by.academy.jee.model.person.Person;
 import by.academy.jee.web.service.Service;
+import by.academy.jee.web.servlet.AbstractServlet;
 import by.academy.jee.web.util.SessionUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -22,9 +20,7 @@ import static by.academy.jee.web.constant.Constant.USER_NAME;
 
 @Slf4j
 @WebServlet(value = {"/", "/login"})
-public class LoginServlet extends HttpServlet {
-
-    private final Service service = Service.getInstance();
+public class LoginServlet extends AbstractServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

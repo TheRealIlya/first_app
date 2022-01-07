@@ -2,11 +2,8 @@ package by.academy.jee.web.service;
 
 import by.academy.jee.dao.RepositoryType;
 import by.academy.jee.dao.group.GroupDao;
-import by.academy.jee.dao.group.GroupDaoFactory;
 import by.academy.jee.dao.person.PersonDao;
-import by.academy.jee.dao.person.PersonDaoFactory;
 import by.academy.jee.dao.theme.ThemeDao;
-import by.academy.jee.dao.theme.ThemeDaoFactory;
 import by.academy.jee.exception.DaoException;
 import by.academy.jee.exception.MyNoResultException;
 import by.academy.jee.exception.ServiceException;
@@ -20,26 +17,26 @@ import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.person.role.Role;
 import by.academy.jee.model.theme.Theme;
 import by.academy.jee.util.DataBaseUtil;
-import by.academy.jee.util.Initializer;
 import by.academy.jee.util.PasswordHasher;
 import by.academy.jee.util.SalaryGenerator;
 import by.academy.jee.util.ThreadLocalForEntityManager;
-import by.academy.jee.util.ThreadLocalForRepositoryType;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import static by.academy.jee.web.constant.Constant.ADMIN;
 import static by.academy.jee.web.constant.Constant.ADMIN_MENU_JSP_URL;
+import static by.academy.jee.web.constant.Constant.ADMIN_PREFIX;
 import static by.academy.jee.web.constant.Constant.AGE;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_GRADE_FORMAT;
+import static by.academy.jee.web.constant.Constant.GROUP_PREFIX;
 import static by.academy.jee.web.constant.Constant.SALARIES_MUST_BE_NUMBERS;
 import static by.academy.jee.web.constant.Constant.ERROR_AGE_MUST_BE_A_NUMBER;
 import static by.academy.jee.web.constant.Constant.ERROR_INCORRECT_ROLE;
@@ -56,60 +53,56 @@ import static by.academy.jee.web.constant.Constant.NO_SUCH_USER_IN_DATABASE;
 import static by.academy.jee.web.constant.Constant.PASSWORD;
 import static by.academy.jee.web.constant.Constant.STUDENT;
 import static by.academy.jee.web.constant.Constant.STUDENT_MENU_JSP_URL;
+import static by.academy.jee.web.constant.Constant.STUDENT_PREFIX;
 import static by.academy.jee.web.constant.Constant.TEACHER;
 import static by.academy.jee.web.constant.Constant.TEACHER_MENU_JSP_URL;
+import static by.academy.jee.web.constant.Constant.TEACHER_PREFIX;
+import static by.academy.jee.web.constant.Constant.THEME_PREFIX;
 import static by.academy.jee.web.constant.Constant.USER_IS_ALREADY_EXIST;
 import static by.academy.jee.web.constant.Constant.USER_NAME;
 
 @Slf4j
+@Component
+@PropertySource("classpath:repository.properties")
 public class Service {
 
-    private static final String ADMIN_PREFIX = "adminDaoFor";
-    private static final String TEACHER_PREFIX = "teacherDaoFor";
-    private static final String STUDENT_PREFIX = "studentDaoFor";
-    private static final String GROUP_PREFIX = "groupDaoFor";
-    private static final String THEME_PREFIX = "themeDaoFor";
-
+    private final String type;
     private final RepositoryType TYPE;
-    private static final ConfigurableApplicationContext ctx;
-    private final ThreadLocalForRepositoryType repositoryTypeHelper;
-    private final PersonDao<Admin> adminDao;
-    private final PersonDao<Teacher> teacherDao;
-    private final PersonDao<Student> studentDao;
-    private final GroupDao groupDao;
-    private final ThemeDao themeDao;
+
+    private PersonDao<Admin> adminDao;
+    private PersonDao<Teacher> teacherDao;
+    private PersonDao<Student> studentDao;
+    @Autowired
+    private Map<String, PersonDao> personDaoMap;
+
+    private GroupDao groupDao;
+    @Autowired
+    private Map<String, GroupDao> groupDaoMap;
+
+    private ThemeDao themeDao;
+    @Autowired
+    private Map<String, ThemeDao> themeDaoMap;
+
     private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
 
-    private static volatile Service instance;
-
-    static {
-        Initializer.initDatabase();
-        ctx = new AnnotationConfigApplicationContext("by.academy.jee");
+    public Service(@Value("${repository.type}") String type) {
+        this.type = StringUtils.capitalize(type);
+        TYPE = RepositoryType.getTypeByString(type.toLowerCase());
     }
 
-    private Service() {
-        //singleton
-        repositoryTypeHelper = ctx.getBean("threadLocalForRepositoryType", ThreadLocalForRepositoryType.class);
-        //TYPE = repositoryTypeHelper.get();
-        String type = StringUtils.capitalize(repositoryTypeHelper.getType());
-        TYPE = RepositoryType.getTypeByString(type.toLowerCase(Locale.ROOT));
-        adminDao = ctx.getBean(ADMIN_PREFIX + type, PersonDao.class);
-        teacherDao = ctx.getBean(TEACHER_PREFIX + type, PersonDao.class);
-        studentDao = ctx.getBean(STUDENT_PREFIX + type, PersonDao.class);
-        groupDao = ctx.getBean(GROUP_PREFIX + type, GroupDao.class);
-        themeDao = ctx.getBean(THEME_PREFIX + type, ThemeDao.class);
-    }
+    @PostConstruct
+    private void init() {
 
-    public static Service getInstance() {
-
-        if (instance == null) {
-            synchronized (Service.class) {
-                if (instance == null) {
-                    instance = new Service();
-                }
-            }
-        }
-        return instance;
+        String adminDaoTitle = ADMIN_PREFIX + type;
+        String teacherDaoTitle = TEACHER_PREFIX + type;
+        String studentDaoTitle = STUDENT_PREFIX + type;
+        String groupDaoTitle = GROUP_PREFIX + type;
+        String themeDaoTitle = THEME_PREFIX + type;
+        adminDao = personDaoMap.get(adminDaoTitle);
+        teacherDao = personDaoMap.get(teacherDaoTitle);
+        studentDao = personDaoMap.get(studentDaoTitle);
+        groupDao = groupDaoMap.get(groupDaoTitle);
+        themeDao = themeDaoMap.get(themeDaoTitle);
     }
 
     public Student getStudentFromRequest(HttpServletRequest req) throws ServiceException {

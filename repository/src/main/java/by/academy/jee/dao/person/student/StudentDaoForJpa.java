@@ -20,24 +20,6 @@ public class StudentDaoForJpa extends CommonDaoForJpa<Student> implements Person
 
     private final String SELECT_ONE_STUDENT = SELECT_ALL_STUDENTS_JPA + JPA_LOGIN_FILTER;
 
-    private static volatile StudentDaoForJpa instance;
-
-    private StudentDaoForJpa() {
-        //singleton
-    }
-
-    public static StudentDaoForJpa getInstance() {
-
-        if (instance == null) {
-            synchronized ((StudentDaoForJpa.class)) {
-                if (instance == null) {
-                    instance = new StudentDaoForJpa();
-                }
-            }
-        }
-        return instance;
-    }
-
     @Override
     public Student read(String name) {
 

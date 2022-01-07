@@ -10,23 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdminDaoForMemory implements PersonDao<Admin> {
 
-    private static volatile AdminDaoForMemory instance;
-
-    private AdminDaoForMemory() {
-        //singleton
-    }
-
-    public static AdminDaoForMemory getInstance() {
-        if (instance == null) {
-            synchronized (AdminDaoForMemory.class) {
-                if (instance == null) {
-                    instance = new AdminDaoForMemory();
-                }
-            }
-        }
-        return instance;
-    }
-
     @Override
     public Admin create(Admin admin) {
         Database.getInstance().addAdmin(admin);

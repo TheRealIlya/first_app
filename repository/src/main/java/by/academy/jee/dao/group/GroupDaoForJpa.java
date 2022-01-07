@@ -13,24 +13,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class GroupDaoForJpa extends CommonDaoForJpa<Group> implements GroupDao {
 
-    private static volatile GroupDaoForJpa instance;
-
-    private GroupDaoForJpa() {
-        //singleton
-    }
-
-    public static GroupDaoForJpa getInstance() {
-
-        if (instance == null) {
-            synchronized (GroupDaoForJpa.class) {
-                if (instance == null) {
-                    instance = new GroupDaoForJpa();
-                }
-            }
-        }
-        return instance;
-    }
-
     @Override
     public Group read(String title) {
         EntityManager em = emHelper.get();

@@ -20,24 +20,6 @@ public class TeacherDaoForJpa extends CommonDaoForJpa<Teacher> implements Person
 
     private final String SELECT_ONE_TEACHER = SELECT_ALL_TEACHERS_JPA + JPA_LOGIN_FILTER;
 
-    private static volatile TeacherDaoForJpa instance;
-
-    private TeacherDaoForJpa() {
-        //singleton
-    }
-
-    public static TeacherDaoForJpa getInstance() {
-
-        if (instance == null) {
-            synchronized (TeacherDaoForJpa.class) {
-                if (instance == null) {
-                    instance = new TeacherDaoForJpa();
-                }
-            }
-        }
-        return instance;
-    }
-
     @Override
     public Teacher read(String name) {
 

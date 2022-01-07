@@ -3,13 +3,12 @@ package by.academy.jee.web.servlet.admin;
 import by.academy.jee.exception.DaoException;
 import by.academy.jee.exception.ServiceException;
 import by.academy.jee.model.person.Teacher;
-import by.academy.jee.web.service.Service;
+import by.academy.jee.web.servlet.AbstractServlet;
 import by.academy.jee.web.util.SessionUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -21,9 +20,7 @@ import static by.academy.jee.web.constant.Constant.TEACHER_IS_SUCCESSFULLY_ADDED
 
 @Slf4j
 @WebServlet(value = "/addTeacher")
-public class AddTeacherServlet extends HttpServlet {
-
-    private final Service service = Service.getInstance();
+public class AddTeacherServlet extends AbstractServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

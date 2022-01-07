@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -35,29 +36,12 @@ import static by.academy.jee.constant.Constant.U_PASSWORD;
 import static by.academy.jee.constant.Constant.U_SALT;
 
 @Component
+@RequiredArgsConstructor
 public class TeacherDaoForPostgres implements PersonDao<Teacher> {
 
     private static final Logger log = LoggerFactory.getLogger(TeacherDaoForPostgres.class);
     private static final String SELECT_ONE_TEACHER = SELECT_ALL_TEACHERS_POSTGRES + LOGIN_FILTER_POSTGRES;
     private final DataSource dataSource;
-
-    private static volatile TeacherDaoForPostgres instance;
-
-    private TeacherDaoForPostgres(DataSource dataSource) {
-        //singleton
-        this.dataSource = dataSource;
-    }
-
-    public static TeacherDaoForPostgres getInstance(DataSource dataSource) {
-        if (instance == null) {
-            synchronized (TeacherDaoForPostgres.class) {
-                if (instance == null) {
-                    instance = new TeacherDaoForPostgres(dataSource);
-                }
-            }
-        }
-        return instance;
-    }
 
     @Override
     public Teacher create(Teacher teacher) {

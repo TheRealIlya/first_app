@@ -14,24 +14,6 @@ public class ThemeDaoForJpa implements ThemeDao {
 
     private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
 
-//    private static volatile ThemeDaoForJpa instance;
-//
-//    private ThemeDaoForJpa() {
-//        //singleton
-//    }
-//
-//    public static ThemeDaoForJpa getInstance() {
-//
-//        if (instance == null) {
-//            synchronized (ThemeDaoForJpa.class) {
-//                if (instance == null) {
-//                    instance = new ThemeDaoForJpa();
-//                }
-//            }
-//        }
-//        return instance;
-//    }
-
     @Override
     public Theme read(String title) {
 

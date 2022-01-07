@@ -36,24 +36,6 @@ public class AdminDaoForPostgres implements PersonDao<Admin> {
     private static final String SELECT_ONE_ADMIN = SELECT_ALL_ADMINS_POSTGRES + LOGIN_FILTER_POSTGRES;
     private final DataSource dataSource;
 
-    private static volatile AdminDaoForPostgres instance;
-
-//    private AdminDaoForPostgres(DataSource dataSource) {
-//        //singleton
-//        this.dataSource = dataSource;
-//    }
-
-    public static AdminDaoForPostgres getInstance(DataSource dataSource) {
-        if (instance == null) {
-            synchronized (AdminDaoForPostgres.class) {
-                if (instance == null) {
-                    instance = new AdminDaoForPostgres(dataSource);
-                }
-            }
-        }
-        return instance;
-    }
-
     @Override
     public Admin create(Admin admin) {
 
