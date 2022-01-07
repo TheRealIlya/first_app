@@ -7,28 +7,30 @@ import by.academy.jee.util.ThreadLocalForEntityManager;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ThemeDaoForJpa implements ThemeDao {
 
     private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
 
-    private static volatile ThemeDaoForJpa instance;
-
-    private ThemeDaoForJpa() {
-        //singleton
-    }
-
-    public static ThemeDaoForJpa getInstance() {
-
-        if (instance == null) {
-            synchronized (ThemeDaoForJpa.class) {
-                if (instance == null) {
-                    instance = new ThemeDaoForJpa();
-                }
-            }
-        }
-        return instance;
-    }
+//    private static volatile ThemeDaoForJpa instance;
+//
+//    private ThemeDaoForJpa() {
+//        //singleton
+//    }
+//
+//    public static ThemeDaoForJpa getInstance() {
+//
+//        if (instance == null) {
+//            synchronized (ThemeDaoForJpa.class) {
+//                if (instance == null) {
+//                    instance = new ThemeDaoForJpa();
+//                }
+//            }
+//        }
+//        return instance;
+//    }
 
     @Override
     public Theme read(String title) {

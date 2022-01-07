@@ -5,20 +5,22 @@ import by.academy.jee.database.Database;
 import by.academy.jee.model.person.Admin;
 
 import java.util.List;
+import org.springframework.stereotype.Component;
 
-public class AdminDaoForMemoryDatabase implements PersonDao<Admin> {
+@Component
+public class AdminDaoForMemory implements PersonDao<Admin> {
 
-    private static volatile AdminDaoForMemoryDatabase instance;
+    private static volatile AdminDaoForMemory instance;
 
-    private AdminDaoForMemoryDatabase() {
+    private AdminDaoForMemory() {
         //singleton
     }
 
-    public static AdminDaoForMemoryDatabase getInstance() {
+    public static AdminDaoForMemory getInstance() {
         if (instance == null) {
-            synchronized (AdminDaoForMemoryDatabase.class) {
+            synchronized (AdminDaoForMemory.class) {
                 if (instance == null) {
-                    instance = new AdminDaoForMemoryDatabase();
+                    instance = new AdminDaoForMemory();
                 }
             }
         }

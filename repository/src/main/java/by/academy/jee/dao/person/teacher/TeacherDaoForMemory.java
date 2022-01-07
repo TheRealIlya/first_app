@@ -5,20 +5,22 @@ import by.academy.jee.database.Database;
 import by.academy.jee.model.person.Teacher;
 
 import java.util.List;
+import org.springframework.stereotype.Component;
 
-public class TeacherDaoForMemoryDatabase implements PersonDao<Teacher> {
+@Component
+public class TeacherDaoForMemory implements PersonDao<Teacher> {
 
-    private static volatile TeacherDaoForMemoryDatabase instance;
+    private static volatile TeacherDaoForMemory instance;
 
-    private TeacherDaoForMemoryDatabase() {
+    private TeacherDaoForMemory() {
         //singleton
     }
 
-    public static TeacherDaoForMemoryDatabase getInstance() {
+    public static TeacherDaoForMemory getInstance() {
         if (instance == null) {
-            synchronized (TeacherDaoForMemoryDatabase.class) {
+            synchronized (TeacherDaoForMemory.class) {
                 if (instance == null) {
-                    instance = new TeacherDaoForMemoryDatabase();
+                    instance = new TeacherDaoForMemory();
                 }
             }
         }

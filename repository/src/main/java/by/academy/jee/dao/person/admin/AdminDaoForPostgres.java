@@ -12,8 +12,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_ADMIN;
 import static by.academy.jee.constant.Constant.LOGIN_FILTER_POSTGRES;
 import static by.academy.jee.constant.Constant.INSERT_ADMIN_POSTGRES;
@@ -26,6 +28,8 @@ import static by.academy.jee.constant.Constant.U_NAME;
 import static by.academy.jee.constant.Constant.U_PASSWORD;
 import static by.academy.jee.constant.Constant.U_SALT;
 
+@Component
+@RequiredArgsConstructor
 public class AdminDaoForPostgres implements PersonDao<Admin> {
 
     private static final Logger log = LoggerFactory.getLogger(AdminDaoForPostgres.class);
@@ -34,10 +38,10 @@ public class AdminDaoForPostgres implements PersonDao<Admin> {
 
     private static volatile AdminDaoForPostgres instance;
 
-    private AdminDaoForPostgres(DataSource dataSource) {
-        //singleton
-        this.dataSource = dataSource;
-    }
+//    private AdminDaoForPostgres(DataSource dataSource) {
+//        //singleton
+//        this.dataSource = dataSource;
+//    }
 
     public static AdminDaoForPostgres getInstance(DataSource dataSource) {
         if (instance == null) {

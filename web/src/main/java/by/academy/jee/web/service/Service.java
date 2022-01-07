@@ -27,9 +27,15 @@ import by.academy.jee.util.ThreadLocalForEntityManager;
 import by.academy.jee.util.ThreadLocalForRepositoryType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import static by.academy.jee.web.constant.Constant.ADMIN;
 import static by.academy.jee.web.constant.Constant.ADMIN_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.AGE;
@@ -58,24 +64,40 @@ import static by.academy.jee.web.constant.Constant.USER_NAME;
 @Slf4j
 public class Service {
 
-    private static final RepositoryType TYPE;
-    private static final ThreadLocalForRepositoryType repositoryTypeHelper = ThreadLocalForRepositoryType.getInstance();
-    private final PersonDao<Admin> adminDao = PersonDaoFactory.getPersonDao(Role.ADMIN);
-    private final PersonDao<Teacher> teacherDao = PersonDaoFactory.getPersonDao(Role.TEACHER);
-    private final PersonDao<Student> studentDao = PersonDaoFactory.getPersonDao(Role.STUDENT);
-    private final GroupDao groupDao = GroupDaoFactory.getGroupDao();
-    private final ThemeDao themeDao = ThemeDaoFactory.getThemeDao();
+    private static final String ADMIN_PREFIX = "adminDaoFor";
+    private static final String TEACHER_PREFIX = "teacherDaoFor";
+    private static final String STUDENT_PREFIX = "studentDaoFor";
+    private static final String GROUP_PREFIX = "groupDaoFor";
+    private static final String THEME_PREFIX = "themeDaoFor";
+
+    private final RepositoryType TYPE;
+    private static final ConfigurableApplicationContext ctx;
+    private final ThreadLocalForRepositoryType repositoryTypeHelper;
+    private final PersonDao<Admin> adminDao;
+    private final PersonDao<Teacher> teacherDao;
+    private final PersonDao<Student> studentDao;
+    private final GroupDao groupDao;
+    private final ThemeDao themeDao;
     private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
 
     private static volatile Service instance;
 
     static {
         Initializer.initDatabase();
-        TYPE = repositoryTypeHelper.get();
+        ctx = new AnnotationConfigApplicationContext("by.academy.jee");
     }
 
     private Service() {
         //singleton
+        repositoryTypeHelper = ctx.getBean("threadLocalForRepositoryType", ThreadLocalForRepositoryType.class);
+        //TYPE = repositoryTypeHelper.get();
+        String type = StringUtils.capitalize(repositoryTypeHelper.getType());
+        TYPE = RepositoryType.getTypeByString(type.toLowerCase(Locale.ROOT));
+        adminDao = ctx.getBean(ADMIN_PREFIX + type, PersonDao.class);
+        teacherDao = ctx.getBean(TEACHER_PREFIX + type, PersonDao.class);
+        studentDao = ctx.getBean(STUDENT_PREFIX + type, PersonDao.class);
+        groupDao = ctx.getBean(GROUP_PREFIX + type, GroupDao.class);
+        themeDao = ctx.getBean(THEME_PREFIX + type, ThemeDao.class);
     }
 
     public static Service getInstance() {

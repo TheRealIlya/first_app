@@ -8,7 +8,9 @@ import by.academy.jee.model.person.Teacher;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GroupDaoForJpa extends CommonDaoForJpa<Group> implements GroupDao {
 
     private static volatile GroupDaoForJpa instance;

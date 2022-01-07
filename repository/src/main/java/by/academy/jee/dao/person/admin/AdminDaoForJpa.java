@@ -9,10 +9,12 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import static by.academy.jee.constant.Constant.JPA_LOGIN_FILTER;
 import static by.academy.jee.constant.Constant.SELECT_ALL_ADMINS_JPA;
 
 @Slf4j
+@Component
 public class AdminDaoForJpa extends CommonDaoForJpa<Admin> implements PersonDao<Admin> {
 
     private final String SELECT_ONE_ADMIN = SELECT_ALL_ADMINS_JPA + JPA_LOGIN_FILTER;

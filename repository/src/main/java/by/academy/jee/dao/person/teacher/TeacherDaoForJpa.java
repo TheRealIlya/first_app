@@ -9,11 +9,13 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import static by.academy.jee.constant.Constant.ERROR_NO_TEACHERS_IN_DATABASE;
 import static by.academy.jee.constant.Constant.JPA_LOGIN_FILTER;
 import static by.academy.jee.constant.Constant.SELECT_ALL_TEACHERS_JPA;
 
 @Slf4j
+@Component
 public class TeacherDaoForJpa extends CommonDaoForJpa<Teacher> implements PersonDao<Teacher> {
 
     private final String SELECT_ONE_TEACHER = SELECT_ALL_TEACHERS_JPA + JPA_LOGIN_FILTER;

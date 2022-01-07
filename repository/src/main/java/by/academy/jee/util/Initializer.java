@@ -20,9 +20,9 @@ public class Initializer {
         //util class
     }
 
-    private static PersonDao<Admin> adminDao = PersonDaoFactory.getPersonDao(Role.ADMIN);
-    private static PersonDao<Teacher> teacherDao = PersonDaoFactory.getPersonDao(Role.TEACHER);
-    private static PersonDao<Student> studentDao = PersonDaoFactory.getPersonDao(Role.STUDENT);
+//    private static PersonDao<Admin> adminDao = PersonDaoFactory.getPersonDao(Role.ADMIN);
+//    private static PersonDao<Teacher> teacherDao = PersonDaoFactory.getPersonDao(Role.TEACHER);
+//    private static PersonDao<Student> studentDao = PersonDaoFactory.getPersonDao(Role.STUDENT);
 
     public static void initDatabase() {
 

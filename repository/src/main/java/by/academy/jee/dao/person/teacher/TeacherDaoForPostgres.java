@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_TEACHER;
 import static by.academy.jee.constant.Constant.ERROR_NO_TEACHERS_IN_DATABASE;
 import static by.academy.jee.constant.Constant.INSERT_SALARIES_POSTGRES;
@@ -33,6 +34,7 @@ import static by.academy.jee.constant.Constant.U_NAME;
 import static by.academy.jee.constant.Constant.U_PASSWORD;
 import static by.academy.jee.constant.Constant.U_SALT;
 
+@Component
 public class TeacherDaoForPostgres implements PersonDao<Teacher> {
 
     private static final Logger log = LoggerFactory.getLogger(TeacherDaoForPostgres.class);
