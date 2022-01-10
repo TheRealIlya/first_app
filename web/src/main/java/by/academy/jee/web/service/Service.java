@@ -359,6 +359,33 @@ public class Service {
         }
     }
 
+    public List<Admin> getAllAdmins() {
+        beginTransaction();
+        List<Admin> admins = adminDao.readAll();
+        closeTransaction();
+        return admins;
+    }
+
+    public Admin createAdmin(Admin admin) {
+        beginTransaction();
+        adminDao.create(admin);
+        closeTransaction();
+        return admin;
+    }
+
+    public Admin updateAdmin(Admin newAdmin) {
+        beginTransaction();
+        adminDao.update(newAdmin);
+        closeTransaction();
+        return newAdmin;
+    }
+
+    public void removeAdminByLogin(String login) {
+        beginTransaction();
+        adminDao.delete(login);
+        closeTransaction();
+    }
+
     private void setTeacherForGroup(Group group, Teacher teacher) throws DaoException {
 
         group.setTeacher(teacher);

@@ -1,4 +1,4 @@
-package by.academy.jee.web.controller.common;
+package by.academy.jee.web.controller.jsp.common;
 
 import javax.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;

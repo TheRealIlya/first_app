@@ -1,8 +1,8 @@
-package by.academy.jee.web.controller.admin;
+package by.academy.jee.web.controller.jsp.admin;
 
 import by.academy.jee.exception.DaoException;
 import by.academy.jee.exception.ServiceException;
-import by.academy.jee.model.person.Student;
+import by.academy.jee.model.person.Teacher;
 import by.academy.jee.web.service.Service;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -12,38 +12,38 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import static by.academy.jee.web.constant.Constant.ADD_STUDENT_JSP_URL;
+import static by.academy.jee.web.constant.Constant.ADD_TEACHER_JSP_URL;
 import static by.academy.jee.web.constant.Constant.APPROVE_MESSAGE;
 import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
-import static by.academy.jee.web.constant.Constant.STUDENT_IS_SUCCESSFULLY_ADDED;
+import static by.academy.jee.web.constant.Constant.TEACHER_IS_SUCCESSFULLY_ADDED;
 
 @Slf4j
-@Controller
-@RequestMapping(value = "/addStudent")
+@RequestMapping(value = "/addTeacher")
 @RequiredArgsConstructor
-public class AddStudentController {
+@Controller
+public class AddTeacherController {
 
     private final Service service;
 
     @GetMapping
     public String redirectFromGetCall() {
-        return ADD_STUDENT_JSP_URL;
+        return ADD_TEACHER_JSP_URL;
     }
 
     @PostMapping
-    public ModelAndView addStudent(HttpServletRequest req) {
+    public ModelAndView addTeacher(HttpServletRequest req) {
 
         ModelAndView modelAndView = new ModelAndView();
         try {
-            Student student = service.getStudentFromRequest(req);
-            service.checkIsUserNotExist(student.getLogin());
-            service.createStudentAfterChecks(student);
-            log.info("Student {} is successfully added", student.getLogin());
-            modelAndView.addObject(APPROVE_MESSAGE, STUDENT_IS_SUCCESSFULLY_ADDED);
+            Teacher teacher = service.getTeacherFromRequest(req);
+            service.checkIsUserNotExist(teacher.getLogin());
+            service.createTeacherAfterChecks(teacher);
+            log.info("Teacher {} is successfully added", teacher.getLogin());
+            modelAndView.addObject(APPROVE_MESSAGE, TEACHER_IS_SUCCESSFULLY_ADDED);
         } catch (ServiceException | DaoException e) {
             modelAndView.addObject(ERROR_MESSAGE, e.getMessage());
         }
-        modelAndView.setViewName(ADD_STUDENT_JSP_URL);
+        modelAndView.setViewName(ADD_TEACHER_JSP_URL);
         return modelAndView;
     }
 }

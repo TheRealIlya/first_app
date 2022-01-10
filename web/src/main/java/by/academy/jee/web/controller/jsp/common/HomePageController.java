@@ -1,4 +1,4 @@
-package by.academy.jee.web.controller.common;
+package by.academy.jee.web.controller.jsp.common;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

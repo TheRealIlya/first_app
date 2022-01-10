@@ -1,4 +1,4 @@
-package by.academy.jee.web.controller.teacher;
+package by.academy.jee.web.controller.jsp.teacher;
 
 import by.academy.jee.exception.ServiceException;
 import by.academy.jee.model.group.Group;
