@@ -18,7 +18,7 @@ import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
 import static by.academy.jee.web.constant.Constant.TEACHER_IS_SUCCESSFULLY_ADDED;
 
 @Slf4j
-@RequestMapping(value = "/addTeacher")
+@RequestMapping(value = "/jsp/addTeacher")
 @RequiredArgsConstructor
 @Controller
 public class AddTeacherController {
@@ -36,8 +36,7 @@ public class AddTeacherController {
         ModelAndView modelAndView = new ModelAndView();
         try {
             Teacher teacher = service.getTeacherFromRequest(req);
-            service.checkIsUserNotExist(teacher.getLogin());
-            service.createTeacherAfterChecks(teacher);
+            service.createPerson(teacher);
             log.info("Teacher {} is successfully added", teacher.getLogin());
             modelAndView.addObject(APPROVE_MESSAGE, TEACHER_IS_SUCCESSFULLY_ADDED);
         } catch (ServiceException | DaoException e) {

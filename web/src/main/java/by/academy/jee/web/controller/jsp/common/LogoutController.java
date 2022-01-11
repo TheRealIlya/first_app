@@ -15,7 +15,7 @@ import static by.academy.jee.web.constant.Constant.USER_IS_LOGGED_OUT;
 @Controller
 public class LogoutController {
 
-    @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/jsp/logout", method = {RequestMethod.GET, RequestMethod.POST})
     public ModelAndView logout(HttpSession httpSession) {
 
         ModelAndView modelAndView = new ModelAndView();

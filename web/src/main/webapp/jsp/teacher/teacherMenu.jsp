@@ -9,7 +9,7 @@
         <jsp:include page="../common/header.jsp"></jsp:include>
         <h2>Hello, teacher!</h2>
         <p>
-        <a href="${pageContext.request.contextPath}/groupInfo">Get group info</a>
+        <a href="${pageContext.request.contextPath}/jsp/groupInfo">Get group info</a>
         </p>
         <p style="color: green;">${approveMessage}</p>
     </body>

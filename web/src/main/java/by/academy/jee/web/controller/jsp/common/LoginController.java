@@ -21,7 +21,7 @@ import static by.academy.jee.web.constant.Constant.USER_NAME;
 
 @Slf4j
 @Controller
-@RequestMapping(value = {"/", "/login"})
+@RequestMapping(value = {"/", "/jsp/", "/jsp/login"})
 @RequiredArgsConstructor
 public class LoginController {
 

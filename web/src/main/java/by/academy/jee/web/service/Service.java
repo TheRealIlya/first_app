@@ -3,6 +3,7 @@ package by.academy.jee.web.service;
 import by.academy.jee.dao.RepositoryType;
 import by.academy.jee.dao.group.GroupDao;
 import by.academy.jee.dao.person.PersonDao;
+import by.academy.jee.dao.person.admin.AdminDaoForJpa;
 import by.academy.jee.dao.theme.ThemeDao;
 import by.academy.jee.exception.DaoException;
 import by.academy.jee.exception.MyNoResultException;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -117,25 +119,20 @@ public class Service {
                 .withRole(Role.STUDENT);
     }
 
-    public void createStudentAfterChecks(Student student) throws ServiceException {
+    public Person createPerson(Person person) throws ServiceException {
 
         try {
             beginTransaction();
-            studentDao.create(student);
-        } catch (DaoException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            closeTransaction();
-        }
-    }
-
-    public void createTeacherAfterChecks(Teacher teacher) throws ServiceException {
-
-        try {
-            beginTransaction();
-            teacherDao.create(teacher);
+            checkIsUserNotExist(person.getLogin());
+            switch (person.getRole()) {
+                case ADMIN:
+                    return adminDao.create((Admin) person);
+                case TEACHER:
+                    return teacherDao.create((Teacher) person);
+                case STUDENT:
+                default:
+                    return studentDao.create((Student) person);
+            }
         } catch (DaoException e) {
             DataBaseUtil.rollBack(emHelper.get());
             log.error(e.getMessage());
@@ -171,29 +168,6 @@ public class Service {
                 .withAge(context.getAge())
                 .withSalaries(salaries)
                 .withRole(Role.TEACHER);
-    }
-
-    public void checkIsUserNotExist(String login) throws ServiceException {
-
-        beginTransaction();
-        try {
-            adminDao.read(login);
-        } catch (DaoException e) {
-            try {
-                teacherDao.read(login);
-            } catch (DaoException f) {
-                try {
-                    studentDao.read(login);
-                } catch (DaoException g) {
-                    closeTransaction();
-                    return;
-                }
-            }
-        }
-        DataBaseUtil.rollBack(emHelper.get());
-        closeTransaction();
-        log.error("Error - attempt to add already existed user {}", login);
-        throw new ServiceException(USER_IS_ALREADY_EXIST);
     }
 
     public Person getUserIfExist(String login) throws ServiceException {
@@ -270,6 +244,14 @@ public class Service {
         if (!Role.TEACHER.equals(person.getRole())) {
             log.error("Error - user {} is not a teacher", person.getLogin());
             throw new ServiceException("Error - this user isn't a teacher");
+        }
+    }
+
+    public void checkIsNotAnAdmin(Person person) throws ServiceException {
+
+        if (!Role.ADMIN.equals(person.getRole())) {
+            log.error("Error - user {} is not an admin", person.getLogin());
+            throw new ServiceException("Error - this user isn't an admin");
         }
     }
 
@@ -366,24 +348,50 @@ public class Service {
         return admins;
     }
 
-    public Admin createAdmin(Admin admin) {
-        beginTransaction();
-        adminDao.create(admin);
-        closeTransaction();
-        return admin;
-    }
+    public Admin updateAdmin(Admin newAdmin) throws ServiceException {
 
-    public Admin updateAdmin(Admin newAdmin) {
-        beginTransaction();
-        adminDao.update(newAdmin);
-        closeTransaction();
-        return newAdmin;
+        try {
+            beginTransaction();
+            adminDao.update(newAdmin);
+            return newAdmin;
+        } catch (DaoException e) {
+            DataBaseUtil.rollBack(emHelper.get());
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        } finally {
+            closeTransaction();
+        }
     }
 
     public void removeAdminByLogin(String login) {
         beginTransaction();
         adminDao.delete(login);
         closeTransaction();
+    }
+
+    public Person removeUser(Person person) throws ServiceException {
+
+        try {
+            beginTransaction();
+            switch (person.getRole()) {
+                case ADMIN:
+                    adminDao.delete(person.getLogin());
+                    break;
+                case TEACHER:
+                    teacherDao.delete(person.getLogin());
+                    break;
+                case STUDENT:
+                default:
+                    studentDao.delete(person.getLogin());
+            }
+            return person;
+        } catch (DaoException e) {
+            DataBaseUtil.rollBack(emHelper.get());
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        } finally {
+            closeTransaction();
+        }
     }
 
     private void setTeacherForGroup(Group group, Teacher teacher) throws DaoException {
@@ -414,6 +422,25 @@ public class Service {
                 .name(fio)
                 .age(age)
                 .build();
+    }
+
+    private void checkIsUserNotExist(String login) throws ServiceException {
+
+        try {
+            adminDao.read(login);
+        } catch (DaoException e) {
+            try {
+                teacherDao.read(login);
+            } catch (DaoException f) {
+                try {
+                    studentDao.read(login);
+                } catch (DaoException g) {
+                    return;
+                }
+            }
+        }
+        log.error("Error - attempt to add already existed user {}", login);
+        throw new ServiceException(USER_IS_ALREADY_EXIST);
     }
 
     private String calculateAverageSalaryByMonths(Teacher teacher, List<Integer> months) {

@@ -19,7 +19,7 @@ import static by.academy.jee.web.constant.Constant.STUDENT_IS_SUCCESSFULLY_ADDED
 
 @Slf4j
 @Controller
-@RequestMapping(value = "/addStudent")
+@RequestMapping(value = "/jsp/addStudent")
 @RequiredArgsConstructor
 public class AddStudentController {
 
@@ -36,8 +36,7 @@ public class AddStudentController {
         ModelAndView modelAndView = new ModelAndView();
         try {
             Student student = service.getStudentFromRequest(req);
-            service.checkIsUserNotExist(student.getLogin());
-            service.createStudentAfterChecks(student);
+            service.createPerson(student);
             log.info("Student {} is successfully added", student.getLogin());
             modelAndView.addObject(APPROVE_MESSAGE, STUDENT_IS_SUCCESSFULLY_ADDED);
         } catch (ServiceException | DaoException e) {

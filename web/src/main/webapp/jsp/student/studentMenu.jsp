@@ -8,6 +8,6 @@
     <body>
         <jsp:include page="../common/header.jsp"></jsp:include>
         <h2>Hello, student!</h2>
-        <p><a href="${pageContext.request.contextPath}/checkGrades">Check grades</a></p>
+        <p><a href="${pageContext.request.contextPath}/jsp/checkGrades">Check grades</a></p>
     </body>
 </html>

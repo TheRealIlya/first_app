@@ -7,7 +7,7 @@ import static by.academy.jee.web.constant.Constant.CHECK_GRADES_JSP_URL;
 
 @Controller
 public class CheckGradesController {
-    @RequestMapping(value = "/checkGrades", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/jsp/checkGrades", method = {RequestMethod.GET, RequestMethod.POST})
     public String redirectToJsp() {
         return CHECK_GRADES_JSP_URL;
     }

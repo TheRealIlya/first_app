@@ -21,7 +21,7 @@ import static by.academy.jee.web.constant.Constant.LOGIN;
 import static by.academy.jee.web.constant.Constant.RESULT;
 
 @Slf4j
-@RequestMapping(value = "/avgSalary")
+@RequestMapping(value = "/jsp/avgSalary")
 @Controller
 @RequiredArgsConstructor
 public class AverageSalaryController {

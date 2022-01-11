@@ -7,7 +7,7 @@ import static by.academy.jee.web.constant.Constant.USER_INFO_JSP_URL;
 
 @Controller
 public class UserInfoController {
-    @RequestMapping(value = "/userInfo", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/jsp/userInfo", method = {RequestMethod.GET, RequestMethod.POST})
     public String redirectToJsp() {
         return USER_INFO_JSP_URL;
     }

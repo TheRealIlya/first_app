@@ -20,7 +20,7 @@ import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
 import static by.academy.jee.web.constant.Constant.TEACHER_MENU_JSP_URL;
 
 @Controller
-@RequestMapping(value = "/changeGroup")
+@RequestMapping(value = "/jsp/changeGroup")
 @RequiredArgsConstructor
 public class ChangeGroupController {
 

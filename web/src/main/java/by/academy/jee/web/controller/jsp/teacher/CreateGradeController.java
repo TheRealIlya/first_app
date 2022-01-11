@@ -20,7 +20,7 @@ import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping(value = "/createGrade")
+@RequestMapping(value = "/jsp/createGrade")
 public class CreateGradeController {
 
     private final Service service;

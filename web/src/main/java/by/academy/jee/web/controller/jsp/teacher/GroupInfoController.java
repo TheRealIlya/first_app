@@ -24,7 +24,7 @@ public class GroupInfoController {
 
     private final Service service;
 
-    @RequestMapping(value = "/groupInfo", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/jsp/groupInfo", method = {RequestMethod.GET, RequestMethod.POST})
     public ModelAndView getGroupInfo(HttpSession httpSession) {
 
         ModelAndView modelAndView = new ModelAndView();

@@ -7,7 +7,7 @@ import static by.academy.jee.web.constant.Constant.HOME_PAGE_JSP_URL;
 
 @Controller
 public class HomePageController {
-    @RequestMapping(value = "/home", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/jsp/home", method = {RequestMethod.GET, RequestMethod.POST})
     public String redirectToJsp() {
         return HOME_PAGE_JSP_URL;
     }

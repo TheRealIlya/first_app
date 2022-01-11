@@ -9,7 +9,7 @@
         <jsp:include page="../common/header.jsp"></jsp:include>
         <h2>Adding new student. Enter values:</h2>
         <p style="color: red;">${errorMessage}</p>
-        <form method="POST" action="${pageContext.request.contextPath}/addStudent">
+        <form method="POST" action="${pageContext.request.contextPath}/jsp/addStudent">
             <table>
                 <tr>
                     <td><b>Login</b></td>

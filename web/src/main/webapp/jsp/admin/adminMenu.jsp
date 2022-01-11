@@ -9,13 +9,13 @@
         <jsp:include page="../common/header.jsp"></jsp:include>
         <h2>Admin Workspace</h2>
         <p>
-        <a href="${pageContext.request.contextPath}/addTeacher">Add new teacher</a>
+        <a href="${pageContext.request.contextPath}/jsp/addTeacher">Add new teacher</a>
         </p>
         <p>
-        <a href="${pageContext.request.contextPath}/avgSalary">Get average salary</a>
+        <a href="${pageContext.request.contextPath}/jsp/avgSalary">Get average salary</a>
         </p>
         <p>
-        <a href="${pageContext.request.contextPath}/addStudent">Add new student</a>
+        <a href="${pageContext.request.contextPath}/jsp/addStudent">Add new student</a>
         </p>
     </body>
 </html>
