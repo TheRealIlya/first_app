@@ -39,6 +39,7 @@ public class AdminJsonController {
             service.checkIsNotAnAdmin(person);
             return ResponseEntity.ok(person);
         } catch (ServiceException e) {
+            log.error(e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
@@ -48,6 +49,7 @@ public class AdminJsonController {
         try {
             return ResponseEntity.ok(service.createPerson(admin));
         } catch (ServiceException e) {
+            log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -59,23 +61,27 @@ public class AdminJsonController {
             if (admin != null && admin.getId() == id) {
                 return ResponseEntity.ok(service.updateAdmin(admin));
             } else {
+                log.error("Error - Admin's id must be equal with id in path");
                 return ResponseEntity.badRequest().body("Error - Admin's id must be equal with id in path");
             }
         } catch (ServiceException e) {
+            log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
     }
 
     @DeleteMapping(value = "/{login}")
     public ResponseEntity<?> deleteAdmin(@PathVariable String login) {
+
         try {
             Person person = service.getUserIfExist(login);
             if (Role.ADMIN.equals(person.getRole())) {
                 return ResponseEntity.ok(service.removeUser(person));
             }
+            log.error("Error - no admin with login" + login);
             return ResponseEntity.notFound().build();
         } catch (ServiceException e) {
+            log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

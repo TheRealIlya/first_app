@@ -348,6 +348,68 @@ public class Service {
         return admins;
     }
 
+    public List<Theme> getAllThemes() {
+        beginTransaction();
+        List<Theme> themes = themeDao.readAll();
+        closeTransaction();
+        return themes;
+    }
+
+    public Theme getTheme(String title) throws ServiceException {
+
+        beginTransaction();
+        try {
+            return themeDao.read(title);
+        } catch (DaoException | MyNoResultException e) {
+            DataBaseUtil.rollBack(emHelper.get());
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        } finally {
+            closeTransaction();
+        }
+    }
+
+    public Theme createTheme(Theme theme) throws ServiceException {
+
+        try {
+            beginTransaction();
+            checkIsThemeNotExist(theme.getTitle());
+            return themeDao.create(theme);
+        } finally {
+            closeTransaction();
+        }
+    }
+
+    public Theme updateTheme(Theme newTheme) throws ServiceException {
+
+        try {
+            beginTransaction();
+            themeDao.update(newTheme);
+            return newTheme;
+        } catch (DaoException e) {
+            DataBaseUtil.rollBack(emHelper.get());
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        } finally {
+            closeTransaction();
+        }
+    }
+
+    public Theme removeTheme(Theme theme) throws ServiceException {
+
+        try {
+            beginTransaction();
+            themeDao.delete(theme.getTitle());
+            return theme;
+        } catch (DaoException e) {
+            DataBaseUtil.rollBack(emHelper.get());
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        } finally {
+            closeTransaction();
+        }
+    }
+
     public Admin updateAdmin(Admin newAdmin) throws ServiceException {
 
         try {
@@ -422,6 +484,17 @@ public class Service {
                 .name(fio)
                 .age(age)
                 .build();
+    }
+
+    private void checkIsThemeNotExist(String title) throws ServiceException {
+
+        try {
+            themeDao.read(title);
+        } catch (DaoException | MyNoResultException e) {
+            return;
+        }
+        log.error("Error - attempt to add already existed theme {}", title);
+        throw new ServiceException("Error - this theme is already exist");
     }
 
     private void checkIsUserNotExist(String login) throws ServiceException {
