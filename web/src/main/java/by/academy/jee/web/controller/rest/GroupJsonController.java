@@ -1,8 +1,7 @@
 package by.academy.jee.web.controller.rest;
 
-
 import by.academy.jee.exception.ServiceException;
-import by.academy.jee.model.theme.Theme;
+import by.academy.jee.model.group.Group;
 import by.academy.jee.web.service.Service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,21 +19,21 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/rest/themes", produces = "application/json")
-public class ThemeJsonController {
+@RequestMapping(value = "/rest/groups", produces = "application/json")
+public class GroupJsonController {
 
     private final Service service;
 
     @GetMapping
-    public List<Theme> getAllThemes() {
-        return service.getAllThemes();
+    public List<Group> getAllGroups() {
+        return service.getAllGroups();
     }
 
     @GetMapping(value = "/{title}")
-    public ResponseEntity<Theme> getTheme(@PathVariable String title) {
+    public ResponseEntity<Group> getGroup(@PathVariable String title) {
 
         try {
-            return ResponseEntity.ok(service.getTheme(title));
+            return ResponseEntity.ok(service.getGroup(title));
         } catch (ServiceException e) {
             log.error(e.getMessage());
             return ResponseEntity.notFound().build();
@@ -42,10 +41,10 @@ public class ThemeJsonController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createTheme(@RequestBody Theme theme) {
+    public ResponseEntity<?> createGroup(@RequestBody Group group) {
 
         try {
-            return ResponseEntity.ok(service.createTheme(theme));
+            return ResponseEntity.ok(service.createGroup(group));
         } catch (ServiceException e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -53,14 +52,14 @@ public class ThemeJsonController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> updateTheme(@RequestBody Theme theme, @PathVariable int id) {
+    public ResponseEntity<?> updateGroup(@RequestBody Group group, @PathVariable int id) {
 
         try {
-            if (theme != null && theme.getId() == id) {
-                return ResponseEntity.ok(service.updateTheme(theme));
+            if (group != null && group.getId() == id) {
+                return ResponseEntity.ok(service.updateGroup(group));
             } else {
-                log.error("Error - Theme id must be equal with id in path");
-                return ResponseEntity.badRequest().body("Error - Theme id must be equal with id in path");
+                log.error("Error - Group id must be equal with id in path");
+                return ResponseEntity.badRequest().body("Error - Group id must be equal with id in path");
             }
         } catch (ServiceException e) {
             log.error(e.getMessage());
@@ -69,11 +68,11 @@ public class ThemeJsonController {
     }
 
     @DeleteMapping(value = "/{title}")
-    public ResponseEntity<?> deleteTheme(@PathVariable String title) {
+    public ResponseEntity<?> deleteGroup(@PathVariable String title) {
 
         try {
-            Theme theme = service.getTheme(title);
-            return ResponseEntity.ok(service.removeTheme(theme));
+            Group group = service.getGroup(title);
+            return ResponseEntity.ok(service.removeGroup(group));
         } catch (ServiceException e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());

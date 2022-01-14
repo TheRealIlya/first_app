@@ -5,13 +5,11 @@ import by.academy.jee.model.grade.Grade;
 import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.theme.Theme;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -40,6 +38,7 @@ public class Group extends AbstractEntity {
     )
     private List<Theme> themes;
     @OneToMany(mappedBy = "group", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JsonIgnore
     private List<Grade> grades;
 
     @Override

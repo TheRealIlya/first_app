@@ -3,7 +3,6 @@ package by.academy.jee.web.service;
 import by.academy.jee.dao.RepositoryType;
 import by.academy.jee.dao.group.GroupDao;
 import by.academy.jee.dao.person.PersonDao;
-import by.academy.jee.dao.person.admin.AdminDaoForJpa;
 import by.academy.jee.dao.theme.ThemeDao;
 import by.academy.jee.exception.DaoException;
 import by.academy.jee.exception.MyNoResultException;
@@ -29,7 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -37,22 +35,22 @@ import static by.academy.jee.web.constant.Constant.ADMIN;
 import static by.academy.jee.web.constant.Constant.ADMIN_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.ADMIN_PREFIX;
 import static by.academy.jee.web.constant.Constant.AGE;
-import static by.academy.jee.web.constant.Constant.ERROR_WRONG_GRADE_FORMAT;
-import static by.academy.jee.web.constant.Constant.GROUP_PREFIX;
-import static by.academy.jee.web.constant.Constant.SALARIES_MUST_BE_NUMBERS;
 import static by.academy.jee.web.constant.Constant.ERROR_AGE_MUST_BE_A_NUMBER;
 import static by.academy.jee.web.constant.Constant.ERROR_INCORRECT_ROLE;
+import static by.academy.jee.web.constant.Constant.ERROR_WRONG_GRADE_FORMAT;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_MONTHS_FORMAT;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_MONTHS_INPUT;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_NUMBERS_FORMAT;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_PASSWORD;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_SALARIES_INPUT;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_SALARIES_LOGIC;
+import static by.academy.jee.web.constant.Constant.GROUP_PREFIX;
 import static by.academy.jee.web.constant.Constant.LOGIN;
 import static by.academy.jee.web.constant.Constant.MAX_SALARY;
 import static by.academy.jee.web.constant.Constant.MIN_SALARY;
 import static by.academy.jee.web.constant.Constant.NO_SUCH_USER_IN_DATABASE;
 import static by.academy.jee.web.constant.Constant.PASSWORD;
+import static by.academy.jee.web.constant.Constant.SALARIES_MUST_BE_NUMBERS;
 import static by.academy.jee.web.constant.Constant.STUDENT;
 import static by.academy.jee.web.constant.Constant.STUDENT_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.STUDENT_PREFIX;
@@ -315,14 +313,15 @@ public class Service {
     public void changeGroup(Group oldGroup, String newGroupTitle, Teacher teacher) throws ServiceException {
 
         try {
+            beginTransaction();
             if (newGroupTitle == null || newGroupTitle.equals("")) {
                 if (oldGroup == null) {
+                    DataBaseUtil.rollBack(emHelper.get());
                     throw new ServiceException("Error - you already don't have a group");
                 }
                 setTeacherForGroup(oldGroup, null);
                 return;
             }
-            beginTransaction();
             Group newGroup = groupDao.read(newGroupTitle);
             if (newGroup.getTeacher() != null) {
                 DataBaseUtil.rollBack(emHelper.get());
@@ -346,6 +345,68 @@ public class Service {
         List<Admin> admins = adminDao.readAll();
         closeTransaction();
         return admins;
+    }
+
+    public List<Group> getAllGroups() {
+        beginTransaction();
+        List<Group> groups = groupDao.readAll();
+        closeTransaction();
+        return groups;
+    }
+
+    public Group getGroup(String title) throws ServiceException {
+
+        beginTransaction();
+        try {
+            return groupDao.read(title);
+        } catch (DaoException | MyNoResultException e) {
+            DataBaseUtil.rollBack(emHelper.get());
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        } finally {
+            closeTransaction();
+        }
+    }
+
+    public Group createGroup(Group group) throws ServiceException {
+
+        try {
+            beginTransaction();
+            checkIsGroupNotExist(group.getTitle());
+            return groupDao.create(group);
+        } finally {
+            closeTransaction();
+        }
+    }
+
+    public Group updateGroup(Group newGroup) throws ServiceException {
+
+        try {
+            beginTransaction();
+            groupDao.update(newGroup);
+            return newGroup;
+        } catch (DaoException e) {
+            DataBaseUtil.rollBack(emHelper.get());
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        } finally {
+            closeTransaction();
+        }
+    }
+
+    public Group removeGroup(Group group) throws ServiceException {
+
+        try {
+            beginTransaction();
+            groupDao.delete(group.getTitle());
+            return group;
+        } catch (DaoException e) {
+            DataBaseUtil.rollBack(emHelper.get());
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        } finally {
+            closeTransaction();
+        }
     }
 
     public List<Theme> getAllThemes() {
@@ -484,6 +545,17 @@ public class Service {
                 .name(fio)
                 .age(age)
                 .build();
+    }
+
+    private void checkIsGroupNotExist(String title) throws ServiceException {
+
+        try {
+            groupDao.read(title);
+        } catch (DaoException | MyNoResultException e) {
+            return;
+        }
+        log.error("Error - attempt to add already existed group {}", title);
+        throw new ServiceException("Error - this group is already exist");
     }
 
     private void checkIsThemeNotExist(String title) throws ServiceException {

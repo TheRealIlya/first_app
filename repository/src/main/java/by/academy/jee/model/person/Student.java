@@ -3,8 +3,8 @@ package by.academy.jee.model.person;
 import by.academy.jee.model.grade.Grade;
 import by.academy.jee.model.group.Group;
 import by.academy.jee.model.person.role.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
-import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -23,16 +23,17 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 @SecondaryTable(name = "roles", pkJoinColumns = {@PrimaryKeyJoinColumn(name = "id")})
 public class Student extends Person {
-
+    @JsonIgnore
     @OneToMany(mappedBy = "student", cascade = {CascadeType.ALL})
     private List<Grade> grades;
+
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "group_student",
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
-
     private List<Group> groups;
 
     public Student withId(int id) {

@@ -5,6 +5,7 @@ import by.academy.jee.exception.DaoException;
 import by.academy.jee.exception.MyNoResultException;
 import by.academy.jee.model.group.Group;
 import by.academy.jee.model.person.Teacher;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -15,6 +16,7 @@ public class GroupDaoForJpa extends CommonDaoForJpa<Group> implements GroupDao {
 
     @Override
     public Group read(String title) {
+
         EntityManager em = emHelper.get();
         try {
             return getGroupByTitle(title, em);
@@ -27,6 +29,7 @@ public class GroupDaoForJpa extends CommonDaoForJpa<Group> implements GroupDao {
 
     @Override
     public Group read(Teacher teacher) {
+
         EntityManager em = emHelper.get();
         try {
             return getGroupByTeacher(teacher, em);
@@ -35,6 +38,22 @@ public class GroupDaoForJpa extends CommonDaoForJpa<Group> implements GroupDao {
         } catch (Exception e) {
             throw new DaoException(e.getMessage());
         }
+    }
+
+    @Override
+    public List<Group> readAll() {
+
+        EntityManager em = emHelper.get();
+        try {
+            return getAllGroups(em);
+        } catch (Exception e) {
+            throw new DaoException(e.getMessage());
+        }
+    }
+
+    private List<Group> getAllGroups(EntityManager em) {
+        TypedQuery<Group> query = em.createQuery("from Group", Group.class);
+        return query.getResultList();
     }
 
     private Group getGroupByTeacher(Teacher teacher, EntityManager em) {

@@ -2,7 +2,7 @@ package by.academy.jee.model.person;
 
 import by.academy.jee.model.AbstractEntity;
 import by.academy.jee.model.person.role.Role;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -43,6 +43,7 @@ public abstract class Person extends AbstractEntity {
         return Objects.hash(getId());
     }
 
+    @JsonIgnore
     public String getStringForJsp() {
         return toString();
     }
