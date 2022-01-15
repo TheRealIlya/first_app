@@ -11,7 +11,7 @@ import by.academy.jee.model.grade.Grade;
 import by.academy.jee.model.group.Group;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.Person;
-import by.academy.jee.model.person.PersonContext;
+import by.academy.jee.model.person.PersonDto;
 import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.person.role.Role;
@@ -105,16 +105,40 @@ public class Service {
         themeDao = themeDaoMap.get(themeDaoTitle);
     }
 
-    public Student getStudentFromRequest(HttpServletRequest req) throws ServiceException {
+    public Student getStudentFromRequestWithoutId(HttpServletRequest req) throws ServiceException {
 
-        PersonContext context = getPersonContextFromRequest(req);
-        return new Student()
-                .withLogin(context.getLogin())
-                .withPwd(context.getPwd())
-                .withSalt(context.getSalt())
-                .withName(context.getName())
-                .withAge(context.getAge())
-                .withRole(Role.STUDENT);
+        PersonDto personDto = getPersonDtoFromRequest(req);
+        personDto.setRole(Role.STUDENT);
+        return (Student) getPersonFromDto(personDto);
+    }
+
+    public Person getPersonFromDto(PersonDto personDto) {
+
+        Person person;
+        switch (personDto.getRole()) {
+            case ADMIN:
+                person = new Admin()
+                        .withRole(Role.ADMIN);
+                break;
+            case TEACHER:
+                person = new Teacher()
+                        .withRole(Role.TEACHER)
+                        .withSalaries(personDto.getSalaries());
+                break;
+            case STUDENT:
+            default:
+                person = new Student()
+                        .withRole(Role.STUDENT);
+        }
+        if (personDto.getId() != null) {
+            person.setId(personDto.getId());
+        }
+        person.setLogin(personDto.getLogin());
+        person.setPwd(personDto.getPwd());
+        person.setSalt(personDto.getSalt());
+        person.setName(personDto.getName());
+        person.setAge(personDto.getAge());
+        return person;
     }
 
     public Person createPerson(Person person) throws ServiceException {
@@ -142,7 +166,8 @@ public class Service {
 
     public Teacher getTeacherFromRequest(HttpServletRequest req) throws ServiceException {
 
-        PersonContext context = getPersonContextFromRequest(req);
+        PersonDto personDto = getPersonDtoFromRequest(req);
+        personDto.setRole(Role.TEACHER);
         String minSalaryString = req.getParameter(MIN_SALARY);
         String maxSalaryString = req.getParameter(MAX_SALARY);
         double minSalary, maxSalary;
@@ -158,14 +183,9 @@ public class Service {
             throw new ServiceException(ERROR_WRONG_SALARIES_LOGIC);
         }
         Map<Integer, Double> salaries = SalaryGenerator.generate(minSalary, maxSalary);
-        return new Teacher()
-                .withLogin(context.getLogin())
-                .withPwd(context.getPwd())
-                .withSalt(context.getSalt())
-                .withName(context.getName())
-                .withAge(context.getAge())
-                .withSalaries(salaries)
-                .withRole(Role.TEACHER);
+        Teacher teacher = (Teacher) getPersonFromDto(personDto);
+        teacher.setSalaries(salaries);
+        return teacher;
     }
 
     public Person getUserIfExist(String login) throws ServiceException {
@@ -340,11 +360,15 @@ public class Service {
         }
     }
 
-    public List<Admin> getAllAdmins() {
+    public List<Person> getAllPersons() {
         beginTransaction();
-        List<Admin> admins = adminDao.readAll();
+        List<Person> persons = new ArrayList<>(adminDao.readAll());
+        List<Teacher> teachers = teacherDao.readAll();
+        List<Student> students = studentDao.readAll();
+        persons.addAll(teachers);
+        persons.addAll(students);
         closeTransaction();
-        return admins;
+        return persons;
     }
 
     public List<Group> getAllGroups() {
@@ -471,12 +495,21 @@ public class Service {
         }
     }
 
-    public Admin updateAdmin(Admin newAdmin) throws ServiceException {
+    public Person updatePerson(Person newPerson) throws ServiceException {
 
         try {
             beginTransaction();
-            adminDao.update(newAdmin);
-            return newAdmin;
+            switch (newPerson.getRole()) {
+                case ADMIN:
+                    adminDao.update((Admin) newPerson);
+                    break;
+                case TEACHER:
+                    teacherDao.update((Teacher) newPerson);
+                    break;
+                case STUDENT:
+                    studentDao.update((Student) newPerson);
+            }
+            return newPerson;
         } catch (DaoException e) {
             DataBaseUtil.rollBack(emHelper.get());
             log.error(e.getMessage());
@@ -484,12 +517,6 @@ public class Service {
         } finally {
             closeTransaction();
         }
-    }
-
-    public void removeAdminByLogin(String login) {
-        beginTransaction();
-        adminDao.delete(login);
-        closeTransaction();
     }
 
     public Person removeUser(Person person) throws ServiceException {
@@ -523,7 +550,7 @@ public class Service {
         groupDao.update(group);
     }
 
-    private PersonContext getPersonContextFromRequest(HttpServletRequest req) throws ServiceException {
+    private PersonDto getPersonDtoFromRequest(HttpServletRequest req) throws ServiceException {
 
         String userName = req.getParameter(LOGIN);
         String password = req.getParameter(PASSWORD);
@@ -538,7 +565,7 @@ public class Service {
             log.error(ERROR_WRONG_NUMBERS_FORMAT);
             throw new ServiceException(ERROR_AGE_MUST_BE_A_NUMBER);
         }
-        return PersonContext.builder()
+        return PersonDto.builder()
                 .login(userName)
                 .pwd(encryptedPassword)
                 .salt(salt)

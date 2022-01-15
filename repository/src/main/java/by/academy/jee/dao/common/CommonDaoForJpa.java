@@ -19,7 +19,11 @@ public abstract class CommonDaoForJpa<T extends AbstractEntity> implements Commo
     public T read(int id) {
         EntityManager em = emHelper.get();
         try {
-            return em.find(getType(), id);
+            T t = em.find(getType(), id);
+            if (t == null) {
+                throw new DaoException("No such entity with this id");
+            }
+            return t;
         } catch (Exception e) {
             throw new DaoException(e.getMessage());
         }

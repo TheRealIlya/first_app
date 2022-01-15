@@ -1,9 +1,8 @@
 package by.academy.jee.web.controller.rest;
 
 import by.academy.jee.exception.ServiceException;
-import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.Person;
-import by.academy.jee.model.person.role.Role;
+import by.academy.jee.model.person.PersonDto;
 import by.academy.jee.web.service.Service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -21,22 +20,21 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/rest/admins", produces = "application/json")
-public class AdminJsonController {
+@RequestMapping(value = "/rest/persons", produces = "application/json")
+public class PersonJsonController {
 
     private final Service service;
 
     @GetMapping
-    public List<Admin> getAllAdmins() {
-        return service.getAllAdmins();
+    public List<Person> getAllPersons() {
+        return service.getAllPersons();
     }
 
     @GetMapping(value = "/{login}")
-    public ResponseEntity<?> getAdmin(@PathVariable String login) {
+    public ResponseEntity<Person> getPerson(@PathVariable String login) {
 
         try {
             Person person = service.getUserIfExist(login);
-            service.checkIsNotAnAdmin(person);
             return ResponseEntity.ok(person);
         } catch (ServiceException e) {
             log.error(e.getMessage());
@@ -45,9 +43,10 @@ public class AdminJsonController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAdmin(@RequestBody Admin admin) {
+    public ResponseEntity<?> createPerson(@RequestBody PersonDto personDto) {
         try {
-            return ResponseEntity.ok(service.createPerson(admin));
+            Person person = service.getPersonFromDto(personDto);
+            return ResponseEntity.ok(service.createPerson(person));
         } catch (ServiceException e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -55,14 +54,15 @@ public class AdminJsonController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAdmin(@RequestBody Admin admin, @PathVariable int id) {
+    public ResponseEntity<?> updatePerson(@RequestBody PersonDto personDto, @PathVariable int id) {
 
         try {
-            if (admin != null && admin.getId() == id) {
-                return ResponseEntity.ok(service.updateAdmin(admin));
+            if (personDto != null && personDto.getId() == id) {
+                Person person = service.getPersonFromDto(personDto);
+                return ResponseEntity.ok(service.updatePerson(person));
             } else {
-                log.error("Error - Admin's id must be equal with id in path");
-                return ResponseEntity.badRequest().body("Error - Admin's id must be equal with id in path");
+                log.error("Error - Person's id must be equal with id in path");
+                return ResponseEntity.badRequest().body("Error - Person's id must be equal with id in path");
             }
         } catch (ServiceException e) {
             log.error(e.getMessage());
@@ -71,15 +71,11 @@ public class AdminJsonController {
     }
 
     @DeleteMapping(value = "/{login}")
-    public ResponseEntity<?> deleteAdmin(@PathVariable String login) {
+    public ResponseEntity<?> deletePerson(@PathVariable String login) {
 
         try {
             Person person = service.getUserIfExist(login);
-            if (Role.ADMIN.equals(person.getRole())) {
-                return ResponseEntity.ok(service.removeUser(person));
-            }
-            log.error("Error - no admin with login" + login);
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(service.removeUser(person));
         } catch (ServiceException e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());

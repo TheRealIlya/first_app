@@ -35,7 +35,7 @@ public class AddStudentController {
 
         ModelAndView modelAndView = new ModelAndView();
         try {
-            Student student = service.getStudentFromRequest(req);
+            Student student = service.getStudentFromRequestWithoutId(req);
             service.createPerson(student);
             log.info("Student {} is successfully added", student.getLogin());
             modelAndView.addObject(APPROVE_MESSAGE, STUDENT_IS_SUCCESSFULLY_ADDED);
