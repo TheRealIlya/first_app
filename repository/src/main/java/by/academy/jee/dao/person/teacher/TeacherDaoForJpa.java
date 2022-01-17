@@ -22,24 +22,14 @@ public class TeacherDaoForJpa extends CommonDaoForJpa<Teacher> implements Person
 
     @Override
     public Teacher read(String name) {
-
         EntityManager em = emHelper.get();
-        try {
-            return getTeacherByName(name, em);
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
+        return getTeacherByName(name, em);
     }
 
     @Override
     public List<Teacher> readAll() {
-
         EntityManager em = emHelper.get();
-        try {
-            return getAllTeachers(em);
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
+        return getAllTeachers(em);
     }
 
     private Teacher getTeacherByName(String name, EntityManager em) {

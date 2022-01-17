@@ -17,16 +17,13 @@ public abstract class CommonDaoForJpa<T extends AbstractEntity> implements Commo
 
     @Override
     public T read(int id) {
+
         EntityManager em = emHelper.get();
-        try {
-            T t = em.find(getType(), id);
-            if (t == null) {
-                throw new DaoException("No such entity with this id");
-            }
-            return t;
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
+        T t = em.find(getType(), id);
+        if (t == null) {
+            throw new DaoException("No such entity with this id");
         }
+        return t;
     }
 
     @Override
@@ -41,26 +38,18 @@ public abstract class CommonDaoForJpa<T extends AbstractEntity> implements Commo
     public boolean delete(String name) {
 
         EntityManager em = emHelper.get();
-        try {
-            T t = read(name);
-            em.remove(t);
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
+        T t = read(name);
+        em.remove(t);
         return true;
     }
 
     protected T save(T t) {
 
         EntityManager em = emHelper.get();
-        try {
-            if (t.getId() == null) {
-                em.persist(t);
-            } else {
-                em.merge(t);
-            }
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
+        if (t.getId() == null) {
+            em.persist(t);
+        } else {
+            em.merge(t);
         }
         return t;
     }

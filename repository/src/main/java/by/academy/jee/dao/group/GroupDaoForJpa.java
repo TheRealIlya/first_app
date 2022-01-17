@@ -1,13 +1,10 @@
 package by.academy.jee.dao.group;
 
 import by.academy.jee.dao.common.CommonDaoForJpa;
-import by.academy.jee.exception.DaoException;
-import by.academy.jee.exception.MyNoResultException;
 import by.academy.jee.model.group.Group;
 import by.academy.jee.model.person.Teacher;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Component;
 
@@ -16,39 +13,20 @@ public class GroupDaoForJpa extends CommonDaoForJpa<Group> implements GroupDao {
 
     @Override
     public Group read(String title) {
-
         EntityManager em = emHelper.get();
-        try {
-            return getGroupByTitle(title, em);
-        } catch (NoResultException e) {
-            throw new MyNoResultException(e.getMessage());
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
+        return getGroupByTitle(title, em);
     }
 
     @Override
     public Group read(Teacher teacher) {
-
         EntityManager em = emHelper.get();
-        try {
-            return getGroupByTeacher(teacher, em);
-        } catch (NoResultException e) {
-            throw new MyNoResultException(e.getMessage());
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
+        return getGroupByTeacher(teacher, em);
     }
 
     @Override
     public List<Group> readAll() {
-
         EntityManager em = emHelper.get();
-        try {
-            return getAllGroups(em);
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
+        return getAllGroups(em);
     }
 
     private List<Group> getAllGroups(EntityManager em) {

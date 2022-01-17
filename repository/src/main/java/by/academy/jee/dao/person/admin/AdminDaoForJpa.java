@@ -2,7 +2,6 @@ package by.academy.jee.dao.person.admin;
 
 import by.academy.jee.dao.common.CommonDaoForJpa;
 import by.academy.jee.dao.person.PersonDao;
-import by.academy.jee.exception.DaoException;
 import by.academy.jee.model.person.Admin;
 import by.academy.jee.model.person.role.Role;
 import java.util.List;
@@ -21,24 +20,14 @@ public class AdminDaoForJpa extends CommonDaoForJpa<Admin> implements PersonDao<
 
     @Override
     public Admin read(String name) {
-
         EntityManager em = emHelper.get();
-        try {
-            return getAdminByName(name, em);
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
+        return getAdminByName(name, em);
     }
 
     @Override
     public List<Admin> readAll() {
-
         EntityManager em = emHelper.get();
-        try {
-            return getAllAdmins(em);
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
+        return getAllAdmins(em);
     }
 
     private Admin getAdminByName(String name, EntityManager em) {

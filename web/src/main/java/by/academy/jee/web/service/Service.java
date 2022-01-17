@@ -5,7 +5,6 @@ import by.academy.jee.dao.group.GroupDao;
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.dao.theme.ThemeDao;
 import by.academy.jee.exception.DaoException;
-import by.academy.jee.exception.MyNoResultException;
 import by.academy.jee.exception.ServiceException;
 import by.academy.jee.model.grade.Grade;
 import by.academy.jee.model.group.Group;
@@ -278,10 +277,6 @@ public class Service {
         beginTransaction();
         try {
             return groupDao.read(teacher);
-        } catch (MyNoResultException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException("Error - you don't have a group");
         } catch (DaoException e) {
             DataBaseUtil.rollBack(emHelper.get());
             log.error(e.getMessage());
@@ -321,7 +316,7 @@ public class Service {
             DataBaseUtil.rollBack(emHelper.get());
             log.error(ERROR_WRONG_GRADE_FORMAT);
             throw new ServiceException(ERROR_WRONG_GRADE_FORMAT);
-        } catch (MyNoResultException | DaoException e) {
+        } catch (DaoException e) {
             DataBaseUtil.rollBack(emHelper.get());
             log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
@@ -351,7 +346,7 @@ public class Service {
                 setTeacherForGroup(oldGroup, null);
             }
             setTeacherForGroup(newGroup, teacher);
-        } catch (MyNoResultException | DaoException e) {
+        } catch (DaoException e) {
             DataBaseUtil.rollBack(emHelper.get());
             log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
@@ -383,7 +378,7 @@ public class Service {
         beginTransaction();
         try {
             return groupDao.read(title);
-        } catch (DaoException | MyNoResultException e) {
+        } catch (DaoException e) {
             DataBaseUtil.rollBack(emHelper.get());
             log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
@@ -445,7 +440,7 @@ public class Service {
         beginTransaction();
         try {
             return themeDao.read(title);
-        } catch (DaoException | MyNoResultException e) {
+        } catch (DaoException e) {
             DataBaseUtil.rollBack(emHelper.get());
             log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
@@ -578,7 +573,7 @@ public class Service {
 
         try {
             groupDao.read(title);
-        } catch (DaoException | MyNoResultException e) {
+        } catch (DaoException e) {
             return;
         }
         log.error("Error - attempt to add already existed group {}", title);
@@ -589,7 +584,7 @@ public class Service {
 
         try {
             themeDao.read(title);
-        } catch (DaoException | MyNoResultException e) {
+        } catch (DaoException e) {
             return;
         }
         log.error("Error - attempt to add already existed theme {}", title);

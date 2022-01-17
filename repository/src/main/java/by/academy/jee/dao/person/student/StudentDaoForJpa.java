@@ -22,24 +22,14 @@ public class StudentDaoForJpa extends CommonDaoForJpa<Student> implements Person
 
     @Override
     public Student read(String name) {
-
         EntityManager em = emHelper.get();
-        try {
-            return getStudentByName(name, em);
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
+        return getStudentByName(name, em);
     }
 
     @Override
     public List<Student> readAll() {
-
         EntityManager em = emHelper.get();
-        try {
-            return getAllStudents(em);
-        } catch (Exception e) {
-            throw new DaoException(e.getMessage());
-        }
+        return getAllStudents(em);
     }
 
     private Student getStudentByName(String name, EntityManager em) {
