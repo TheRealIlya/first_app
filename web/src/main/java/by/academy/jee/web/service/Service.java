@@ -1,6 +1,5 @@
 package by.academy.jee.web.service;
 
-import by.academy.jee.dao.RepositoryType;
 import by.academy.jee.dao.group.GroupDao;
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.dao.theme.ThemeDao;
@@ -19,6 +18,8 @@ import by.academy.jee.util.DataBaseUtil;
 import by.academy.jee.util.PasswordHasher;
 import by.academy.jee.util.SalaryGenerator;
 import by.academy.jee.util.ThreadLocalForEntityManager;
+import by.academy.jee.web.aspect.ServiceExceptionHandler;
+import by.academy.jee.web.aspect.ServiceTransaction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,6 @@ import static by.academy.jee.web.constant.Constant.USER_NAME;
 public class Service {
 
     private final String type;
-    private final RepositoryType TYPE;
 
     private PersonDao<Admin> adminDao;
     private PersonDao<Teacher> teacherDao;
@@ -86,7 +86,6 @@ public class Service {
 
     public Service(@Value("${repository.type}") String type) {
         this.type = StringUtils.capitalize(type);
-        TYPE = RepositoryType.getTypeByString(type.toLowerCase());
     }
 
     @PostConstruct
@@ -140,26 +139,19 @@ public class Service {
         return person;
     }
 
+    @ServiceExceptionHandler
+    @ServiceTransaction
     public Person createPerson(Person person) throws ServiceException {
 
-        try {
-            beginTransaction();
-            checkIsUserNotExist(person.getLogin());
-            switch (person.getRole()) {
-                case ADMIN:
-                    return adminDao.create((Admin) person);
-                case TEACHER:
-                    return teacherDao.create((Teacher) person);
-                case STUDENT:
-                default:
-                    return studentDao.create((Student) person);
-            }
-        } catch (DaoException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            closeTransaction();
+        checkIsUserNotExist(person.getLogin());
+        switch (person.getRole()) {
+            case ADMIN:
+                return adminDao.create((Admin) person);
+            case TEACHER:
+                return teacherDao.create((Teacher) person);
+            case STUDENT:
+            default:
+                return studentDao.create((Student) person);
         }
     }
 
@@ -187,10 +179,10 @@ public class Service {
         return teacher;
     }
 
+    @ServiceTransaction
     public Person getUserIfExist(String login) throws ServiceException {
 
         Person user;
-        beginTransaction();
         try {
             user = adminDao.read(login);
         } catch (DaoException e) {
@@ -205,8 +197,6 @@ public class Service {
                     throw new ServiceException(NO_SUCH_USER_IN_DATABASE);
                 }
             }
-        } finally {
-            closeTransaction();
         }
         return user;
     }
@@ -264,28 +254,14 @@ public class Service {
         }
     }
 
-    public void checkIsNotAnAdmin(Person person) throws ServiceException {
-
-        if (!Role.ADMIN.equals(person.getRole())) {
-            log.error("Error - user {} is not an admin", person.getLogin());
-            throw new ServiceException("Error - this user isn't an admin");
-        }
-    }
-
+    @ServiceExceptionHandler
+    @ServiceTransaction
     public Group getGroupByTeacher(Teacher teacher) throws ServiceException {
-
-        beginTransaction();
-        try {
-            return groupDao.read(teacher);
-        } catch (DaoException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            closeTransaction();
-        }
+        return groupDao.read(teacher);
     }
 
+    @ServiceExceptionHandler
+    @ServiceTransaction
     public void createGrade(String studentLogin, Group group, String themeString, String gradeString)
             throws ServiceException {
 
@@ -294,7 +270,6 @@ public class Service {
             if (gradeValue < 1 || gradeValue > 10) {
                 throw new NumberFormatException();
             }
-            beginTransaction();
             Student student = studentDao.read(studentLogin);
             if (!group.getStudents().contains(student)) {
                 DataBaseUtil.rollBack(emHelper.get());
@@ -316,231 +291,141 @@ public class Service {
             DataBaseUtil.rollBack(emHelper.get());
             log.error(ERROR_WRONG_GRADE_FORMAT);
             throw new ServiceException(ERROR_WRONG_GRADE_FORMAT);
-        } catch (DaoException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            closeTransaction();
         }
     }
 
+    @ServiceExceptionHandler
+    @ServiceTransaction
     public void changeGroup(Group oldGroup, String newGroupTitle, Teacher teacher) throws ServiceException {
 
-        try {
-            beginTransaction();
-            if (newGroupTitle == null || newGroupTitle.equals("")) {
-                if (oldGroup == null) {
-                    DataBaseUtil.rollBack(emHelper.get());
-                    throw new ServiceException("Error - you already don't have a group");
-                }
-                setTeacherForGroup(oldGroup, null);
-                return;
-            }
-            Group newGroup = groupDao.read(newGroupTitle);
-            if (newGroup.getTeacher() != null) {
+        if (newGroupTitle == null || newGroupTitle.equals("")) {
+            if (oldGroup == null) {
                 DataBaseUtil.rollBack(emHelper.get());
-                throw new ServiceException("Error - this group already has a teacher");
+                throw new ServiceException("Error - you already don't have a group");
             }
-            if (oldGroup != null) {
-                setTeacherForGroup(oldGroup, null);
-            }
-            setTeacherForGroup(newGroup, teacher);
-        } catch (DaoException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            closeTransaction();
+            setTeacherForGroup(oldGroup, null);
+            return;
         }
+        Group newGroup = groupDao.read(newGroupTitle);
+        if (newGroup.getTeacher() != null) {
+            DataBaseUtil.rollBack(emHelper.get());
+            throw new ServiceException("Error - this group already has a teacher");
+        }
+        if (oldGroup != null) {
+            setTeacherForGroup(oldGroup, null);
+        }
+        setTeacherForGroup(newGroup, teacher);
     }
 
+    @ServiceTransaction
     public List<Person> getAllPersons() {
-        beginTransaction();
+
         List<Person> persons = new ArrayList<>(adminDao.readAll());
         List<Teacher> teachers = teacherDao.readAll();
         List<Student> students = studentDao.readAll();
         persons.addAll(teachers);
         persons.addAll(students);
-        closeTransaction();
         return persons;
     }
 
+    @ServiceTransaction
     public List<Group> getAllGroups() {
-        beginTransaction();
-        List<Group> groups = groupDao.readAll();
-        closeTransaction();
-        return groups;
+        return groupDao.readAll();
     }
 
+    @ServiceExceptionHandler
+    @ServiceTransaction
     public Group getGroup(String title) throws ServiceException {
-
-        beginTransaction();
-        try {
-            return groupDao.read(title);
-        } catch (DaoException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            closeTransaction();
-        }
+        return groupDao.read(title);
     }
 
+    @ServiceTransaction
     public Group createGroup(Group group) throws ServiceException {
-
-        try {
-            beginTransaction();
-            checkIsGroupNotExist(group.getTitle());
-            return groupDao.create(group);
-        } finally {
-            closeTransaction();
-        }
+        checkIsGroupNotExist(group.getTitle());
+        return groupDao.create(group);
     }
 
+    @ServiceExceptionHandler
+    @ServiceTransaction
     public Group updateGroup(Group newGroup) throws ServiceException {
-
-        try {
-            beginTransaction();
-            groupDao.update(newGroup);
-            return newGroup;
-        } catch (DaoException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            closeTransaction();
-        }
+        groupDao.update(newGroup);
+        return newGroup;
     }
 
+    @ServiceExceptionHandler
+    @ServiceTransaction
     public Group removeGroup(Group group) throws ServiceException {
-
-        try {
-            beginTransaction();
-            groupDao.delete(group.getTitle());
-            return group;
-        } catch (DaoException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            closeTransaction();
-        }
+        groupDao.delete(group.getTitle());
+        return group;
     }
 
+    @ServiceTransaction
     public List<Theme> getAllThemes() {
-        beginTransaction();
-        List<Theme> themes = themeDao.readAll();
-        closeTransaction();
-        return themes;
+        return themeDao.readAll();
     }
 
+    @ServiceExceptionHandler
+    @ServiceTransaction
     public Theme getTheme(String title) throws ServiceException {
-
-        beginTransaction();
-        try {
-            return themeDao.read(title);
-        } catch (DaoException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            closeTransaction();
-        }
+        return themeDao.read(title);
     }
 
+    @ServiceTransaction
     public Theme createTheme(Theme theme) throws ServiceException {
-
-        try {
-            beginTransaction();
-            checkIsThemeNotExist(theme.getTitle());
-            return themeDao.create(theme);
-        } finally {
-            closeTransaction();
-        }
+        checkIsThemeNotExist(theme.getTitle());
+        return themeDao.create(theme);
     }
 
+    @ServiceExceptionHandler
+    @ServiceTransaction
     public Theme updateTheme(Theme newTheme) throws ServiceException {
-
-        try {
-            beginTransaction();
-            themeDao.update(newTheme);
-            return newTheme;
-        } catch (DaoException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            closeTransaction();
-        }
+        themeDao.update(newTheme);
+        return newTheme;
     }
 
+    @ServiceExceptionHandler
+    @ServiceTransaction
     public Theme removeTheme(Theme theme) throws ServiceException {
-
-        try {
-            beginTransaction();
-            themeDao.delete(theme.getTitle());
-            return theme;
-        } catch (DaoException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            closeTransaction();
-        }
+        themeDao.delete(theme.getTitle());
+        return theme;
     }
 
+    @ServiceExceptionHandler
+    @ServiceTransaction
     public Person updatePerson(Person newPerson) throws ServiceException {
 
-        try {
-            beginTransaction();
-            switch (newPerson.getRole()) {
-                case ADMIN:
-                    adminDao.update((Admin) newPerson);
-                    break;
-                case TEACHER:
-                    teacherDao.update((Teacher) newPerson);
-                    break;
-                case STUDENT:
-                    studentDao.update((Student) newPerson);
-            }
-            return newPerson;
-        } catch (DaoException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            closeTransaction();
+        switch (newPerson.getRole()) {
+            case ADMIN:
+                adminDao.update((Admin) newPerson);
+                break;
+            case TEACHER:
+                teacherDao.update((Teacher) newPerson);
+                break;
+            case STUDENT:
+                studentDao.update((Student) newPerson);
         }
+        return newPerson;
     }
 
+    @ServiceExceptionHandler
+    @ServiceTransaction
     public Person removeUser(Person person) throws ServiceException {
 
-        try {
-            beginTransaction();
-            switch (person.getRole()) {
-                case ADMIN:
-                    adminDao.delete(person.getLogin());
-                    break;
-                case TEACHER:
-                    teacherDao.delete(person.getLogin());
-                    break;
-                case STUDENT:
-                default:
-                    studentDao.delete(person.getLogin());
-            }
-            return person;
-        } catch (DaoException e) {
-            DataBaseUtil.rollBack(emHelper.get());
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            closeTransaction();
+        switch (person.getRole()) {
+            case ADMIN:
+                adminDao.delete(person.getLogin());
+                break;
+            case TEACHER:
+                teacherDao.delete(person.getLogin());
+                break;
+            case STUDENT:
+            default:
+                studentDao.delete(person.getLogin());
         }
+        return person;
     }
 
     private void setTeacherForGroup(Group group, Teacher teacher) throws DaoException {
-
         group.setTeacher(teacher);
         groupDao.update(group);
     }
@@ -624,34 +509,5 @@ public class Service {
         double averageSalary = sum / divider;
         String result = String.format("%.2f", averageSalary).replace(',', '.');
         return result;
-    }
-
-    private void beginTransaction() {
-
-        switch (TYPE) {
-            case MEMORY:
-
-            case POSTGRES:
-
-            case JPA:
-            default:
-                emHelper.set();
-                emHelper.get().getTransaction().begin();
-        }
-    }
-
-    private void closeTransaction() {
-
-        switch (TYPE) {
-            case MEMORY:
-
-            case POSTGRES:
-
-            case JPA:
-            default:
-                DataBaseUtil.closeEntityManager(emHelper.get());
-                DataBaseUtil.finallyCloseEntityManager(emHelper.get());
-                emHelper.remove();
-        }
     }
 }
