@@ -60,4 +60,5 @@ public class Constant {
     public static final String STUDENT_PREFIX = "studentDaoFor";
     public static final String GROUP_PREFIX = "groupDaoFor";
     public static final String THEME_PREFIX = "themeDaoFor";
+    public static final String GRADE_PREFIX = "gradeDaoFor";
 }

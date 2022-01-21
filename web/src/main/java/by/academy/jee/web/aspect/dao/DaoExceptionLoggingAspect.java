@@ -1,4 +1,4 @@
-package by.academy.jee.web.aspect;
+package by.academy.jee.web.aspect.dao;
 
 import by.academy.jee.exception.DaoException;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class DaoExceptionLoggingAspect {
 
     @AfterThrowing(
-            pointcut = "execution(* by.academy.jee.dao.*.*.*.*(..)) || execution(* by.academy.jee.dao.*.*.*(..))",
+            pointcut = "within(by.academy.jee.dao..*)",
             throwing = "e"
     )
     public void loggingExceptionWithRethrowing(Exception e) {

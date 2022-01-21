@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @SecondaryTable(name = "roles", pkJoinColumns = {@PrimaryKeyJoinColumn(name = "id")})
 public class Student extends Person {
     @JsonIgnore
-    @OneToMany(mappedBy = "student", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Grade> grades;
 
     @JsonIgnore

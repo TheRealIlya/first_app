@@ -1,4 +1,4 @@
-package by.academy.jee.web.aspect;
+package by.academy.jee.web.aspect.service;
 
 import by.academy.jee.dao.RepositoryType;
 import by.academy.jee.util.DataBaseUtil;
@@ -31,15 +31,14 @@ public class ServiceTransactionAspect {
 
         beginTransaction();
         String method = jp.getSignature().getName();
-        log.info("Transaction begins, method {}" + method);
+        log.info("Transaction begins, method {}", method);
         try {
             return jp.proceed();
         } finally {
             closeTransaction();
-            log.info("Transaction ends, method {}" + method);
+            log.info("Transaction ends, method {}", method);
         }
     }
-
 
     private void beginTransaction() {
 

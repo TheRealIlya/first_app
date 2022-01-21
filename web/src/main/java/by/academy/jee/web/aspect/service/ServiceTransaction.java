@@ -1,4 +1,4 @@
-package by.academy.jee.web.aspect;
+package by.academy.jee.web.aspect.service;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

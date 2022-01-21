@@ -1,4 +1,4 @@
-package by.academy.jee.web.aspect;
+package by.academy.jee.web.aspect.service;
 
 import by.academy.jee.exception.DaoException;
 import by.academy.jee.exception.ServiceException;

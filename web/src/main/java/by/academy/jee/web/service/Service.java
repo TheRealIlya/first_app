@@ -1,5 +1,6 @@
 package by.academy.jee.web.service;
 
+import by.academy.jee.dao.grade.GradeDao;
 import by.academy.jee.dao.group.GroupDao;
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.dao.theme.ThemeDao;
@@ -18,8 +19,8 @@ import by.academy.jee.util.DataBaseUtil;
 import by.academy.jee.util.PasswordHasher;
 import by.academy.jee.util.SalaryGenerator;
 import by.academy.jee.util.ThreadLocalForEntityManager;
-import by.academy.jee.web.aspect.ServiceExceptionHandler;
-import by.academy.jee.web.aspect.ServiceTransaction;
+import by.academy.jee.web.aspect.service.ServiceExceptionHandler;
+import by.academy.jee.web.aspect.service.ServiceTransaction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import static by.academy.jee.web.constant.Constant.ERROR_WRONG_NUMBERS_FORMAT;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_PASSWORD;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_SALARIES_INPUT;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_SALARIES_LOGIC;
+import static by.academy.jee.web.constant.Constant.GRADE_PREFIX;
 import static by.academy.jee.web.constant.Constant.GROUP_PREFIX;
 import static by.academy.jee.web.constant.Constant.LOGIN;
 import static by.academy.jee.web.constant.Constant.MAX_SALARY;
@@ -82,6 +84,10 @@ public class Service {
     @Autowired
     private Map<String, ThemeDao> themeDaoMap;
 
+    private GradeDao gradeDao;
+    @Autowired
+    private Map<String, GradeDao> gradeDaoMap;
+
     private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
 
     public Service(@Value("${repository.type}") String type) {
@@ -96,11 +102,13 @@ public class Service {
         String studentDaoTitle = STUDENT_PREFIX + type;
         String groupDaoTitle = GROUP_PREFIX + type;
         String themeDaoTitle = THEME_PREFIX + type;
+        String gradeDaoTitle = GRADE_PREFIX + type;
         adminDao = personDaoMap.get(adminDaoTitle);
         teacherDao = personDaoMap.get(teacherDaoTitle);
         studentDao = personDaoMap.get(studentDaoTitle);
         groupDao = groupDaoMap.get(groupDaoTitle);
         themeDao = themeDaoMap.get(themeDaoTitle);
+        gradeDao = gradeDaoMap.get(gradeDaoTitle);
     }
 
     public Student getStudentFromRequestWithoutId(HttpServletRequest req) throws ServiceException {
@@ -329,6 +337,31 @@ public class Service {
     }
 
     @ServiceTransaction
+    public List<Grade> getAllGrades() {
+        return gradeDao.readAll();
+    }
+
+    @ServiceTransaction
+    @ServiceExceptionHandler
+    public Grade createGrade(Grade grade) throws ServiceException {
+        return gradeDao.create(grade);
+    }
+
+    @ServiceExceptionHandler
+    @ServiceTransaction
+    public Grade updateGrade(Grade grade) throws ServiceException {
+        return gradeDao.update(grade);
+    }
+
+    @ServiceExceptionHandler
+    @ServiceTransaction
+    public Grade removeGrade(int id) throws ServiceException {
+        Grade grade = gradeDao.read(id);
+        gradeDao.delete(grade);
+        return grade;
+    }
+
+    @ServiceTransaction
     public List<Group> getAllGroups() {
         return groupDao.readAll();
     }
@@ -355,6 +388,15 @@ public class Service {
     @ServiceExceptionHandler
     @ServiceTransaction
     public Group removeGroup(Group group) throws ServiceException {
+        for (Grade grade : group.getGrades()) {
+            gradeDao.delete(grade);
+        }
+        group.setGrades(null);
+        for (Student student : group.getStudents()) {
+            student.getGroups().remove(group);
+            studentDao.update(student);
+        }
+        groupDao.update(group);
         groupDao.delete(group.getTitle());
         return group;
     }
@@ -386,6 +428,13 @@ public class Service {
     @ServiceExceptionHandler
     @ServiceTransaction
     public Theme removeTheme(Theme theme) throws ServiceException {
+        for (Grade grade : theme.getGrades()) {
+            gradeDao.delete(grade);
+        }
+        for (Group group : theme.getGroups()) {
+            group.getThemes().remove(theme);
+            groupDao.update(group);
+        }
         themeDao.delete(theme.getTitle());
         return theme;
     }
@@ -416,10 +465,17 @@ public class Service {
                 adminDao.delete(person.getLogin());
                 break;
             case TEACHER:
+                Group group = groupDao.read((Teacher) person);
+                group.setTeacher(null);
+                groupDao.update(group);
                 teacherDao.delete(person.getLogin());
                 break;
             case STUDENT:
             default:
+                Student student = (Student) person;
+                for (Grade grade : student.getGrades()) {
+                    gradeDao.delete(grade);
+                }
                 studentDao.delete(person.getLogin());
         }
         return person;
