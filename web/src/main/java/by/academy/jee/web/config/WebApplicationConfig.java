@@ -1,5 +1,7 @@
 package by.academy.jee.web.config;
 
+import by.academy.jee.web.filter.CachingFilter;
+import javax.servlet.Filter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 public class WebApplicationConfig extends AbstractAnnotationConfigDispatcherServletInitializer {
@@ -16,5 +18,12 @@ public class WebApplicationConfig extends AbstractAnnotationConfigDispatcherServ
     @Override
     protected String[] getServletMappings() {
         return new String[]{"/"};
+    }
+
+    @Override
+    protected Filter[] getServletFilters() {
+        return new Filter[] {
+                new CachingFilter()
+        };
     }
 }

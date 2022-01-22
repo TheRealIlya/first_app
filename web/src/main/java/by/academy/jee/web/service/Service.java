@@ -465,9 +465,13 @@ public class Service {
                 adminDao.delete(person.getLogin());
                 break;
             case TEACHER:
-                Group group = groupDao.read((Teacher) person);
-                group.setTeacher(null);
-                groupDao.update(group);
+                try {
+                    Group group = groupDao.read((Teacher) person);
+                    group.setTeacher(null);
+                    groupDao.update(group);
+                } catch (DaoException e) {
+                    //ignore
+                }
                 teacherDao.delete(person.getLogin());
                 break;
             case STUDENT:
