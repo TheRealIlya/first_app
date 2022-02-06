@@ -6,15 +6,16 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @Entity
 @Table(name = "users")
 @SecondaryTable(name = "roles", pkJoinColumns = {@PrimaryKeyJoinColumn(name = "id")})
 public class Admin extends Person {
+
+    public Admin() {
+        setRole(Role.ADMIN);
+    }
 
     public Admin withId(int id) {
         setId(id);
@@ -43,11 +44,6 @@ public class Admin extends Person {
 
     public Admin withAge(int age) {
         setAge(age);
-        return this;
-    }
-
-    public Admin withRole(Role role) {
-        setRole(role);
         return this;
     }
 

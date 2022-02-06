@@ -9,7 +9,8 @@ public enum RepositoryType {
 
     MEMORY("memory"),
     POSTGRES("postgres"),
-    JPA("jpa");
+    JPA("jpa"),
+    ORM("orm");
 
     private final String type;
     private static Map<String, RepositoryType> valueToEnum = initValueToEnum();

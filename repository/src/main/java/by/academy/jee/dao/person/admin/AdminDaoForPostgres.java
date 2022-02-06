@@ -17,9 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_ADMIN;
-import static by.academy.jee.constant.Constant.LOGIN_FILTER_POSTGRES;
 import static by.academy.jee.constant.Constant.INSERT_ADMIN_POSTGRES;
-import static by.academy.jee.constant.Constant.R_TITLE;
+import static by.academy.jee.constant.Constant.LOGIN_FILTER_POSTGRES;
 import static by.academy.jee.constant.Constant.SELECT_ALL_ADMINS_POSTGRES;
 import static by.academy.jee.constant.Constant.U_AGE;
 import static by.academy.jee.constant.Constant.U_ID;
@@ -107,15 +106,13 @@ public class AdminDaoForPostgres implements PersonDao<Admin> {
             byte[] salt = rs.getBytes(U_SALT);
             String name = rs.getString(U_NAME);
             int age = rs.getInt(U_AGE);
-            Role role = Role.valueOf(rs.getString(R_TITLE));
             Admin admin = new Admin()
                     .withId(id)
                     .withLogin(login)
                     .withPwd(pwd)
                     .withSalt(salt)
                     .withName(name)
-                    .withAge(age)
-                    .withRole(role);
+                    .withAge(age);
             result.add(admin);
         }
         result.removeIf(admin -> !Role.ADMIN.equals(admin.getRole()));

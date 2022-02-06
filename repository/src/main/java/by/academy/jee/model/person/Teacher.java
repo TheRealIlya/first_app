@@ -1,30 +1,32 @@
 package by.academy.jee.model.person;
 
 import by.academy.jee.model.person.role.Role;
-
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @Entity
 @Table(name = "users")
 @SecondaryTable(name = "roles", pkJoinColumns = {@PrimaryKeyJoinColumn(name = "id")})
 public class Teacher extends Person {
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "salary", joinColumns = @JoinColumn(name = "teacher_id"))
     @Column(name = "value")
     private Map<Integer, Double> salaries = new HashMap<>();
+
+    public Teacher() {
+        setRole(Role.TEACHER);
+    }
 
     public Map<Integer, Double> getSalaries() {
         return salaries;
@@ -57,11 +59,6 @@ public class Teacher extends Person {
 
     public Teacher withAge(int age) {
         setAge(age);
-        return this;
-    }
-
-    public Teacher withRole(Role role) {
-        setRole(role);
         return this;
     }
 

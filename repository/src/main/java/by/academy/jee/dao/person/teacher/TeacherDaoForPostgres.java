@@ -21,9 +21,8 @@ import org.springframework.stereotype.Component;
 import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_TEACHER;
 import static by.academy.jee.constant.Constant.ERROR_NO_TEACHERS_IN_DATABASE;
 import static by.academy.jee.constant.Constant.INSERT_SALARIES_POSTGRES;
-import static by.academy.jee.constant.Constant.LOGIN_FILTER_POSTGRES;
 import static by.academy.jee.constant.Constant.INSERT_TEACHER_POSTGRES;
-import static by.academy.jee.constant.Constant.R_TITLE;
+import static by.academy.jee.constant.Constant.LOGIN_FILTER_POSTGRES;
 import static by.academy.jee.constant.Constant.SELECT_ALL_TEACHERS_POSTGRES;
 import static by.academy.jee.constant.Constant.S_SALARIES_KEY;
 import static by.academy.jee.constant.Constant.S_VALUE;
@@ -154,7 +153,6 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
             byte[] salt = rs.getBytes(U_SALT);
             String name = rs.getString(U_NAME);
             int age = rs.getInt(U_AGE);
-            Role role = Role.valueOf(rs.getString(R_TITLE));
             int month = rs.getInt(S_SALARIES_KEY);
             double salary = rs.getDouble(S_VALUE);
             if (!login.equals(previousLogin)) {
@@ -166,7 +164,6 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
                         .withSalt(salt)
                         .withName(name)
                         .withAge(age)
-                        .withRole(role)
                         .withSalaries(salaries);
                 result.add(teacher);
                 previousLogin = login;

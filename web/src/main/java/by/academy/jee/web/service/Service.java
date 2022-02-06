@@ -30,14 +30,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import static by.academy.jee.web.constant.Constant.ADMIN;
 import static by.academy.jee.web.constant.Constant.ADMIN_MENU_JSP_URL;
 import static by.academy.jee.web.constant.Constant.ADMIN_PREFIX;
 import static by.academy.jee.web.constant.Constant.AGE;
 import static by.academy.jee.web.constant.Constant.ERROR_AGE_MUST_BE_A_NUMBER;
-import static by.academy.jee.web.constant.Constant.ERROR_INCORRECT_ROLE;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_GRADE_FORMAT;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_MONTHS_FORMAT;
 import static by.academy.jee.web.constant.Constant.ERROR_WRONG_MONTHS_INPUT;
@@ -64,7 +63,8 @@ import static by.academy.jee.web.constant.Constant.USER_IS_ALREADY_EXIST;
 import static by.academy.jee.web.constant.Constant.USER_NAME;
 
 @Slf4j
-@Component
+@org.springframework.stereotype.Service
+@Transactional
 @PropertySource("classpath:repository.properties")
 public class Service {
 
@@ -120,22 +120,10 @@ public class Service {
 
     public Person getPersonFromDto(PersonDto personDto) {
 
-        Person person;
-        switch (personDto.getRole()) {
-            case ADMIN:
-                person = new Admin()
-                        .withRole(Role.ADMIN);
-                break;
-            case TEACHER:
-                person = new Teacher()
-                        .withRole(Role.TEACHER)
-                        .withSalaries(personDto.getSalaries());
-                break;
-            case STUDENT:
-            default:
-                person = new Student()
-                        .withRole(Role.STUDENT);
-        }
+        Map<Role, Person> personMap = Map.of(Role.ADMIN, new Admin(),
+                Role.TEACHER, new Teacher().withSalaries(personDto.getSalaries()),
+                Role.STUDENT, new Student());
+        Person person = personMap.get(personDto.getRole());
         if (personDto.getId() != null) {
             person.setId(personDto.getId());
         }
@@ -192,15 +180,15 @@ public class Service {
 
         Person user;
         try {
-            user = adminDao.read(login);
+            user = studentDao.read(login);
         } catch (DaoException e) {
             try {
                 user = teacherDao.read(login);
             } catch (DaoException f) {
                 try {
-                    user = studentDao.read(login);
+                    user = adminDao.read(login);
                 } catch (DaoException g) {
-                    DataBaseUtil.rollBack(emHelper.get());
+//                    DataBaseUtil.rollBack(emHelper.get());
                     log.error("Error - no user {} in database", login);
                     throw new ServiceException(NO_SUCH_USER_IN_DATABASE);
                 }
@@ -211,17 +199,10 @@ public class Service {
 
     public String getMenuUrlAfterLogin(String roleString) throws ServiceException {
 
-        switch (roleString) {
-            case ADMIN:
-                return ADMIN_MENU_JSP_URL;
-            case TEACHER:
-                return TEACHER_MENU_JSP_URL;
-            case STUDENT:
-                return STUDENT_MENU_JSP_URL;
-            default:
-                log.error("Error - incorrect role \"{}\"", roleString);
-                throw new ServiceException(ERROR_INCORRECT_ROLE);
-        }
+        Map<String, String> urlMap = Map.of(ADMIN, ADMIN_MENU_JSP_URL,
+                TEACHER, TEACHER_MENU_JSP_URL,
+                STUDENT, STUDENT_MENU_JSP_URL);
+        return urlMap.get(roleString);
     }
 
     public void checkPassword(String attemptedPassword, Person user) throws ServiceException {
@@ -428,13 +409,14 @@ public class Service {
     @ServiceExceptionHandler
     @ServiceTransaction
     public Theme removeTheme(Theme theme) throws ServiceException {
-        for (Grade grade : theme.getGrades()) {
-            gradeDao.delete(grade);
-        }
-        for (Group group : theme.getGroups()) {
-            group.getThemes().remove(theme);
-            groupDao.update(group);
-        }
+
+        theme.getGrades()
+                .forEach(grade -> gradeDao.delete(grade));
+        theme.getGroups()
+                .forEach(group -> {
+                    group.getThemes().remove(theme);
+                    groupDao.update(group);
+                });
         themeDao.delete(theme.getTitle());
         return theme;
     }
@@ -477,9 +459,8 @@ public class Service {
             case STUDENT:
             default:
                 Student student = (Student) person;
-                for (Grade grade : student.getGrades()) {
-                    gradeDao.delete(grade);
-                }
+                student.getGrades()
+                        .forEach(grade -> gradeDao.delete(grade));
                 studentDao.delete(person.getLogin());
         }
         return person;

@@ -43,29 +43,25 @@ public class ServiceTransactionAspect {
     private void beginTransaction() {
 
         switch (TYPE) {
-            case MEMORY:
-
-            case POSTGRES:
-
             case JPA:
-            default:
                 emHelper.set();
                 emHelper.get().getTransaction().begin();
+            case MEMORY:
+            case POSTGRES:
+            case ORM:
         }
     }
 
     private void closeTransaction() {
 
         switch (TYPE) {
-            case MEMORY:
-
-            case POSTGRES:
-
             case JPA:
-            default:
                 DataBaseUtil.closeEntityManager(emHelper.get());
                 DataBaseUtil.finallyCloseEntityManager(emHelper.get());
                 emHelper.remove();
+            case MEMORY:
+            case POSTGRES:
+            case ORM:
         }
     }
 }

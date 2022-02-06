@@ -1,33 +1,30 @@
 package by.academy.jee.dao.theme;
 
-import by.academy.jee.dao.common.CommonDaoForJpa;
+import by.academy.jee.dao.common.CommonDaoForOrm;
 import by.academy.jee.model.theme.Theme;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-@Component
-public class ThemeDaoForJpa extends CommonDaoForJpa<Theme> implements ThemeDao {
+@Repository
+public class ThemeDaoForOrm extends CommonDaoForOrm<Theme> implements ThemeDao {
 
     @Override
     public Theme read(String title) {
-        EntityManager em = emHelper.get();
-        return getThemeByTitle(title, em);
+        return getThemeByTitle(title);
     }
 
     @Override
     public List<Theme> readAll() {
-        EntityManager em = emHelper.get();
-        return getAllThemes(em);
+        return getAllThemes();
     }
 
-    private List<Theme> getAllThemes(EntityManager em) {
+    private List<Theme> getAllThemes() {
         TypedQuery<Theme> query = em.createQuery("from Theme", Theme.class);
         return query.getResultList();
     }
 
-    private Theme getThemeByTitle(String title, EntityManager em) {
+    private Theme getThemeByTitle(String title) {
 
         TypedQuery<Theme> query = em.createQuery("from Theme t where t.title = ?1", Theme.class);
         query.setParameter(1, title);
