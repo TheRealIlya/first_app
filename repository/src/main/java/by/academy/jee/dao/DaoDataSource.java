@@ -12,9 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+import static by.academy.jee.constant.CommonConstant.REPOSITORY_PROPERTIES;
 
 @Component
-@PropertySource("classpath:repository.properties")
+@PropertySource(REPOSITORY_PROPERTIES)
 public class DaoDataSource implements DataSource {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(DaoDataSource.class);

@@ -13,9 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import static by.academy.jee.web.constant.Constant.APPROVE_MESSAGE;
-import static by.academy.jee.web.constant.Constant.CREATE_GRADE_JSP_URL;
-import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
+import static by.academy.jee.constant.ControllerConstant.APPROVE_MESSAGE;
+import static by.academy.jee.constant.ControllerConstant.CREATE_GRADE_JSP_URL;
+import static by.academy.jee.constant.ControllerConstant.ERROR_MESSAGE;
+import static by.academy.jee.constant.ControllerConstant.GRADE_HAS_BEEN_ADDED;
+import static by.academy.jee.constant.ControllerConstant.GRADE_STRING;
+import static by.academy.jee.constant.ControllerConstant.STUDENT_LOGIN;
+import static by.academy.jee.constant.ControllerConstant.THEME_STRING;
 
 @Slf4j
 @Controller
@@ -31,16 +35,16 @@ public class CreateGradeController {
     }
 
     @PostMapping
-    public ModelAndView createGrade(@RequestParam("studentLogin") String studentLogin,
-                                    @RequestParam("themeString") String themeString,
-                                    @RequestParam("gradeString") String gradeString, HttpSession httpSession) {
+    public ModelAndView createGrade(@RequestParam(STUDENT_LOGIN) String studentLogin,
+                                    @RequestParam(THEME_STRING) String themeString,
+                                    @RequestParam(GRADE_STRING) String gradeString, HttpSession httpSession) {
 
         ModelAndView modelAndView = new ModelAndView();
         try {
             Group group = SessionUtil.getSessionGroup(httpSession);
             service.createGrade(studentLogin, group, themeString, gradeString);
-            log.info("Grade has been added");
-            modelAndView.addObject(APPROVE_MESSAGE, "Grade has been added");
+            log.info(GRADE_HAS_BEEN_ADDED);
+            modelAndView.addObject(APPROVE_MESSAGE, GRADE_HAS_BEEN_ADDED);
         } catch (ServiceException e) {
             modelAndView.addObject(ERROR_MESSAGE, e.getMessage());
         }

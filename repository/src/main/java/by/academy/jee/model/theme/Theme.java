@@ -20,11 +20,13 @@ import lombok.NoArgsConstructor;
 public class Theme extends AbstractEntity {
 
     private String title;
-    @ManyToMany(mappedBy = "themes", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "themes", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
+            CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @JsonIgnore
     private List<Group> groups;
-    @OneToMany(mappedBy = "theme", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "theme", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
+            CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @JsonIgnore
     private List<Grade> grades;

@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import static by.academy.jee.constant.ControllerConstant.APPLICATION_JSON;
+import static by.academy.jee.constant.ExceptionConstant.GROUP_UPDATE_ERROR;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/rest/groups", produces = "application/json")
+@RequestMapping(value = "/rest/groups", produces = APPLICATION_JSON)
 public class GroupJsonController {
 
     private final Service service;
@@ -58,8 +60,8 @@ public class GroupJsonController {
             if (group != null && group.getId() == id) {
                 return ResponseEntity.ok(service.updateGroup(group));
             } else {
-                log.error("Error - Group id must be equal with id in path");
-                return ResponseEntity.badRequest().body("Error - Group id must be equal with id in path");
+                log.error(GROUP_UPDATE_ERROR);
+                return ResponseEntity.badRequest().body(GROUP_UPDATE_ERROR);
             }
         } catch (ServiceException e) {
             log.error(e.getMessage());

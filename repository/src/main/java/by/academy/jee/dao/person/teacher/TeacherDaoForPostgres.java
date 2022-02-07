@@ -15,31 +15,30 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_TEACHER;
-import static by.academy.jee.constant.Constant.ERROR_NO_TEACHERS_IN_DATABASE;
-import static by.academy.jee.constant.Constant.INSERT_SALARIES_POSTGRES;
-import static by.academy.jee.constant.Constant.INSERT_TEACHER_POSTGRES;
-import static by.academy.jee.constant.Constant.LOGIN_FILTER_POSTGRES;
-import static by.academy.jee.constant.Constant.SELECT_ALL_TEACHERS_POSTGRES;
-import static by.academy.jee.constant.Constant.S_SALARIES_KEY;
-import static by.academy.jee.constant.Constant.S_VALUE;
-import static by.academy.jee.constant.Constant.USER_CREATE_TRANSACTION_ERROR;
-import static by.academy.jee.constant.Constant.U_AGE;
-import static by.academy.jee.constant.Constant.U_ID;
-import static by.academy.jee.constant.Constant.U_LOGIN;
-import static by.academy.jee.constant.Constant.U_NAME;
-import static by.academy.jee.constant.Constant.U_PASSWORD;
-import static by.academy.jee.constant.Constant.U_SALT;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_NO_SUCH_TEACHER;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_NO_TEACHERS_IN_DATABASE;
+import static by.academy.jee.constant.ExceptionConstant.USER_CREATE_TRANSACTION_ERROR;
+import static by.academy.jee.constant.PostgresQueryConstant.GET_ALL_TEACHERS;
+import static by.academy.jee.constant.PostgresQueryConstant.INSERT_SALARIES;
+import static by.academy.jee.constant.PostgresQueryConstant.INSERT_TEACHER;
+import static by.academy.jee.constant.PostgresQueryConstant.LOGIN_FILTER;
+import static by.academy.jee.constant.PostgresQueryConstant.S_SALARIES_KEY;
+import static by.academy.jee.constant.PostgresQueryConstant.S_VALUE;
+import static by.academy.jee.constant.PostgresQueryConstant.U_AGE;
+import static by.academy.jee.constant.PostgresQueryConstant.U_ID;
+import static by.academy.jee.constant.PostgresQueryConstant.U_LOGIN;
+import static by.academy.jee.constant.PostgresQueryConstant.U_NAME;
+import static by.academy.jee.constant.PostgresQueryConstant.U_PASSWORD;
+import static by.academy.jee.constant.PostgresQueryConstant.U_SALT;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TeacherDaoForPostgres implements PersonDao<Teacher> {
 
-    private static final Logger log = LoggerFactory.getLogger(TeacherDaoForPostgres.class);
-    private static final String SELECT_ONE_TEACHER = SELECT_ALL_TEACHERS_POSTGRES + LOGIN_FILTER_POSTGRES;
+    private static final String SELECT_ONE_TEACHER = GET_ALL_TEACHERS + LOGIN_FILTER;
     private final DataSource dataSource;
 
     @Override
@@ -50,7 +49,7 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
         PreparedStatement ps2 = null;
         try {
             con = dataSource.getConnection();
-            ps1 = con.prepareStatement(INSERT_TEACHER_POSTGRES);
+            ps1 = con.prepareStatement(INSERT_TEACHER);
             con.setAutoCommit(false);
             ps1.setString(1, teacher.getLogin());
             ps1.setBytes(2, teacher.getPwd());
@@ -63,7 +62,7 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
                 throw new DaoException(USER_CREATE_TRANSACTION_ERROR);
             }
             for (int i = 1; i < 13; i++) {
-                ps2 = con.prepareStatement(INSERT_SALARIES_POSTGRES);
+                ps2 = con.prepareStatement(INSERT_SALARIES);
                 ps2.setInt(1, i);
                 ps2.setDouble(2, teacher.getSalaries().get(i));
                 ps2.setString(3, teacher.getLogin());
@@ -125,7 +124,7 @@ public class TeacherDaoForPostgres implements PersonDao<Teacher> {
         List<Teacher> result;
         ResultSet rs = null;
         try (Connection con = dataSource.getConnection();
-             PreparedStatement ps = con.prepareStatement(SELECT_ALL_TEACHERS_POSTGRES)) {
+             PreparedStatement ps = con.prepareStatement(GET_ALL_TEACHERS)) {
             rs = ps.executeQuery();
             result = resultSetToTeachers(rs);
         } catch (SQLException e) {

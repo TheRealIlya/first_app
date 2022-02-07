@@ -19,6 +19,7 @@ import lombok.Data;
 @Table(name = "users")
 @SecondaryTable(name = "roles", pkJoinColumns = {@PrimaryKeyJoinColumn(name = "id")})
 public class Teacher extends Person {
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "salary", joinColumns = @JoinColumn(name = "teacher_id"))
     @Column(name = "value")

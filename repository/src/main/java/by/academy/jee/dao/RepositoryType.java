@@ -14,7 +14,7 @@ public enum RepositoryType {
 
     private final String type;
     private static Map<String, RepositoryType> valueToEnum = initValueToEnum();
-    private static Map<RepositoryType, String>  enumToValue = initEnumToValue();
+    private static Map<RepositoryType, String> enumToValue = initEnumToValue();
 
     RepositoryType(String type) {
         this.type = type;

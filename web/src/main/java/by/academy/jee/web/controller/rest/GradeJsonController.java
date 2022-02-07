@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import static by.academy.jee.constant.ControllerConstant.APPLICATION_JSON;
+import static by.academy.jee.constant.ExceptionConstant.GRADE_UPDATE_ERROR;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/rest/grades", produces = "application/json")
+@RequestMapping(value = "/rest/grades", produces = APPLICATION_JSON)
 public class GradeJsonController {
 
     private final Service service;
@@ -47,8 +49,8 @@ public class GradeJsonController {
             if (grade != null && grade.getId() == id) {
                 return ResponseEntity.ok(service.updateGrade(grade));
             } else {
-                log.error("Error - Grade id must be equal with id in path");
-                return ResponseEntity.badRequest().body("Error - Grade id must be equal with id in path");
+                log.error(GRADE_UPDATE_ERROR);
+                return ResponseEntity.badRequest().body(GRADE_UPDATE_ERROR);
             }
         } catch (ServiceException e) {
             log.error(e.getMessage());

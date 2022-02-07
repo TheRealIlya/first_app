@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import static by.academy.jee.web.constant.Constant.ALREADY_LOGGED_IN_JSP_URL;
-import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
-import static by.academy.jee.web.constant.Constant.LOGIN_JSP_URL;
-import static by.academy.jee.web.constant.Constant.PASSWORD;
-import static by.academy.jee.web.constant.Constant.USER;
-import static by.academy.jee.web.constant.Constant.USER_NAME;
+import static by.academy.jee.constant.ControllerConstant.ALREADY_LOGGED_IN_JSP_URL;
+import static by.academy.jee.constant.ControllerConstant.ERROR_MESSAGE;
+import static by.academy.jee.constant.ControllerConstant.LOGIN_JSP_URL;
+import static by.academy.jee.constant.CommonConstant.PASSWORD;
+import static by.academy.jee.constant.CommonConstant.USER;
+import static by.academy.jee.constant.CommonConstant.USER_NAME;
 
 @Slf4j
 @Controller

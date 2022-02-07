@@ -11,11 +11,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+import static by.academy.jee.constant.CommonConstant.REPOSITORY_PROPERTIES;
 
 @Aspect
 @Component
 @Slf4j
-@PropertySource("classpath:repository.properties")
+@PropertySource(REPOSITORY_PROPERTIES)
 public class ServiceTransactionAspect {
 
     private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
@@ -42,26 +43,18 @@ public class ServiceTransactionAspect {
 
     private void beginTransaction() {
 
-        switch (TYPE) {
-            case JPA:
-                emHelper.set();
-                emHelper.get().getTransaction().begin();
-            case MEMORY:
-            case POSTGRES:
-            case ORM:
+        if (RepositoryType.JPA.equals(TYPE)) {
+            emHelper.set();
+            emHelper.get().getTransaction().begin();
         }
     }
 
     private void closeTransaction() {
 
-        switch (TYPE) {
-            case JPA:
-                DataBaseUtil.closeEntityManager(emHelper.get());
-                DataBaseUtil.finallyCloseEntityManager(emHelper.get());
-                emHelper.remove();
-            case MEMORY:
-            case POSTGRES:
-            case ORM:
+        if (RepositoryType.JPA.equals(TYPE)) {
+            DataBaseUtil.closeEntityManager(emHelper.get());
+            DataBaseUtil.finallyCloseEntityManager(emHelper.get());
+            emHelper.remove();
         }
     }
 }

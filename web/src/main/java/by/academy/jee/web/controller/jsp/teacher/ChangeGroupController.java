@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import static by.academy.jee.web.constant.Constant.APPROVE_MESSAGE;
-import static by.academy.jee.web.constant.Constant.CHANGE_GROUP_JSP_URL;
-import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
-import static by.academy.jee.web.constant.Constant.TEACHER_MENU_JSP_URL;
+import static by.academy.jee.constant.CommonConstant.TITLE;
+import static by.academy.jee.constant.ControllerConstant.APPROVE_MESSAGE;
+import static by.academy.jee.constant.ControllerConstant.CHANGE_GROUP_JSP_URL;
+import static by.academy.jee.constant.ControllerConstant.ERROR_MESSAGE;
+import static by.academy.jee.constant.ControllerConstant.GROUP_HAS_BEEN_CHANGED;
+import static by.academy.jee.constant.ControllerConstant.TEACHER_MENU_JSP_URL;
 
 @Controller
 @RequestMapping(value = "/jsp/changeGroup")
@@ -32,7 +34,7 @@ public class ChangeGroupController {
     }
 
     @PostMapping
-    public ModelAndView changeGroup(HttpSession httpSession, @RequestParam("title") String newGroupTitle) {
+    public ModelAndView changeGroup(HttpSession httpSession, @RequestParam(TITLE) String newGroupTitle) {
 
         ModelAndView modelAndView = new ModelAndView();
         try {
@@ -41,7 +43,7 @@ public class ChangeGroupController {
             service.checkIsNotATeacher(person);
             Teacher teacher = (Teacher) person;
             service.changeGroup(oldGroup, newGroupTitle, teacher);
-            modelAndView.addObject(APPROVE_MESSAGE, "Your group has been changed");
+            modelAndView.addObject(APPROVE_MESSAGE, GROUP_HAS_BEEN_CHANGED);
             modelAndView.setViewName(TEACHER_MENU_JSP_URL);
         } catch (ServiceException e) {
             modelAndView.addObject(ERROR_MESSAGE, e.getMessage());

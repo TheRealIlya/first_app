@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import static by.academy.jee.web.constant.Constant.AVERAGE_SALARY_CALCULATED;
-import static by.academy.jee.web.constant.Constant.AVG_SALARY_JSP_URL;
-import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
-import static by.academy.jee.web.constant.Constant.FIRST_MONTH;
-import static by.academy.jee.web.constant.Constant.LAST_MONTH;
-import static by.academy.jee.web.constant.Constant.LOGIN;
-import static by.academy.jee.web.constant.Constant.RESULT;
+import static by.academy.jee.constant.ControllerConstant.AVERAGE_SALARY_CALCULATED;
+import static by.academy.jee.constant.ControllerConstant.AVG_SALARY_JSP_URL;
+import static by.academy.jee.constant.ControllerConstant.ERROR_MESSAGE;
+import static by.academy.jee.constant.CommonConstant.FIRST_MONTH;
+import static by.academy.jee.constant.CommonConstant.LAST_MONTH;
+import static by.academy.jee.constant.CommonConstant.LOGIN;
+import static by.academy.jee.constant.CommonConstant.RESULT;
 
 @Slf4j
 @RequestMapping(value = "/jsp/avgSalary")

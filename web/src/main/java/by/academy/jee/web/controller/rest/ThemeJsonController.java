@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import static by.academy.jee.constant.ControllerConstant.APPLICATION_JSON;
+import static by.academy.jee.constant.ExceptionConstant.THEME_UPDATE_ERROR;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/rest/themes", produces = "application/json")
+@RequestMapping(value = "/rest/themes", produces = APPLICATION_JSON)
 public class ThemeJsonController {
 
     private final Service service;
@@ -59,8 +61,8 @@ public class ThemeJsonController {
             if (theme != null && theme.getId() == id) {
                 return ResponseEntity.ok(service.updateTheme(theme));
             } else {
-                log.error("Error - Theme id must be equal with id in path");
-                return ResponseEntity.badRequest().body("Error - Theme id must be equal with id in path");
+                log.error(THEME_UPDATE_ERROR);
+                return ResponseEntity.badRequest().body(THEME_UPDATE_ERROR);
             }
         } catch (ServiceException e) {
             log.error(e.getMessage());

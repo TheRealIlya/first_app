@@ -5,6 +5,7 @@ import by.academy.jee.model.AbstractEntity;
 import by.academy.jee.util.ThreadLocalForEntityManager;
 import java.lang.reflect.ParameterizedType;
 import javax.persistence.EntityManager;
+import static by.academy.jee.constant.ExceptionConstant.NO_SUCH_ENTITY_WITH_THIS_ID;
 
 public abstract class CommonDaoForJpa<T extends AbstractEntity> implements CommonDao<T> {
 
@@ -21,7 +22,7 @@ public abstract class CommonDaoForJpa<T extends AbstractEntity> implements Commo
         EntityManager em = emHelper.get();
         T t = em.find(getType(), id);
         if (t == null) {
-            throw new DaoException("No such entity with this id");
+            throw new DaoException(NO_SUCH_ENTITY_WITH_THIS_ID);
         }
         return t;
     }

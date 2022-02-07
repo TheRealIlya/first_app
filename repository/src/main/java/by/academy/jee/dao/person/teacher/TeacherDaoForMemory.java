@@ -3,7 +3,6 @@ package by.academy.jee.dao.person.teacher;
 import by.academy.jee.dao.person.PersonDao;
 import by.academy.jee.database.Database;
 import by.academy.jee.model.person.Teacher;
-
 import java.util.List;
 import org.springframework.stereotype.Component;
 

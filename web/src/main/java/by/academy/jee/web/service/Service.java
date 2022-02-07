@@ -32,40 +32,46 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import static by.academy.jee.web.constant.Constant.ADMIN;
-import static by.academy.jee.web.constant.Constant.ADMIN_MENU_JSP_URL;
-import static by.academy.jee.web.constant.Constant.ADMIN_PREFIX;
-import static by.academy.jee.web.constant.Constant.AGE;
-import static by.academy.jee.web.constant.Constant.ERROR_AGE_MUST_BE_A_NUMBER;
-import static by.academy.jee.web.constant.Constant.ERROR_WRONG_GRADE_FORMAT;
-import static by.academy.jee.web.constant.Constant.ERROR_WRONG_MONTHS_FORMAT;
-import static by.academy.jee.web.constant.Constant.ERROR_WRONG_MONTHS_INPUT;
-import static by.academy.jee.web.constant.Constant.ERROR_WRONG_NUMBERS_FORMAT;
-import static by.academy.jee.web.constant.Constant.ERROR_WRONG_PASSWORD;
-import static by.academy.jee.web.constant.Constant.ERROR_WRONG_SALARIES_INPUT;
-import static by.academy.jee.web.constant.Constant.ERROR_WRONG_SALARIES_LOGIC;
-import static by.academy.jee.web.constant.Constant.GRADE_PREFIX;
-import static by.academy.jee.web.constant.Constant.GROUP_PREFIX;
-import static by.academy.jee.web.constant.Constant.LOGIN;
-import static by.academy.jee.web.constant.Constant.MAX_SALARY;
-import static by.academy.jee.web.constant.Constant.MIN_SALARY;
-import static by.academy.jee.web.constant.Constant.NO_SUCH_USER_IN_DATABASE;
-import static by.academy.jee.web.constant.Constant.PASSWORD;
-import static by.academy.jee.web.constant.Constant.SALARIES_MUST_BE_NUMBERS;
-import static by.academy.jee.web.constant.Constant.STUDENT;
-import static by.academy.jee.web.constant.Constant.STUDENT_MENU_JSP_URL;
-import static by.academy.jee.web.constant.Constant.STUDENT_PREFIX;
-import static by.academy.jee.web.constant.Constant.TEACHER;
-import static by.academy.jee.web.constant.Constant.TEACHER_MENU_JSP_URL;
-import static by.academy.jee.web.constant.Constant.TEACHER_PREFIX;
-import static by.academy.jee.web.constant.Constant.THEME_PREFIX;
-import static by.academy.jee.web.constant.Constant.USER_IS_ALREADY_EXIST;
-import static by.academy.jee.web.constant.Constant.USER_NAME;
+import static by.academy.jee.constant.CommonConstant.ADMIN;
+import static by.academy.jee.constant.CommonConstant.AGE;
+import static by.academy.jee.constant.CommonConstant.LOGIN;
+import static by.academy.jee.constant.CommonConstant.PASSWORD;
+import static by.academy.jee.constant.CommonConstant.REPOSITORY_PROPERTIES;
+import static by.academy.jee.constant.CommonConstant.STUDENT;
+import static by.academy.jee.constant.CommonConstant.TEACHER;
+import static by.academy.jee.constant.CommonConstant.USER_NAME;
+import static by.academy.jee.constant.ControllerConstant.ADMIN_MENU_JSP_URL;
+import static by.academy.jee.constant.ControllerConstant.STUDENT_MENU_JSP_URL;
+import static by.academy.jee.constant.ControllerConstant.TEACHER_MENU_JSP_URL;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_AGE_MUST_BE_A_NUMBER;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_GROUP_ALREADY_EXIST;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_GROUP_ALREADY_HAS_A_TEACHER;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_NO_STUDENT_IN_GROUP;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_NO_THEME_IN_GROUP;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_SALARIES_MUST_BE_NUMBERS;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_THEME_ALREADY_EXIST;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_GRADE_FORMAT;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_MONTHS_FORMAT;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_MONTHS_INPUT;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_NUMBERS_FORMAT;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_PASSWORD;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_SALARIES_INPUT;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_SALARIES_LOGIC;
+import static by.academy.jee.constant.ExceptionConstant.USER_IS_ALREADY_EXIST;
+import static by.academy.jee.constant.ServiceConstant.ADMIN_PREFIX;
+import static by.academy.jee.constant.ServiceConstant.GRADE_PREFIX;
+import static by.academy.jee.constant.ServiceConstant.GROUP_PREFIX;
+import static by.academy.jee.constant.ServiceConstant.MAX_SALARY;
+import static by.academy.jee.constant.ServiceConstant.MIN_SALARY;
+import static by.academy.jee.constant.ServiceConstant.NO_SUCH_USER_IN_DATABASE;
+import static by.academy.jee.constant.ServiceConstant.STUDENT_PREFIX;
+import static by.academy.jee.constant.ServiceConstant.TEACHER_PREFIX;
+import static by.academy.jee.constant.ServiceConstant.THEME_PREFIX;
 
 @Slf4j
 @org.springframework.stereotype.Service
 @Transactional
-@PropertySource("classpath:repository.properties")
+@PropertySource(REPOSITORY_PROPERTIES)
 public class Service {
 
     private final String type;
@@ -163,7 +169,7 @@ public class Service {
             maxSalary = Double.parseDouble(maxSalaryString);
         } catch (NumberFormatException e) {
             log.error(ERROR_WRONG_NUMBERS_FORMAT);
-            throw new ServiceException(SALARIES_MUST_BE_NUMBERS);
+            throw new ServiceException(ERROR_SALARIES_MUST_BE_NUMBERS);
         }
         if (minSalary <= 0 || maxSalary <= 0 || minSalary > maxSalary) {
             log.error(ERROR_WRONG_SALARIES_INPUT);
@@ -188,7 +194,6 @@ public class Service {
                 try {
                     user = adminDao.read(login);
                 } catch (DaoException g) {
-//                    DataBaseUtil.rollBack(emHelper.get());
                     log.error("Error - no user {} in database", login);
                     throw new ServiceException(NO_SUCH_USER_IN_DATABASE);
                 }
@@ -262,12 +267,12 @@ public class Service {
             Student student = studentDao.read(studentLogin);
             if (!group.getStudents().contains(student)) {
                 DataBaseUtil.rollBack(emHelper.get());
-                throw new ServiceException("Error - no such student in current group");
+                throw new ServiceException(ERROR_NO_STUDENT_IN_GROUP);
             }
             Theme theme = themeDao.read(themeString);
             if (!group.getThemes().contains(theme)) {
                 DataBaseUtil.rollBack(emHelper.get());
-                throw new ServiceException("Error - this group doesn't contain such theme");
+                throw new ServiceException(ERROR_NO_THEME_IN_GROUP);
             }
             Grade grade = new Grade()
                     .withValue(gradeValue)
@@ -298,7 +303,7 @@ public class Service {
         Group newGroup = groupDao.read(newGroupTitle);
         if (newGroup.getTeacher() != null) {
             DataBaseUtil.rollBack(emHelper.get());
-            throw new ServiceException("Error - this group already has a teacher");
+            throw new ServiceException(ERROR_GROUP_ALREADY_HAS_A_TEACHER);
         }
         if (oldGroup != null) {
             setTeacherForGroup(oldGroup, null);
@@ -503,7 +508,7 @@ public class Service {
             return;
         }
         log.error("Error - attempt to add already existed group {}", title);
-        throw new ServiceException("Error - this group is already exist");
+        throw new ServiceException(ERROR_GROUP_ALREADY_EXIST);
     }
 
     private void checkIsThemeNotExist(String title) throws ServiceException {
@@ -514,7 +519,7 @@ public class Service {
             return;
         }
         log.error("Error - attempt to add already existed theme {}", title);
-        throw new ServiceException("Error - this theme is already exist");
+        throw new ServiceException(ERROR_THEME_ALREADY_EXIST);
     }
 
     private void checkIsUserNotExist(String login) throws ServiceException {

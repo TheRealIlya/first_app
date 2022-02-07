@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Component;
+import static by.academy.jee.constant.JpaQueryConstant.GET_ALL_THEMES;
+import static by.academy.jee.constant.JpaQueryConstant.GET_THEME_BY_TITLE;
 
 @Component
 public class ThemeDaoForJpa extends CommonDaoForJpa<Theme> implements ThemeDao {
@@ -23,13 +25,13 @@ public class ThemeDaoForJpa extends CommonDaoForJpa<Theme> implements ThemeDao {
     }
 
     private List<Theme> getAllThemes(EntityManager em) {
-        TypedQuery<Theme> query = em.createQuery("from Theme", Theme.class);
+        TypedQuery<Theme> query = em.createQuery(GET_ALL_THEMES, Theme.class);
         return query.getResultList();
     }
 
     private Theme getThemeByTitle(String title, EntityManager em) {
 
-        TypedQuery<Theme> query = em.createQuery("from Theme t where t.title = ?1", Theme.class);
+        TypedQuery<Theme> query = em.createQuery(GET_THEME_BY_TITLE, Theme.class);
         query.setParameter(1, title);
         return query.getSingleResult();
     }

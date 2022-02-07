@@ -8,13 +8,13 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Component;
-import static by.academy.jee.constant.Constant.JPA_LOGIN_FILTER;
-import static by.academy.jee.constant.Constant.SELECT_ALL_ADMINS_JPA;
+import static by.academy.jee.constant.CommonConstant.NAME;
+import static by.academy.jee.constant.CommonConstant.ROLE;
+import static by.academy.jee.constant.JpaQueryConstant.GET_ALL_ADMINS;
+import static by.academy.jee.constant.JpaQueryConstant.LOGIN_FILTER;
 
 @Component
 public class AdminDaoForJpa extends CommonDaoForJpa<Admin> implements PersonDao<Admin> {
-
-    private final String SELECT_ONE_ADMIN = SELECT_ALL_ADMINS_JPA + JPA_LOGIN_FILTER;
 
     @Override
     public Admin read(String name) {
@@ -29,15 +29,18 @@ public class AdminDaoForJpa extends CommonDaoForJpa<Admin> implements PersonDao<
     }
 
     private Admin getAdminByName(String name, EntityManager em) {
+
+        String SELECT_ONE_ADMIN = GET_ALL_ADMINS + LOGIN_FILTER;
         TypedQuery<Admin> query = em.createQuery(SELECT_ONE_ADMIN, Admin.class);
-        query.setParameter("role", Role.ADMIN);
-        query.setParameter("name", name);
+        query.setParameter(ROLE, Role.ADMIN);
+        query.setParameter(NAME, name);
         return query.getSingleResult();
     }
 
     private List<Admin> getAllAdmins(EntityManager em) {
-        TypedQuery<Admin> query = em.createQuery(SELECT_ALL_ADMINS_JPA, Admin.class);
-        query.setParameter("role", Role.ADMIN);
+
+        TypedQuery<Admin> query = em.createQuery(GET_ALL_ADMINS, Admin.class);
+        query.setParameter(ROLE, Role.ADMIN);
         return query.getResultList();
     }
 }

@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import static by.academy.jee.constant.ControllerConstant.APPLICATION_JSON;
+import static by.academy.jee.constant.ExceptionConstant.PERSON_UPDATE_ERROR;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/rest/persons", produces = "application/json")
+@RequestMapping(value = "/rest/persons", produces = APPLICATION_JSON)
 public class PersonJsonController {
 
     private final Service service;
@@ -61,8 +63,8 @@ public class PersonJsonController {
                 Person person = service.getPersonFromDto(personDto);
                 return ResponseEntity.ok(service.updatePerson(person));
             } else {
-                log.error("Error - Person's id must be equal with id in path");
-                return ResponseEntity.badRequest().body("Error - Person's id must be equal with id in path");
+                log.error(PERSON_UPDATE_ERROR);
+                return ResponseEntity.badRequest().body(PERSON_UPDATE_ERROR);
             }
         } catch (ServiceException e) {
             log.error(e.getMessage());

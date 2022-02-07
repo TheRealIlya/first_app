@@ -13,9 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
-import static by.academy.jee.web.constant.Constant.GROUP_INFO_ERROR_PAGE_JSP_URL;
-import static by.academy.jee.web.constant.Constant.GROUP_INFO_JSP_URL;
+import static by.academy.jee.constant.ControllerConstant.ERROR_MESSAGE;
+import static by.academy.jee.constant.ControllerConstant.GROUP_INFO_ERROR_PAGE_JSP_URL;
+import static by.academy.jee.constant.ControllerConstant.GROUP_INFO_JSP_URL;
+import static by.academy.jee.constant.CommonConstant.GROUP;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class GroupInfoController {
             service.checkIsNotATeacher(person);
             Teacher teacher = (Teacher) person;
             Group group = service.getGroupByTeacher(teacher);
-            httpSession.setAttribute("group", group);
+            httpSession.setAttribute(GROUP, group);
             modelAndView.setViewName(GROUP_INFO_JSP_URL);
         } catch (ServiceException e) {
             modelAndView.addObject(ERROR_MESSAGE, e.getMessage());

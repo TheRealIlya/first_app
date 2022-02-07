@@ -13,33 +13,32 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_ADMIN;
-import static by.academy.jee.constant.Constant.INSERT_ADMIN_POSTGRES;
-import static by.academy.jee.constant.Constant.LOGIN_FILTER_POSTGRES;
-import static by.academy.jee.constant.Constant.SELECT_ALL_ADMINS_POSTGRES;
-import static by.academy.jee.constant.Constant.U_AGE;
-import static by.academy.jee.constant.Constant.U_ID;
-import static by.academy.jee.constant.Constant.U_LOGIN;
-import static by.academy.jee.constant.Constant.U_NAME;
-import static by.academy.jee.constant.Constant.U_PASSWORD;
-import static by.academy.jee.constant.Constant.U_SALT;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_NO_SUCH_ADMIN;
+import static by.academy.jee.constant.PostgresQueryConstant.GET_ALL_ADMINS;
+import static by.academy.jee.constant.PostgresQueryConstant.INSERT_ADMIN;
+import static by.academy.jee.constant.PostgresQueryConstant.LOGIN_FILTER;
+import static by.academy.jee.constant.PostgresQueryConstant.U_AGE;
+import static by.academy.jee.constant.PostgresQueryConstant.U_ID;
+import static by.academy.jee.constant.PostgresQueryConstant.U_LOGIN;
+import static by.academy.jee.constant.PostgresQueryConstant.U_NAME;
+import static by.academy.jee.constant.PostgresQueryConstant.U_PASSWORD;
+import static by.academy.jee.constant.PostgresQueryConstant.U_SALT;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AdminDaoForPostgres implements PersonDao<Admin> {
 
-    private static final Logger log = LoggerFactory.getLogger(AdminDaoForPostgres.class);
-    private static final String SELECT_ONE_ADMIN = SELECT_ALL_ADMINS_POSTGRES + LOGIN_FILTER_POSTGRES;
+    private static final String SELECT_ONE_ADMIN = GET_ALL_ADMINS + LOGIN_FILTER;
     private final DataSource dataSource;
 
     @Override
     public Admin create(Admin admin) {
 
         try (Connection con = dataSource.getConnection();
-             PreparedStatement ps = con.prepareStatement(INSERT_ADMIN_POSTGRES)) {
+             PreparedStatement ps = con.prepareStatement(INSERT_ADMIN)) {
             ps.setString(1, admin.getLogin());
             ps.setBytes(2, admin.getPwd());
             ps.setBytes(3, admin.getSalt());

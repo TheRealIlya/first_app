@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import static by.academy.jee.web.constant.Constant.ADD_STUDENT_JSP_URL;
-import static by.academy.jee.web.constant.Constant.APPROVE_MESSAGE;
-import static by.academy.jee.web.constant.Constant.ERROR_MESSAGE;
-import static by.academy.jee.web.constant.Constant.STUDENT_IS_SUCCESSFULLY_ADDED;
+import static by.academy.jee.constant.ControllerConstant.ADD_STUDENT_JSP_URL;
+import static by.academy.jee.constant.ControllerConstant.APPROVE_MESSAGE;
+import static by.academy.jee.constant.ControllerConstant.ERROR_MESSAGE;
+import static by.academy.jee.constant.ControllerConstant.STUDENT_IS_SUCCESSFULLY_ADDED;
 
 @Slf4j
 @Controller

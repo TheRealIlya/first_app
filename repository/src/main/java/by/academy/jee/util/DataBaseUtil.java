@@ -3,18 +3,16 @@ package by.academy.jee.util;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.persistence.EntityManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import static by.academy.jee.constant.Constant.COULDNT_CLOSE_SOME_CLOSEABLE_ELEMENT;
-import static by.academy.jee.constant.Constant.FAILED_TO_ROLLBACK;
+import lombok.extern.slf4j.Slf4j;
+import static by.academy.jee.constant.ExceptionConstant.COULDNT_CLOSE_SOME_CLOSEABLE_ELEMENT;
+import static by.academy.jee.constant.ExceptionConstant.FAILED_TO_ROLLBACK;
 
+@Slf4j
 public class DataBaseUtil {
 
     private DataBaseUtil() {
         //util class
     }
-
-    private static final Logger log = LoggerFactory.getLogger(DataBaseUtil.class);
 
     public static void closeQuietly(AutoCloseable... closeable) {
 

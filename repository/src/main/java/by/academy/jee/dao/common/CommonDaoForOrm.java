@@ -6,6 +6,7 @@ import java.lang.reflect.ParameterizedType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
+import static by.academy.jee.constant.ExceptionConstant.NO_SUCH_ENTITY_WITH_THIS_ID;
 
 @Repository
 public abstract class CommonDaoForOrm<T extends AbstractEntity> implements CommonDao<T> {
@@ -23,7 +24,7 @@ public abstract class CommonDaoForOrm<T extends AbstractEntity> implements Commo
 
         T t = em.find(getType(), id);
         if (t == null) {
-            throw new DaoException("No such entity with this id");
+            throw new DaoException(NO_SUCH_ENTITY_WITH_THIS_ID);
         }
         return t;
     }

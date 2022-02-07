@@ -7,8 +7,8 @@ import by.academy.jee.model.person.Teacher;
 
 import java.util.HashMap;
 import java.util.Map;
-import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_ADMIN;
-import static by.academy.jee.constant.Constant.ERROR_NO_SUCH_TEACHER;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_NO_SUCH_ADMIN;
+import static by.academy.jee.constant.ExceptionConstant.ERROR_NO_SUCH_TEACHER;
 
 public class Database {
 

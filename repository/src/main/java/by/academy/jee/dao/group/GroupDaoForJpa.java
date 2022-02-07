@@ -7,6 +7,9 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Component;
+import static by.academy.jee.constant.JpaQueryConstant.GET_ALL_GROUPS;
+import static by.academy.jee.constant.JpaQueryConstant.GET_GROUP_BY_TEACHER;
+import static by.academy.jee.constant.JpaQueryConstant.GET_GROUP_BY_TITLE;
 
 @Component
 public class GroupDaoForJpa extends CommonDaoForJpa<Group> implements GroupDao {
@@ -30,20 +33,20 @@ public class GroupDaoForJpa extends CommonDaoForJpa<Group> implements GroupDao {
     }
 
     private List<Group> getAllGroups(EntityManager em) {
-        TypedQuery<Group> query = em.createQuery("from Group", Group.class);
+        TypedQuery<Group> query = em.createQuery(GET_ALL_GROUPS, Group.class);
         return query.getResultList();
     }
 
     private Group getGroupByTeacher(Teacher teacher, EntityManager em) {
 
-        TypedQuery<Group> query = em.createQuery("from Group g where g.teacher = ?1", Group.class);
+        TypedQuery<Group> query = em.createQuery(GET_GROUP_BY_TEACHER, Group.class);
         query.setParameter(1, teacher);
         return query.getSingleResult();
     }
 
     private Group getGroupByTitle(String title, EntityManager em) {
 
-        TypedQuery<Group> query = em.createQuery("from Group g where g.title = ?1", Group.class);
+        TypedQuery<Group> query = em.createQuery(GET_GROUP_BY_TITLE, Group.class);
         query.setParameter(1, title);
         return query.getSingleResult();
     }

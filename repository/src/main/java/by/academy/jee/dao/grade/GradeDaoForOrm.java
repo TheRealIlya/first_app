@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
+import static by.academy.jee.constant.JpaQueryConstant.GET_ALL_GRADES;
+import static by.academy.jee.constant.JpaQueryConstant.UPDATE_GRADE_VALUE;
 
 @Repository
 public class GradeDaoForOrm extends CommonDaoForOrm<Grade> implements GradeDao {
@@ -19,7 +21,7 @@ public class GradeDaoForOrm extends CommonDaoForOrm<Grade> implements GradeDao {
 
     public Grade update(Grade newGrade) {
 
-        Query query = em.createQuery("update Grade set value = ?1 where id = ?2");
+        Query query = em.createQuery(UPDATE_GRADE_VALUE);
         query.setParameter(1, newGrade.getValue());
         query.setParameter(2, newGrade.getId());
         query.executeUpdate();
@@ -38,7 +40,7 @@ public class GradeDaoForOrm extends CommonDaoForOrm<Grade> implements GradeDao {
     }
 
     private List<Grade> getAllGrades() {
-        TypedQuery<Grade> query = em.createQuery("from Grade", Grade.class);
+        TypedQuery<Grade> query = em.createQuery(GET_ALL_GRADES, Grade.class);
         return query.getResultList();
     }
 }

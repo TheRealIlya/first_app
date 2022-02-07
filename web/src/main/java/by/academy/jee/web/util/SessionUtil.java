@@ -4,8 +4,8 @@ import by.academy.jee.model.group.Group;
 import by.academy.jee.model.person.Person;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import static by.academy.jee.web.constant.Constant.GROUP;
-import static by.academy.jee.web.constant.Constant.USER;
+import static by.academy.jee.constant.CommonConstant.GROUP;
+import static by.academy.jee.constant.CommonConstant.USER;
 
 public class SessionUtil {
 
