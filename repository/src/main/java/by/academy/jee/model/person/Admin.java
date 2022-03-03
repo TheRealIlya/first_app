@@ -1,8 +1,21 @@
 package by.academy.jee.model.person;
 
 import by.academy.jee.model.person.role.Role;
+import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.Table;
+import lombok.Data;
 
+@Data
+@Entity
+@Table(name = "users")
+@SecondaryTable(name = "roles", pkJoinColumns = {@PrimaryKeyJoinColumn(name = "id")})
 public class Admin extends Person {
+
+    public Admin() {
+        setRole(Role.ADMIN);
+    }
 
     public Admin withId(int id) {
         setId(id);
@@ -34,8 +47,17 @@ public class Admin extends Person {
         return this;
     }
 
-    public Admin withRole(Role role) {
-        setRole(role);
-        return this;
+    public String toString() {
+        return super.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

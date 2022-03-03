@@ -9,7 +9,13 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
+import static by.academy.jee.constant.CommonConstant.REPOSITORY_PROPERTIES;
 
+@Component
+@PropertySource(REPOSITORY_PROPERTIES)
 public class DaoDataSource implements DataSource {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(DaoDataSource.class);
@@ -18,9 +24,8 @@ public class DaoDataSource implements DataSource {
     private final String password;
     private final String driver;
 
-    private static volatile DaoDataSource instance;
-
-    private DaoDataSource(String url, String user, String password, String driver) {
+    public DaoDataSource(@Value("${postgres.url}") String url, @Value("${postgres.user}") String user,
+                         @Value("${postgres.password}") String password, @Value("${postgres.driver}") String driver) {
 
         //singleton
         this.url = url;
@@ -33,18 +38,6 @@ public class DaoDataSource implements DataSource {
             log.error(e.getMessage(), e);
             throw new DaoDataSourceException(e.getMessage(), e);
         }
-    }
-
-    public static DaoDataSource getInstance(String url, String user, String password, String driver) {
-
-        if (instance == null) {
-            synchronized (DaoDataSource.class) {
-                if (instance == null) {
-                    instance = new DaoDataSource(url, user, password, driver);
-                }
-            }
-        }
-        return instance;
     }
 
     @Override

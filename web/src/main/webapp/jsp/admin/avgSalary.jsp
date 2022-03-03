@@ -9,7 +9,7 @@
         <jsp:include page="../common/header.jsp"></jsp:include>
         <h2>Enter data to get average salary of teacher:</h2>
         <p style="color: red;">${errorMessage}</p>
-        <form method="POST" action="${pageContext.request.contextPath}/avgSalary">
+        <form method="POST" action="${pageContext.request.contextPath}/jsp/avgSalary">
             <table>
                 <tr>
                     <td><b>Teacher&#x60s login</b></td>

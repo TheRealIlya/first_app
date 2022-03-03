@@ -6,6 +6,6 @@
 
     <body>
         <jsp:include page="header.jsp"></jsp:include>
-        <h3><p>${user}</p></h3>
+        <h3><p>${user.getStringForJsp()}</p></h3>
     </body>
 </html>

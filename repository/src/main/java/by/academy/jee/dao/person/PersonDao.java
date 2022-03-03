@@ -6,15 +6,15 @@ import java.util.List;
 
 public interface PersonDao<T extends Person> {
 
-    boolean create(T t);
+    T create(T t);
 
     T read(int id);
 
     T read(String name);
 
-    boolean update(T newT);
+    T update(T newT);
 
-    boolean delete (int id);
+    boolean delete (String name);
 
     List<T> readAll();
 }
