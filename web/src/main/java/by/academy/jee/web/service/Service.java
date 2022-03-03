@@ -15,12 +15,9 @@ import by.academy.jee.model.person.Student;
 import by.academy.jee.model.person.Teacher;
 import by.academy.jee.model.person.role.Role;
 import by.academy.jee.model.theme.Theme;
-import by.academy.jee.util.DataBaseUtil;
 import by.academy.jee.util.PasswordHasher;
 import by.academy.jee.util.SalaryGenerator;
-import by.academy.jee.util.ThreadLocalForEntityManager;
 import by.academy.jee.web.aspect.service.ServiceExceptionHandler;
-import by.academy.jee.web.aspect.service.ServiceTransaction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -94,8 +91,6 @@ public class Service {
     @Autowired
     private Map<String, GradeDao> gradeDaoMap;
 
-    private final ThreadLocalForEntityManager emHelper = ThreadLocalForEntityManager.getInstance();
-
     public Service(@Value("${repository.type}") String type) {
         this.type = StringUtils.capitalize(type);
     }
@@ -142,7 +137,6 @@ public class Service {
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public Person createPerson(Person person) throws ServiceException {
 
         checkIsUserNotExist(person.getLogin());
@@ -181,7 +175,6 @@ public class Service {
         return teacher;
     }
 
-    @ServiceTransaction
     public Person getUserIfExist(String login) throws ServiceException {
 
         Person user;
@@ -249,13 +242,11 @@ public class Service {
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public Group getGroupByTeacher(Teacher teacher) throws ServiceException {
         return groupDao.read(teacher);
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public void createGrade(String studentLogin, Group group, String themeString, String gradeString)
             throws ServiceException {
 
@@ -266,12 +257,10 @@ public class Service {
             }
             Student student = studentDao.read(studentLogin);
             if (!group.getStudents().contains(student)) {
-                DataBaseUtil.rollBack(emHelper.get());
                 throw new ServiceException(ERROR_NO_STUDENT_IN_GROUP);
             }
             Theme theme = themeDao.read(themeString);
             if (!group.getThemes().contains(theme)) {
-                DataBaseUtil.rollBack(emHelper.get());
                 throw new ServiceException(ERROR_NO_THEME_IN_GROUP);
             }
             Grade grade = new Grade()
@@ -282,19 +271,16 @@ public class Service {
             student.getGrades().add(grade);
             studentDao.update(student);
         } catch (NumberFormatException e) {
-            DataBaseUtil.rollBack(emHelper.get());
             log.error(ERROR_WRONG_GRADE_FORMAT);
             throw new ServiceException(ERROR_WRONG_GRADE_FORMAT);
         }
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public void changeGroup(Group oldGroup, String newGroupTitle, Teacher teacher) throws ServiceException {
 
         if (newGroupTitle == null || newGroupTitle.equals("")) {
             if (oldGroup == null) {
-                DataBaseUtil.rollBack(emHelper.get());
                 throw new ServiceException("Error - you already don't have a group");
             }
             setTeacherForGroup(oldGroup, null);
@@ -302,7 +288,6 @@ public class Service {
         }
         Group newGroup = groupDao.read(newGroupTitle);
         if (newGroup.getTeacher() != null) {
-            DataBaseUtil.rollBack(emHelper.get());
             throw new ServiceException(ERROR_GROUP_ALREADY_HAS_A_TEACHER);
         }
         if (oldGroup != null) {
@@ -311,7 +296,6 @@ public class Service {
         setTeacherForGroup(newGroup, teacher);
     }
 
-    @ServiceTransaction
     public List<Person> getAllPersons() {
 
         List<Person> persons = new ArrayList<>(adminDao.readAll());
@@ -322,57 +306,48 @@ public class Service {
         return persons;
     }
 
-    @ServiceTransaction
     public List<Grade> getAllGrades() {
         return gradeDao.readAll();
     }
 
-    @ServiceTransaction
     @ServiceExceptionHandler
     public Grade createGrade(Grade grade) throws ServiceException {
         return gradeDao.create(grade);
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public Grade updateGrade(Grade grade) throws ServiceException {
         return gradeDao.update(grade);
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public Grade removeGrade(int id) throws ServiceException {
         Grade grade = gradeDao.read(id);
         gradeDao.delete(grade);
         return grade;
     }
 
-    @ServiceTransaction
     public List<Group> getAllGroups() {
         return groupDao.readAll();
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public Group getGroup(String title) throws ServiceException {
         return groupDao.read(title);
     }
 
-    @ServiceTransaction
     public Group createGroup(Group group) throws ServiceException {
         checkIsGroupNotExist(group.getTitle());
         return groupDao.create(group);
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public Group updateGroup(Group newGroup) throws ServiceException {
         groupDao.update(newGroup);
         return newGroup;
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public Group removeGroup(Group group) throws ServiceException {
         for (Grade grade : group.getGrades()) {
             gradeDao.delete(grade);
@@ -387,32 +362,27 @@ public class Service {
         return group;
     }
 
-    @ServiceTransaction
     public List<Theme> getAllThemes() {
         return themeDao.readAll();
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public Theme getTheme(String title) throws ServiceException {
         return themeDao.read(title);
     }
 
-    @ServiceTransaction
     public Theme createTheme(Theme theme) throws ServiceException {
         checkIsThemeNotExist(theme.getTitle());
         return themeDao.create(theme);
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public Theme updateTheme(Theme newTheme) throws ServiceException {
         themeDao.update(newTheme);
         return newTheme;
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public Theme removeTheme(Theme theme) throws ServiceException {
 
         theme.getGrades()
@@ -427,7 +397,6 @@ public class Service {
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public Person updatePerson(Person newPerson) throws ServiceException {
 
         switch (newPerson.getRole()) {
@@ -444,7 +413,6 @@ public class Service {
     }
 
     @ServiceExceptionHandler
-    @ServiceTransaction
     public Person removeUser(Person person) throws ServiceException {
 
         switch (person.getRole()) {

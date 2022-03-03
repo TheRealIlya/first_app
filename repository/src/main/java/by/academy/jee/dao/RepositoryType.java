@@ -7,9 +7,6 @@ import java.util.Map;
 
 public enum RepositoryType {
 
-    MEMORY("memory"),
-    POSTGRES("postgres"),
-    JPA("jpa"),
     ORM("orm");
 
     private final String type;
