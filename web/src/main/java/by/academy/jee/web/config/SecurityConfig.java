@@ -23,6 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/jsp/teacher/**").hasRole("TEACHER")
                 .antMatchers("/jsp/student/**").hasRole("STUDENT")
                 .antMatchers("/jsp/common/**").authenticated()
+                .and().exceptionHandling().accessDeniedPage("/jsp/common/accessDenied")
                 .and().formLogin().loginPage("/jsp/login").defaultSuccessUrl("/jsp/common/home")
                 .and().logout().logoutUrl("/jsp/common/logout")
                 .and().csrf().disable();

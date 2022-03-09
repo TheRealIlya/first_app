@@ -29,17 +29,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import static by.academy.jee.constant.CommonConstant.ADMIN;
 import static by.academy.jee.constant.CommonConstant.AGE;
 import static by.academy.jee.constant.CommonConstant.LOGIN;
 import static by.academy.jee.constant.CommonConstant.PASSWORD;
 import static by.academy.jee.constant.CommonConstant.REPOSITORY_PROPERTIES;
-import static by.academy.jee.constant.CommonConstant.STUDENT;
-import static by.academy.jee.constant.CommonConstant.TEACHER;
 import static by.academy.jee.constant.CommonConstant.USER_NAME;
-import static by.academy.jee.constant.ControllerConstant.ADMIN_MENU_JSP_URL;
-import static by.academy.jee.constant.ControllerConstant.STUDENT_MENU_JSP_URL;
-import static by.academy.jee.constant.ControllerConstant.TEACHER_MENU_JSP_URL;
 import static by.academy.jee.constant.ExceptionConstant.ERROR_AGE_MUST_BE_A_NUMBER;
 import static by.academy.jee.constant.ExceptionConstant.ERROR_GROUP_ALREADY_EXIST;
 import static by.academy.jee.constant.ExceptionConstant.ERROR_GROUP_ALREADY_HAS_A_TEACHER;
@@ -51,7 +45,6 @@ import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_GRADE_FORMAT
 import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_MONTHS_FORMAT;
 import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_MONTHS_INPUT;
 import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_NUMBERS_FORMAT;
-import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_PASSWORD;
 import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_SALARIES_INPUT;
 import static by.academy.jee.constant.ExceptionConstant.ERROR_WRONG_SALARIES_LOGIC;
 import static by.academy.jee.constant.ExceptionConstant.USER_IS_ALREADY_EXIST;
@@ -72,6 +65,7 @@ import static by.academy.jee.constant.ServiceConstant.THEME_PREFIX;
 public class Service {
 
     private final String type;
+    private final PasswordHasher passwordHasher;
 
     private PersonDao<Admin> adminDao;
     private PersonDao<Teacher> teacherDao;
@@ -91,8 +85,9 @@ public class Service {
     @Autowired
     private Map<String, GradeDao> gradeDaoMap;
 
-    public Service(@Value("${repository.type}") String type) {
+    public Service(@Value("${repository.type}") String type, PasswordHasher passwordHasher) {
         this.type = StringUtils.capitalize(type);
+        this.passwordHasher = passwordHasher;
     }
 
     @PostConstruct
@@ -192,23 +187,6 @@ public class Service {
             }
         }
         return user;
-    }
-
-    public String getMenuUrlAfterLogin(String roleString) throws ServiceException {
-
-        Map<String, String> urlMap = Map.of(ADMIN, ADMIN_MENU_JSP_URL,
-                TEACHER, TEACHER_MENU_JSP_URL,
-                STUDENT, STUDENT_MENU_JSP_URL);
-        return urlMap.get(roleString);
-    }
-
-    public void checkPassword(String attemptedPassword, Person user) throws ServiceException {
-
-//        boolean isCorrectPassword = PasswordHasher.authenticate(attemptedPassword, user.getPwd(), user.getSalt());
-//        if (!isCorrectPassword) {
-//            log.error("Someone tried to enter as user {} with wrong password", user.getLogin());
-//            throw new ServiceException(ERROR_WRONG_PASSWORD);
-//        }
     }
 
     public String getAverageSalaryByMonths(Teacher teacher, String firstMonthString, String lastMonthString)
@@ -446,11 +424,9 @@ public class Service {
     private PersonDto getPersonDtoFromRequest(HttpServletRequest req) throws ServiceException {
 
         String userName = req.getParameter(LOGIN);
-        String password = req.getParameter(PASSWORD);
+        String password = passwordHasher.getEncryptedPassword(req.getParameter(PASSWORD));
         String fio = req.getParameter(USER_NAME);
         String ageString = req.getParameter(AGE);
-        byte[] salt = PasswordHasher.generateSalt();
-        byte[] encryptedPassword = PasswordHasher.getEncryptedPassword(password, salt);
         int age;
         try {
             age = Integer.parseInt(ageString);

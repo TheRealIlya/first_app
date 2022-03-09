@@ -20,9 +20,6 @@ public class HomePageController {
     private final Service service;
 
     @RequestMapping(value = "/jsp/common/home", method = {RequestMethod.GET, RequestMethod.POST})
-//    public String redirectToJsp() {
-//        return HOME_PAGE_JSP_URL;
-//    }
     public ModelAndView homePage(Principal principal, HttpSession session) {
 
         ModelAndView modelAndView = new ModelAndView();
