@@ -37,7 +37,7 @@ public class Student extends Person {
     private List<Group> groups;
 
     public Student() {
-        setRole(Role.STUDENT);
+        setRole(Role.ROLE_STUDENT);
     }
 
     public Student withId(int id) {
@@ -50,13 +50,8 @@ public class Student extends Person {
         return this;
     }
 
-    public Student withPwd(byte[] pwd) {
-        setPwd(pwd);
-        return this;
-    }
-
-    public Student withSalt(byte[] salt) {
-        setSalt(salt);
+    public Student withPassword(String password) {
+        setPassword(password);
         return this;
     }
 

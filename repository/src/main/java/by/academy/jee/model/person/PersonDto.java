@@ -13,8 +13,7 @@ public class PersonDto {
 
     private Integer id;
     private String login;
-    private byte[] pwd;
-    private byte[] salt;
+    private String password;
     private String name;
     private int age;
     private Role role;

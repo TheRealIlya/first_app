@@ -26,7 +26,7 @@ public class Teacher extends Person {
     private Map<Integer, Double> salaries = new HashMap<>();
 
     public Teacher() {
-        setRole(Role.TEACHER);
+        setRole(Role.ROLE_TEACHER);
     }
 
     public Map<Integer, Double> getSalaries() {
@@ -43,13 +43,8 @@ public class Teacher extends Person {
         return this;
     }
 
-    public Teacher withPwd(byte[] pwd) {
-        setPwd(pwd);
-        return this;
-    }
-
-    public Teacher withSalt(byte[] salt) {
-        setSalt(salt);
+    public Teacher withPassword(String password) {
+        setPassword(password);
         return this;
     }
 

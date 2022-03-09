@@ -8,9 +8,9 @@
 
     <body>
         <jsp:include page="header.jsp"></jsp:include>
-        <c:set var="adminRole" value="ADMIN"/>
-        <c:set var="teacherRole" value="TEACHER"/>
-        <c:set var="studentRole" value="STUDENT"/>
+        <c:set var="adminRole" value="ROLE_ADMIN"/>
+        <c:set var="teacherRole" value="ROLE_TEACHER"/>
+        <c:set var="studentRole" value="ROLE_STUDENT"/>
         <c:choose>
             <c:when test="${user.role.toString().equals(adminRole)}">
                 <jsp:forward page="../admin/adminMenu.jsp"/>

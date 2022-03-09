@@ -22,8 +22,8 @@
                     <td>${group.themes}</td>
                 </tr>
             </table>
-        <p><a href="${pageContext.request.contextPath}/jsp/createGrade">Assess student</a></p>
-        <p><a href="${pageContext.request.contextPath}/jsp/changeGroup" style="color: red;">Change group</a></p>
+        <p><a href="${pageContext.request.contextPath}/jsp/teacher/createGrade">Assess student</a></p>
+        <p><a href="${pageContext.request.contextPath}/jsp/teacher/changeGroup" style="color: red;">Change group</a></p>
         <p style="color: green;">${approveMessage}</p>
     </body>
 </html>

@@ -7,6 +7,7 @@ import by.academy.jee.web.service.Service;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,18 +19,20 @@ import static by.academy.jee.constant.ControllerConstant.ERROR_MESSAGE;
 import static by.academy.jee.constant.ControllerConstant.TEACHER_IS_SUCCESSFULLY_ADDED;
 
 @Slf4j
-@RequestMapping(value = "/jsp/addTeacher")
+@RequestMapping(value = "/jsp/admin/addTeacher")
 @RequiredArgsConstructor
 @Controller
 public class AddTeacherController {
 
     private final Service service;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public String redirectFromGetCall() {
         return ADD_TEACHER_JSP_URL;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ModelAndView addTeacher(HttpServletRequest req) {
 

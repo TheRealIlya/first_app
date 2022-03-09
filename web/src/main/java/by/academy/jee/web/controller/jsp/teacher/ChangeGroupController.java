@@ -22,7 +22,7 @@ import static by.academy.jee.constant.ControllerConstant.GROUP_HAS_BEEN_CHANGED;
 import static by.academy.jee.constant.ControllerConstant.TEACHER_MENU_JSP_URL;
 
 @Controller
-@RequestMapping(value = "/jsp/changeGroup")
+@RequestMapping(value = "/jsp/teacher/changeGroup")
 @RequiredArgsConstructor
 public class ChangeGroupController {
 

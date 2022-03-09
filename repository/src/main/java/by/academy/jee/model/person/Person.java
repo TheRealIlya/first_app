@@ -15,9 +15,7 @@ import lombok.NoArgsConstructor;
 public abstract class Person extends AbstractEntity {
 
     private String login;
-    @Column(name = "password")
-    private byte[] pwd;
-    private byte[] salt;
+    private String password;
     private String name;
     private int age;
     @Column(name = "role_id")

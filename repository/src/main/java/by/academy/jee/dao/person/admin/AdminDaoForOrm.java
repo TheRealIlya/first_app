@@ -29,7 +29,7 @@ public class AdminDaoForOrm extends CommonDaoForOrm<Admin> implements PersonDao<
 
         String SELECT_ONE_ADMIN = GET_ALL_ADMINS + LOGIN_FILTER;
         TypedQuery<Admin> query = em.createQuery(SELECT_ONE_ADMIN, Admin.class);
-        query.setParameter(ROLE, Role.ADMIN);
+        query.setParameter(ROLE, Role.ROLE_ADMIN);
         query.setParameter(NAME, name);
         return query.getSingleResult();
     }
@@ -37,7 +37,7 @@ public class AdminDaoForOrm extends CommonDaoForOrm<Admin> implements PersonDao<
     private List<Admin> getAllAdmins() {
 
         TypedQuery<Admin> query = em.createQuery(GET_ALL_ADMINS, Admin.class);
-        query.setParameter(ROLE, Role.ADMIN);
+        query.setParameter(ROLE, Role.ROLE_ADMIN);
         return query.getResultList();
     }
 }

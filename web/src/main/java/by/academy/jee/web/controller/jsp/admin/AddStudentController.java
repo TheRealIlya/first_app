@@ -19,7 +19,7 @@ import static by.academy.jee.constant.ControllerConstant.STUDENT_IS_SUCCESSFULLY
 
 @Slf4j
 @Controller
-@RequestMapping(value = "/jsp/addStudent")
+@RequestMapping(value = "/jsp/admin/addStudent")
 @RequiredArgsConstructor
 public class AddStudentController {
 

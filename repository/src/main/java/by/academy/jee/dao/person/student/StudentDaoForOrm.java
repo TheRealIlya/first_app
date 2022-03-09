@@ -32,14 +32,14 @@ public class StudentDaoForOrm extends CommonDaoForOrm<Student> implements Person
     private Student getStudentByName(String name) {
         String SELECT_ONE_STUDENT = GET_ALL_STUDENTS + LOGIN_FILTER;
         TypedQuery<Student> query = em.createQuery(SELECT_ONE_STUDENT, Student.class);
-        query.setParameter(ROLE, Role.STUDENT);
+        query.setParameter(ROLE, Role.ROLE_STUDENT);
         query.setParameter(NAME, name);
         return query.getSingleResult();
     }
 
     private List<Student> getAllStudents() {
         TypedQuery<Student> query = em.createQuery(GET_ALL_STUDENTS, Student.class);
-        query.setParameter(ROLE, Role.STUDENT);
+        query.setParameter(ROLE, Role.ROLE_STUDENT);
         List<Student> students = query.getResultList();
         if (students.size() == 0) {
             log.error(ERROR_NO_STUDENTS_IN_DATABASE);

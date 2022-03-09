@@ -9,7 +9,7 @@
         <jsp:include page="../common/header.jsp"></jsp:include>
         <h2>Assess student in your group</h2>
         <p style="color: red;">${errorMessage}</p>
-        <form method="POST" action="${pageContext.request.contextPath}/jsp/createGrade">
+        <form method="POST" action="${pageContext.request.contextPath}/jsp/teacher/createGrade">
             <table>
                 <tr>
                     <td><b>Student&#x60s login</b></td>

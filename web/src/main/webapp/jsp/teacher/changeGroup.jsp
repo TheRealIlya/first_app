@@ -10,7 +10,7 @@
         <h3>Enter new group&#x60s title</h3>
         <h4>(empty if you just wanna leave from the current group)</h4>
         <p style="color: red;">${errorMessage}</p>
-        <form method="POST" action="${pageContext.request.contextPath}/jsp/changeGroup">
+        <form method="POST" action="${pageContext.request.contextPath}/jsp/teacher/changeGroup">
             <table>
                 <tr>
                     <td><b>Group title</b></td>

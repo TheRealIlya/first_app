@@ -11,10 +11,10 @@
         <p style="color: red;">${errorMessage}</p>
         <form method="POST" action="${pageContext.request.contextPath}/jsp/login">
             User Name
-            <input type="text" name="userName" value="" />
+            <input type="text" name="username" id="username"/>
             <p>
                 Password
-                <input type="password" name="password" value="" />
+                <input type="password" name="password" id="password"/>
             </p>
             <input type="submit" value= "Enter" />
         </form>

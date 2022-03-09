@@ -115,22 +115,21 @@ public class Service {
     public Student getStudentFromRequestWithoutId(HttpServletRequest req) throws ServiceException {
 
         PersonDto personDto = getPersonDtoFromRequest(req);
-        personDto.setRole(Role.STUDENT);
+        personDto.setRole(Role.ROLE_STUDENT);
         return (Student) getPersonFromDto(personDto);
     }
 
     public Person getPersonFromDto(PersonDto personDto) {
 
-        Map<Role, Person> personMap = Map.of(Role.ADMIN, new Admin(),
-                Role.TEACHER, new Teacher().withSalaries(personDto.getSalaries()),
-                Role.STUDENT, new Student());
+        Map<Role, Person> personMap = Map.of(Role.ROLE_ADMIN, new Admin(),
+                Role.ROLE_TEACHER, new Teacher().withSalaries(personDto.getSalaries()),
+                Role.ROLE_STUDENT, new Student());
         Person person = personMap.get(personDto.getRole());
         if (personDto.getId() != null) {
             person.setId(personDto.getId());
         }
         person.setLogin(personDto.getLogin());
-        person.setPwd(personDto.getPwd());
-        person.setSalt(personDto.getSalt());
+        person.setPassword(personDto.getPassword());
         person.setName(personDto.getName());
         person.setAge(personDto.getAge());
         return person;
@@ -141,11 +140,11 @@ public class Service {
 
         checkIsUserNotExist(person.getLogin());
         switch (person.getRole()) {
-            case ADMIN:
+            case ROLE_ADMIN:
                 return adminDao.create((Admin) person);
-            case TEACHER:
+            case ROLE_TEACHER:
                 return teacherDao.create((Teacher) person);
-            case STUDENT:
+            case ROLE_STUDENT:
             default:
                 return studentDao.create((Student) person);
         }
@@ -154,7 +153,7 @@ public class Service {
     public Teacher getTeacherFromRequest(HttpServletRequest req) throws ServiceException {
 
         PersonDto personDto = getPersonDtoFromRequest(req);
-        personDto.setRole(Role.TEACHER);
+        personDto.setRole(Role.ROLE_TEACHER);
         String minSalaryString = req.getParameter(MIN_SALARY);
         String maxSalaryString = req.getParameter(MAX_SALARY);
         double minSalary, maxSalary;
@@ -205,11 +204,11 @@ public class Service {
 
     public void checkPassword(String attemptedPassword, Person user) throws ServiceException {
 
-        boolean isCorrectPassword = PasswordHasher.authenticate(attemptedPassword, user.getPwd(), user.getSalt());
-        if (!isCorrectPassword) {
-            log.error("Someone tried to enter as user {} with wrong password", user.getLogin());
-            throw new ServiceException(ERROR_WRONG_PASSWORD);
-        }
+//        boolean isCorrectPassword = PasswordHasher.authenticate(attemptedPassword, user.getPwd(), user.getSalt());
+//        if (!isCorrectPassword) {
+//            log.error("Someone tried to enter as user {} with wrong password", user.getLogin());
+//            throw new ServiceException(ERROR_WRONG_PASSWORD);
+//        }
     }
 
     public String getAverageSalaryByMonths(Teacher teacher, String firstMonthString, String lastMonthString)
@@ -235,7 +234,7 @@ public class Service {
 
     public void checkIsNotATeacher(Person person) throws ServiceException {
 
-        if (!Role.TEACHER.equals(person.getRole())) {
+        if (!Role.ROLE_TEACHER.equals(person.getRole())) {
             log.error("Error - user {} is not a teacher", person.getLogin());
             throw new ServiceException("Error - this user isn't a teacher");
         }
@@ -400,13 +399,13 @@ public class Service {
     public Person updatePerson(Person newPerson) throws ServiceException {
 
         switch (newPerson.getRole()) {
-            case ADMIN:
+            case ROLE_ADMIN:
                 adminDao.update((Admin) newPerson);
                 break;
-            case TEACHER:
+            case ROLE_TEACHER:
                 teacherDao.update((Teacher) newPerson);
                 break;
-            case STUDENT:
+            case ROLE_STUDENT:
                 studentDao.update((Student) newPerson);
         }
         return newPerson;
@@ -416,10 +415,10 @@ public class Service {
     public Person removeUser(Person person) throws ServiceException {
 
         switch (person.getRole()) {
-            case ADMIN:
+            case ROLE_ADMIN:
                 adminDao.delete(person.getLogin());
                 break;
-            case TEACHER:
+            case ROLE_TEACHER:
                 try {
                     Group group = groupDao.read((Teacher) person);
                     group.setTeacher(null);
@@ -429,7 +428,7 @@ public class Service {
                 }
                 teacherDao.delete(person.getLogin());
                 break;
-            case STUDENT:
+            case ROLE_STUDENT:
             default:
                 Student student = (Student) person;
                 student.getGrades()
@@ -461,8 +460,7 @@ public class Service {
         }
         return PersonDto.builder()
                 .login(userName)
-                .pwd(encryptedPassword)
-                .salt(salt)
+                .password(password)
                 .name(fio)
                 .age(age)
                 .build();

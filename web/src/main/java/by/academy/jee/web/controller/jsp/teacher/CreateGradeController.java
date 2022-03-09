@@ -24,7 +24,7 @@ import static by.academy.jee.constant.ControllerConstant.THEME_STRING;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping(value = "/jsp/createGrade")
+@RequestMapping(value = "/jsp/teacher/createGrade")
 public class CreateGradeController {
 
     private final Service service;

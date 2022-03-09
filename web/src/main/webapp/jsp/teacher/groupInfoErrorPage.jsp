@@ -7,6 +7,6 @@
     <body>
         <jsp:include page="../common/header.jsp"></jsp:include>
         <p style="color: red;">${errorMessage}</p>
-        <p><a href="${pageContext.request.contextPath}/jsp/changeGroup" style="color: red;">Change group</a></p>
+        <p><a href="${pageContext.request.contextPath}/jsp/teacher/changeGroup" style="color: red;">Change group</a></p>
     </body>
 </html>

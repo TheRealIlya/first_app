@@ -14,7 +14,7 @@ import lombok.Data;
 public class Admin extends Person {
 
     public Admin() {
-        setRole(Role.ADMIN);
+        setRole(Role.ROLE_ADMIN);
     }
 
     public Admin withId(int id) {
@@ -27,13 +27,8 @@ public class Admin extends Person {
         return this;
     }
 
-    public Admin withPwd(byte[] pwd) {
-        setPwd(pwd);
-        return this;
-    }
-
-    public Admin withSalt(byte[] salt) {
-        setSalt(salt);
+    public Admin withPassword(String password) {
+        setPassword(password);
         return this;
     }
 

@@ -35,23 +35,23 @@ public class LoginController {
         return LOGIN_JSP_URL;
     }
 
-    @PostMapping
-    public ModelAndView login(@RequestParam(USER_NAME) String userName, @RequestParam(PASSWORD) String password,
-                              HttpSession httpSession) {
-
-        ModelAndView modelAndView = new ModelAndView();
-        try {
-            Person user = service.getUserIfExist(userName);
-            service.checkPassword(password, user);
-            httpSession.setAttribute(USER, user);
-            String role = user.getRole().toString();
-            log.info("User {} is successfully authorised, role - {}", user.getLogin(), role);
-            String menuUrl = service.getMenuUrlAfterLogin(role);
-            modelAndView.setViewName(menuUrl);
-        } catch (ServiceException e) {
-            modelAndView.addObject(ERROR_MESSAGE, e.getMessage());
-            modelAndView.setViewName(LOGIN_JSP_URL);
-        }
-        return modelAndView;
-    }
+//    @PostMapping
+//    public ModelAndView login(@RequestParam(USER_NAME) String userName, @RequestParam(PASSWORD) String password,
+//                              HttpSession httpSession) {
+//
+//        ModelAndView modelAndView = new ModelAndView();
+//        try {
+//            Person user = service.getUserIfExist(userName);
+//            //service.checkPassword(password, user);
+//            httpSession.setAttribute(USER, user);
+//            String role = user.getRole().toString();
+//            log.info("User {} is successfully authorised, role - {}", user.getLogin(), role);
+//            String menuUrl = service.getMenuUrlAfterLogin(role);
+//            modelAndView.setViewName(menuUrl);
+//        } catch (ServiceException e) {
+//            modelAndView.addObject(ERROR_MESSAGE, e.getMessage());
+//            modelAndView.setViewName(LOGIN_JSP_URL);
+//        }
+//        return modelAndView;
+//    }
 }

@@ -33,7 +33,7 @@ public class TeacherDaoForOrm extends CommonDaoForOrm<Teacher> implements Person
 
         String SELECT_ONE_TEACHER = GET_ALL_TEACHERS + LOGIN_FILTER;
         TypedQuery<Teacher> query = em.createQuery(SELECT_ONE_TEACHER, Teacher.class);
-        query.setParameter(ROLE, Role.TEACHER);
+        query.setParameter(ROLE, Role.ROLE_TEACHER);
         query.setParameter(NAME, name);
         return query.getSingleResult();
     }
@@ -41,7 +41,7 @@ public class TeacherDaoForOrm extends CommonDaoForOrm<Teacher> implements Person
     private List<Teacher> getAllTeachers() {
 
         TypedQuery<Teacher> query = em.createQuery(GET_ALL_TEACHERS, Teacher.class);
-        query.setParameter(ROLE, Role.TEACHER);
+        query.setParameter(ROLE, Role.ROLE_TEACHER);
         List<Teacher> teachers = query.getResultList();
         if (teachers.size() == 0) {
             log.error(ERROR_NO_TEACHERS_IN_DATABASE);

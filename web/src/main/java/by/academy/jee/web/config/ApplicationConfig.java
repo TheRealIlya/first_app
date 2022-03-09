@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -13,9 +15,10 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @Configuration
 @ComponentScan("by.academy.jee")
 @EnableWebMvc
+@EnableWebSecurity
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
-public class ApplicationConfig {
+public class ApplicationConfig extends AbstractSecurityWebApplicationInitializer {
 
     @Bean
     public InternalResourceViewResolver internalResourceViewResolver(@Autowired ApplicationContext ctx) {

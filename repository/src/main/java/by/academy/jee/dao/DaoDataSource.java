@@ -27,7 +27,6 @@ public class DaoDataSource implements DataSource {
     public DaoDataSource(@Value("${postgres.url}") String url, @Value("${postgres.user}") String user,
                          @Value("${postgres.password}") String password, @Value("${postgres.driver}") String driver) {
 
-        //singleton
         this.url = url;
         this.user = user;
         this.password = password;
